@@ -1,0 +1,9 @@
+# Flutter
+build/
+.dart_tool/
+.pub-cache/
+.pub/
+ios/Pods/
+android/.gradle/
+android/app/build/
+**/GeneratedPluginRegistrant.*
