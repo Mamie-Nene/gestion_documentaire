@@ -1,112 +1,29 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/data/local/home_screen_data.dart';
+import 'package:gestion_documentaire/src/domain/local/Categorie.dart';
+import 'package:gestion_documentaire/src/domain/local/Document.dart';
+import 'package:gestion_documentaire/src/domain/local/QuickStats.dart';
 import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
 import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  static const List<_QuickStat> _quickStats = [
-    _QuickStat(
-      icon: Icons.insert_drive_file_rounded,
-      label: 'Documents',
-      value: '128',
-      trend: '+12%',
-      accent: AppColors.mainAppColor,
-    ),
-    _QuickStat(
-      icon: Icons.verified_user_rounded,
-      label: 'Approbations',
-      value: '8',
-      trend: '2 en attente',
-      accent: AppColors.accentTeal,
-    ),
-    _QuickStat(
-      icon: Icons.cloud_done_rounded,
-      label: 'Stockage',
-      value: '82%',
-      trend: '18% libre',
-      accent: AppColors.accentPurple,
-    ),
-  ];
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-  static const List<_CategoryCardData> _categories = [
-    _CategoryCardData(
-      title: 'Tous les documents',
-      icon: Icons.folder_open_rounded,
-      route: AppRoutesName.documentPage,
-      gradient: [AppColors.mainAppColor, AppColors.secondAppColor],
-    ),
-    _CategoryCardData(
-      title: 'Compte rendu',
-      icon: Icons.task_alt_rounded,
-      route: AppRoutesName.documentPage,
-      gradient: [AppColors.accentTeal, Color(0xFF0BB6D9)],
-    ),
-    _CategoryCardData(
-      title: 'Rapport',
-      icon: Icons.verified_rounded,
-      route: AppRoutesName.documentPage,
-      gradient: [AppColors.accentOrange, Color(0xFFFFD28C)],
-    ),
-    _CategoryCardData(
-      title: 'Présentation de projet',
-      icon: Icons.archive_outlined,
-      route: AppRoutesName.documentPage,
-      gradient: [Color(0xFF4E65FF), Color(0xFF92EFFD)],
-    ),
-  ];
-  static const List<_CategoryCardData> _evenement = [
-    _CategoryCardData(
-      title: 'Tous les événements',
-      icon: Icons.folder_open_rounded,
-      route: AppRoutesName.documentPage,
-      gradient: [AppColors.mainAppColor, AppColors.secondAppColor],
-    ),
-    _CategoryCardData(
-      title: 'Rentrée Numérique',
-      icon: Icons.task_alt_rounded,
-      route: AppRoutesName.documentPage,
-      gradient: [Colors.purple, Color(0xFFC15BE3)],
-    ),
-    _CategoryCardData(
-      title: 'TRADE FACILITATION CONFERENCE',
-      icon: Icons.verified_rounded,
-      route: AppRoutesName.documentPage,
-      gradient: [Colors.orange, Color(0xFFFFD28C)],
-    ),
-    _CategoryCardData(
-      title: 'Forum Invest in Sénégal',
-      icon: Icons.archive_outlined,
-      route: AppRoutesName.documentPage,
-      gradient: [Colors.blue, Color(0xFF92EFFD)],
-    ),
-  ];
-
-  static const List<_RecentDocument> _recentDocuments = [
-    _RecentDocument(
-      title: 'Project charter.pdf',
-      subtitle: 'Mis à jour il y a 2 h • 2,4 Mo',
-      progress: 0.82,
-      accentColor: AppColors.mainAppColor,
-    ),
-    _RecentDocument(
-      title: 'Legal contract.docx',
-      subtitle: 'Marketing • 1,1 Mo',
-      progress: 0.38,
-      accentColor: AppColors.accentTeal,
-    ),
-    _RecentDocument(
-      title: 'Rapport annuel.ppt',
-      subtitle: 'Finance • 34 Mo',
-      progress: 0.64,
-      accentColor: AppColors.accentPurple,
-    ),
-  ];
+class _HomeScreenState extends State<HomeScreen> {
+   List<QuickStat> quickStats = HomeScreenData().quickStats;
+  List<CategoryCardData> categories  = HomeScreenData().categories;
+  List<CategoryCardData> evenement = HomeScreenData().evenement;
+  List<RecentDocument> recentDocuments = HomeScreenData().recentDocuments;
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: AppColors.mainBackgroundColor,
       body: Stack(
@@ -130,8 +47,7 @@ class HomeScreen extends StatelessWidget {
                         const SizedBox(height: AppDimensions.paddingLarge),
                         _buildQuickStats(),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSectionTitle('Documents récents',
-                            actionLabel: 'Tout voir'),
+                        _buildSectionTitle('Documents récents', actionLabel: 'Tout voir'),
                         const SizedBox(height: AppDimensions.paddingMedium),
                         _buildRecentDocuments(),
                         const SizedBox(height: AppDimensions.paddingLarge),
@@ -202,7 +118,7 @@ class HomeScreen extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.mainAppColor.withOpacity(0.92),
+                AppColors.mainBlueFirst.withOpacity(0.92),
                 AppColors.secondAppColor.withOpacity(0.9),
               ],
               begin: Alignment.topLeft,
@@ -212,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                 BorderRadius.circular(AppDimensions.borderRadiusLarge + 12),
             boxShadow: [
               BoxShadow(
-                color: AppColors.mainAppColor.withOpacity(0.24),
+                color: AppColors.mainBlueFirst.withOpacity(0.24),
                 blurRadius: 28,
                 offset: const Offset(0, 16),
               ),
@@ -314,14 +230,14 @@ class HomeScreen extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(right: AppDimensions.paddingSmall),
             decoration: BoxDecoration(
-              color: AppColors.mainAppColor.withOpacity(0.12),
+              color: AppColors.mainBlueFirst.withOpacity(0.12),
               borderRadius:
                   BorderRadius.circular(AppDimensions.borderRadiusLarge),
             ),
             child: IconButton(
               onPressed: () {},
               icon:
-                  const Icon(Icons.tune_rounded, color: AppColors.mainAppColor),
+                  const Icon(Icons.tune_rounded, color: AppColors.mainBlueFirst),
             ),
           ),
         ],
@@ -331,12 +247,12 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildQuickStats() {
     return Row(
-      children: List.generate(_quickStats.length, (index) {
-        final stat = _quickStats[index];
+      children: List.generate(quickStats.length, (index) {
+        final stat = quickStats[index];
         return Expanded(
           child: Padding(
             padding: EdgeInsets.only(
-              right: index == _quickStats.length - 1
+              right: index == quickStats.length - 1
                   ? 0
                   : AppDimensions.paddingMedium / 2,
             ),
@@ -379,11 +295,11 @@ class HomeScreen extends StatelessWidget {
       height: 190,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: _recentDocuments.length,
+        itemCount: recentDocuments.length,
         separatorBuilder: (_, __) =>
             const SizedBox(width: AppDimensions.paddingMedium),
         itemBuilder: (context, index) {
-          final doc = _recentDocuments[index];
+          final doc = recentDocuments[index];
           return _RecentDocumentCard(document: doc);
         },
       ),
@@ -401,9 +317,9 @@ class HomeScreen extends StatelessWidget {
         childAspectRatio: 2.1,
         // childAspectRatio: 1.2,
       ),
-      itemCount: _categories.length,
+      itemCount: categories.length,
       itemBuilder: (context, index) {
-        final category = _categories[index];
+        final category = categories[index];
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
           onTap: () => Navigator.pushNamed(context, category.route),
@@ -466,17 +382,17 @@ class HomeScreen extends StatelessWidget {
         childAspectRatio: 2.1,
         // childAspectRatio: 1.2,
       ),
-      itemCount: _evenement.length,
+      itemCount: evenement.length,
       itemBuilder: (context, index) {
-        final evenement = _evenement[index];
+        final even = evenement[index];
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context, evenement.route),
+          onTap: () => Navigator.pushNamed(context, even.route),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingLarge),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: evenement.gradient,
+                colors: even.gradient,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -484,7 +400,7 @@ class HomeScreen extends StatelessWidget {
                   BorderRadius.circular(AppDimensions.borderRadiusLarge),
               boxShadow: [
                 BoxShadow(
-                  color: evenement.gradient.last.withOpacity(0.25),
+                  color: even.gradient.last.withOpacity(0.25),
                   blurRadius: 18,
                   offset: const Offset(0, 10),
                 ),
@@ -500,10 +416,10 @@ class HomeScreen extends StatelessWidget {
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(evenement.icon, color: Colors.white, size: 26),
+                  child: Icon(even.icon, color: Colors.white, size: 26),
                 ),
                 Text(
-                  evenement.title,
+                  even.title,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -524,7 +440,7 @@ class HomeScreen extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   const _StatCard({required this.stat});
 
-  final _QuickStat stat;
+  final QuickStat stat;
 
   @override
   Widget build(BuildContext context) {
@@ -587,7 +503,7 @@ class _StatCard extends StatelessWidget {
 class _RecentDocumentCard extends StatelessWidget {
   const _RecentDocumentCard({required this.document});
 
-  final _RecentDocument document;
+  final RecentDocument document;
 
   @override
   Widget build(BuildContext context) {
@@ -656,49 +572,6 @@ class _RecentDocumentCard extends StatelessWidget {
   }
 }
 
-class _QuickStat {
-  const _QuickStat({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.trend,
-    required this.accent,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final String trend;
-  final Color accent;
-}
-
-class _RecentDocument {
-  const _RecentDocument({
-    required this.title,
-    required this.subtitle,
-    required this.progress,
-    required this.accentColor,
-  });
-
-  final String title;
-  final String subtitle;
-  final double progress;
-  final Color accentColor;
-}
-
-class _CategoryCardData {
-  const _CategoryCardData({
-    required this.title,
-    required this.icon,
-    required this.route,
-    required this.gradient,
-  });
-
-  final String title;
-  final IconData icon;
-  final String route;
-  final List<Color> gradient;
-}
 
 class _BackgroundDecor extends StatelessWidget {
   const _BackgroundDecor({super.key});

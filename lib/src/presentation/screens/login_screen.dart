@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/data/remote/auth_api.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
@@ -10,10 +12,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _loginKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  bool _isRunning = false;
+
+
+
 
   @override
   void dispose() {
@@ -58,22 +65,22 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Logo
-          Container(
+          /*Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppColors.mainBackgroundColor,
               shape: BoxShape.circle,
             ),
-            child: Image.asset(
+            child:*/ Image.asset(
               AppImages.APP_LOGO,
-              width: 64,
-              height: 64,
+              width: 200,
+              height: 100,
             ),
-          ),
+          //),
           const SizedBox(height: AppDimensions.paddingLarge + 4),
           // Title
           Text(
-            'Bon retour',
+            'Connexion',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w600,
@@ -93,28 +100,70 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           const SizedBox(height: AppDimensions.paddingLarge + 8),
           // Email field
-          _buildTextField(
-            label: 'Email professionnel',
-            icon: Icons.mail_outline_rounded,
-            controller: _emailController,
-          ),
-          const SizedBox(height: AppDimensions.paddingMedium),
-          // Password field
-          _buildTextField(
-            label: 'Mot de passe',
-            icon: Icons.lock_outline_rounded,
-            controller: _passwordController,
-            isPassword: true,
+          Form(
+              key: _loginKey,
+              child:Column(
+                children: [
+                  _buildTextField(
+                    label: 'Email professionnel',
+                    icon: Icons.mail_outline_rounded,
+                    controller: _emailController,
+                  ),
+                  const SizedBox(height: AppDimensions.paddingMedium),
+                  // Password field
+                  _buildTextField(
+                    label: 'Mot de passe',
+                    icon: Icons.lock_outline_rounded,
+                    controller: _passwordController,
+                    isPassword: true,
+                  )
+                ],
+              )
           ),
           const SizedBox(height: AppDimensions.paddingMedium),
           // Remember me row
           _buildRememberRow(),
           const SizedBox(height: AppDimensions.paddingLarge + 4),
           // Login button
-          _buildPrimaryButton(context),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed:_isRunning? null : () async {
+                setState(() {
+                  _isRunning=true;
+                });
+                if (_loginKey.currentState!.validate()) {
+                  await AuthApi().loginRequest(context, _emailController.text, _passwordController.text, ApiUrl().getLoginUrl);
+                }
+                setState(() {
+                  _isRunning=false;
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppDimensions.paddingMedium + 2,
+                ),
+                backgroundColor: AppColors.mainAppColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                ),
+              ),
+              child: const Text(
+                'Se connecter',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ),
+          ),
           const SizedBox(height: AppDimensions.paddingMedium),
           // Sign up row
-          _buildSignUpRow(context),
+         // _buildSignUpRow(context),
         ],
       ),
     );
@@ -210,35 +259,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildPrimaryButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () =>
-            Navigator.pushReplacementNamed(context, AppRoutesName.homePage),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppDimensions.paddingMedium + 2,
-          ),
-          backgroundColor: AppColors.mainAppColor,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          ),
-        ),
-        child: const Text(
-          'Se connecter',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.3,
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildSignUpRow(BuildContext context) {
     return Row(

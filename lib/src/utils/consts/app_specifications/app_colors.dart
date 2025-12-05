@@ -4,6 +4,9 @@ class AppColors {
   // ---------------------- APP MAIN COLOR ----------------------
 
   static const mainAppColor = Color(0xFF0056D6);
+  //static const mainAppColor = Color(0xFF7DAA40);
+  //static const mainAppColor = Color(0xFF7EAA41); chat
+  static const mainBlueFirst = Color(0xFF0056D6);
   static const secondAppColor = Color(0xFF3A88FE);
 
   // -------------------- Background Color ----------------------
