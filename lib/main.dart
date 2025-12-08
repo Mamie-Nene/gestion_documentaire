@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/config/router_observer.dart';
+import 'package:gestion_documentaire/src/utils/variable/global_variable.dart';
 import 'src/config/router/route_generator.dart';
 import 'src/utils/consts/routes/app_routes_name.dart';
 import 'dart:io';
@@ -24,11 +26,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [routeObserver],
       title: 'gestion_documentaire',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
+      navigatorKey: navigatorKey, // <-- clé globale
+      scaffoldMessengerKey: scaffoldMessengerKey, // Associer la GlobalKey
       initialRoute: AppRoutesName.splashFirstPage,
       onGenerateRoute: RouteGenerator.generateRoute,
       localizationsDelegates: const [

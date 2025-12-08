@@ -289,6 +289,13 @@
             </list>
           </value>
         </entry>
+        <entry key="http_interceptor">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/http_interceptor-2.0.0/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="http_multi_server">
           <value>
             <list>
@@ -335,6 +342,13 @@
           <value>
             <list>
               <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/json_serializable-6.11.3/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="jwt_decoder">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/jwt_decoder-2.0.1/lib" />
             </list>
           </value>
         </entry>
@@ -798,6 +812,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_fonts-6.3.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/graphs-2.3.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http-1.6.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http_interceptor-2.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http_multi_server-3.2.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/http_parser-4.1.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image-4.5.4/lib" />
@@ -805,6 +820,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/io-1.0.5/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/json_annotation-4.9.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/json_serializable-6.11.3/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/jwt_decoder-2.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker-11.0.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.10/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/leak_tracker_testing-3.0.2/lib" />

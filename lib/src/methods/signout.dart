@@ -10,6 +10,7 @@ class SignOutMethod{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('isLoggedIn');
     prefs.remove('token');
+    prefs.remove('email');
     var status = prefs.getBool('isLoggedIn') ?? false;
     print(status);
     //isUserConnected = status;

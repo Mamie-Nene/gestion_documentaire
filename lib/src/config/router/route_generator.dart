@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '/src/presentation/screens/document_list_screen.dart';
-import '/src/presentation/screens/document_view_screen.dart';
+import 'package:gestion_documentaire/src/presentation/screens/categories/category_list_screen.dart';
+import 'package:gestion_documentaire/src/presentation/screens/documents/recents_document_list_screen.dart';
+import 'package:gestion_documentaire/src/presentation/screens/events/evenement_list_screen.dart';
+import '../../presentation/screens/documents/document_list_screen.dart';
+import '../../presentation/screens/documents/document_view_screen.dart';
 import '/src/presentation/screens/home_pages/home_screen.dart';
-import '/src/presentation/screens/home_pages/profile_screen.dart';
+import '../../presentation/screens/auth/profile_screen.dart';
 import '/src/presentation/screens/login_screen.dart';
-import '/src/presentation/screens/auth/login.dart';
 import '/src/presentation/screens/home_pages/splash_first_page.dart';
-
-import '/src/presentation/screens/home_pages/task_page.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
 class RouteGenerator {
@@ -23,14 +23,32 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => const HomeScreen());
 
       case AppRoutesName.documentPage:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        var event = args["event"];
+        var category = args["category"];
+
         return MaterialPageRoute(
-            builder: (context) => const DocumentListScreen());
+            builder: (context) => DocumentListScreen(event: event,categorie :category ,));
+
+
+        case AppRoutesName.recentDocumentPage :
+          return MaterialPageRoute(builder: (context) => const RecentDocumentListScreen());
+
+        // ----------------------- Evenement Pages ------------------------
+
+        case AppRoutesName.evenementListPage :
+          return MaterialPageRoute(builder: (context) => const EventListScreen());
+
+        // ----------------------- Category Pages ------------------------
+
+        case AppRoutesName.categoryListPage:
+          return MaterialPageRoute(builder: (context) => const CategoryListScreen());
 
       case AppRoutesName.viewDocumentPage:
         final args = settings.arguments;
-        var titleDoc = (args as Map)["titleDoc"].toString();
+        var document = (args as Map)["document"];
         return MaterialPageRoute(
-            builder: (context) => DocumentViewScreen(titleDoc: titleDoc));
+            builder: (context) => DocumentViewScreen(document: document));
 
       case AppRoutesName.profilePage:
         return MaterialPageRoute(builder: (context) => const ProfileScreen());
@@ -45,7 +63,7 @@ class RouteGenerator {
         builder: (context) => Scaffold(
             body: ElevatedButton(
                 onPressed: () =>
-                    Navigator.of(context).pushNamed(AppRoutesName.accueilPage),
+                    Navigator.of(context).pushNamed(AppRoutesName.homePage),
                 child: const Text(" Cette page n'existe pas"))));
   }
 }

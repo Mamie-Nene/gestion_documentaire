@@ -1,9 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/data/remote/auth_api.dart';
+import 'package:gestion_documentaire/src/domain/remote/UserInfo.dart';
+import 'package:gestion_documentaire/src/methods/signout.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+
+ UserInfo? userInfo;
+ bool _infoLoader= true;
+
+
+  getInfoUser() async {
+    await AuthApi().getUserInfo( ApiUrl().getUserInfoUrl).then((value) {
+      setState(() {
+        userInfo = value;
+        _infoLoader=false;
+      });
+    }).catchError((error) {
+      setState(() {
+        _infoLoader=false;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    getInfoUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +68,14 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(
+        child:
+        _infoLoader?
+           Center(child: CircularProgressIndicator())
+        :
+            userInfo == null
+            ? Center(child:Text("Une erreur est survenue"))
+            :
+          Column(
           children: [
             // Profile Header
             Container(
@@ -60,7 +100,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: AppDimensions.paddingMedium),
                   Text(
-                    'Modou Diop',
+                    '${userInfo!.firstName} ${userInfo!.lastName}',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
@@ -68,8 +108,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    'modou.diop@gainde2000.sn',
+                  Text(userInfo!.email,
                     style: TextStyle(
                       fontSize: 15,
                       color: AppColors.textMainPageColor,
@@ -89,19 +128,19 @@ class ProfileScreen extends StatelessWidget {
                   _buildInfoCard(
                     icon: Icons.person_outline_rounded,
                     label: 'Nom complet',
-                    value: 'Modou Diop',
+                    value: '${userInfo!.firstName} ${userInfo!.lastName}',
                   ),
                   const SizedBox(height: AppDimensions.paddingMedium),
                   _buildInfoCard(
                     icon: Icons.email_outlined,
                     label: 'Email',
-                    value: 'modou.diop@gainde2000.sn',
+                    value: userInfo!.email,
                   ),
                   const SizedBox(height: AppDimensions.paddingMedium),
                   _buildInfoCard(
                     icon: Icons.phone_outlined,
-                    label: 'Téléphone',
-                    value: '77 123 45 67',
+                    label: 'Profil',
+                    value: userInfo!.role,
                   ),
                   const SizedBox(height: AppDimensions.paddingLarge * 2),
                   // Logout button
@@ -109,11 +148,12 @@ class ProfileScreen extends StatelessWidget {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
+                        SignOutMethod().signOut(context);
+                        /*Navigator.pushNamedAndRemoveUntil(
                           context,
                           AppRoutesName.loginPage,
                           (route) => false,
-                        );
+                        );*/
                       },
                       icon: Icon(Icons.logout, color: AppColors.mainRedColor),
                       label: Text(

@@ -1,19 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/data/remote/events_api.dart';
+import 'package:gestion_documentaire/src/domain/remote/Event.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
 import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
 
-class DocumentListScreen extends StatefulWidget {
-  const DocumentListScreen({super.key});
+class EventListScreen extends StatefulWidget {
+  const EventListScreen({super.key});
 
   @override
-  State<DocumentListScreen> createState() => _DocumentListScreenState();
+  State<EventListScreen> createState() => _EventListScreenState();
 }
 
-class _DocumentListScreenState extends State<DocumentListScreen> {
+class _EventListScreenState extends State<EventListScreen> {
   static const _tabs = ['Récents', 'Partagés', 'Favoris'];
   static const _filters = ["Aujourd'hui", 'Cette semaine', 'Ce mois'];
   int _activeFilter = 0;
 
+  List<Event> events = [];
+  bool _isEventsLoading=false;
+
+  eventsGetted() async {
+    await EventsApi().getListEvents( ApiUrl().getEventsUrl).then((value) {
+      setState(() {
+        events = value;
+        _isEventsLoading=false;
+      });
+    }).catchError((error) {
+      setState(() {
+        _isEventsLoading=false;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    eventsGetted();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -40,8 +64,8 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                   ],
                 ),
               ),
-              _buildTabBar(),
-              const Divider(height: 1, color: AppColors.dividerLight),
+             // _buildTabBar(),
+             // const Divider(height: 1, color: AppColors.dividerLight),
               Expanded(
                 child: TabBarView(
                   children: List.generate(
@@ -66,25 +90,16 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded,
               color: AppColors.mainAppColor),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+
             Text(
-              'Documents',
+              'Evénements',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 color: AppColors.loginTitleColor,
               ),
             ),
-            Text(
-              'Gardez tout accessible',
-              style: TextStyle(
-                color: AppColors.textMainPageColor,
-              ),
-            ),
-          ],
-        ),
+
         IconButton(
           onPressed: () {},
           icon:
@@ -188,7 +203,8 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   }
 
   Widget _buildDocumentList(int tabIndex) {
-    final documents = _generateDocuments(tabIndex);
+    final documents = events;
+    //final documents = _generateDocuments(tabIndex);
     return ListView.separated(
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),
       itemCount: documents.length,
@@ -197,7 +213,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
       itemBuilder: (context, index) {
         final doc = documents[index];
         return _DocumentTile(
-          document: doc,
+          event: doc,
           onTap: () =>
               Navigator.of(context).pushNamed(AppRoutesName.viewDocumentPage,
                   arguments: {"titleDoc": doc.title}
@@ -260,11 +276,11 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
 
 class _DocumentTile extends StatelessWidget {
   const _DocumentTile({
-    required this.document,
+    required this.event,
     required this.onTap,
   });
 
-  final _DocumentListItem document;
+  final Event event;
   final VoidCallback onTap;
 
   @override
@@ -290,10 +306,10 @@ class _DocumentTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingSmall),
               decoration: BoxDecoration(
-                color: document.accent.withOpacity(0.12),
+                color: AppColors.mainAppColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(document.icon, color: document.accent, size: 28),
+              child: Icon(Icons.article_outlined, color:AppColors.mainAppColor, size: 28),
             ),
             const SizedBox(width: AppDimensions.paddingMedium),
             Expanded(
@@ -301,7 +317,7 @@ class _DocumentTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    document.title,
+                    event.title,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -310,7 +326,7 @@ class _DocumentTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    document.owner,
+                    event.description,
                     style: TextStyle(color: AppColors.textMainPageColor),
                   ),
                   const SizedBox(height: 4),
@@ -321,7 +337,7 @@ class _DocumentTile extends StatelessWidget {
                           color: AppColors.textMainPageColor.withOpacity(0.7)),
                       const SizedBox(width: 4),
                       Text(
-                        document.updatedAt,
+                        event.eventDate,
                         style: TextStyle(
                             color:
                                 AppColors.textMainPageColor.withOpacity(0.8)),
@@ -335,13 +351,7 @@ class _DocumentTile extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        document.size,
-                        style: TextStyle(
-                            color:
-                                AppColors.textMainPageColor.withOpacity(0.8)),
-                      ),
+
                     ],
                   ),
                 ],

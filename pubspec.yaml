@@ -24,6 +24,8 @@ dependencies:
   email_validator: ^2.1.17
   flutter_localization: ^0.1.14
   open_filex: ^4.3.2
+  http_interceptor: ^2.0.0
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:

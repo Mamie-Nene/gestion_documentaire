@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/data/remote/document_api.dart';
+import 'package:gestion_documentaire/src/domain/remote/Document.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
+import 'package:intl/intl.dart';
 
 class DocumentViewScreen extends StatelessWidget {
-  final String titleDoc;
-  const DocumentViewScreen({super.key, required this.titleDoc});
+  final Document document;
+  const DocumentViewScreen({super.key, required this.document});
 
-  static const _metadata = [
-    _Metadata(
-        icon: Icons.person_outline, label: 'Propriétaire', value: 'Modou Diop'),
-    _Metadata(
-        icon: Icons.calendar_today_rounded,
-        label: 'Créé le',
-        value: '12 nov. 2025'),
-    _Metadata(
-        icon: Icons.sync_rounded,
-        label: 'Dernière mise à jour',
-        value: 'il y a 2 heures'),
-    _Metadata(
-        icon: Icons.approval_rounded,
-        label: 'Statut',
-        value: 'En attente d\'approbation'),
-  ];
 
   @override
   Widget build(BuildContext context) {
+    DateTime dateCreation = DateTime.parse(document.createdAt);
+    String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
+
+    final  _metadata = [
+      _Metadata(
+          icon: Icons.person_outline, label: 'Propriétaire', value: 'Modou Diop'),
+      _Metadata(
+          icon: Icons.calendar_today_rounded,
+          label: 'Créé le',
+          value: formatted),
+      _Metadata(
+          icon: Icons.sync_rounded,
+          label: 'Dernière mise à jour',
+          value: formatted),
+      _Metadata(
+          icon: Icons.approval_rounded,
+          label: 'Statut',
+          value: document.status),
+    ];
     return Scaffold(
       backgroundColor: AppColors.mainBackgroundColor,
       body: Stack(
@@ -43,7 +50,9 @@ class DocumentViewScreen extends StatelessWidget {
                         const SizedBox(height: AppDimensions.paddingLarge),
                         _buildActionButtons(),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildMetadataSection(),
+                        _buildDescriptionSection(),
+                        const SizedBox(height: AppDimensions.paddingLarge),
+                        _buildMetadataSection(_metadata),
                         const SizedBox(height: AppDimensions.paddingLarge),
                         _buildActivityTimeline(),
                       ],
@@ -125,7 +134,7 @@ class DocumentViewScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Text(titleDoc,
+                 Text(document.title,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -161,22 +170,22 @@ class DocumentViewScreen extends StatelessWidget {
   }
 
   Widget _buildActionButtons() {
-    const actions = [
-      _ActionButtonData(Icons.share_rounded, 'Partager'),
-      _ActionButtonData(Icons.download_rounded, 'Télécharger'),
-      _ActionButtonData(Icons.print_rounded, 'Imprimer'),
+    List<_ActionButtonData> actionsButton = [
+      _ActionButtonData(Icons.share_rounded, 'Partager',(){}),
+      _ActionButtonData(Icons.download_rounded, 'Télécharger',(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);}),
+      _ActionButtonData(Icons.print_rounded, 'Imprimer',(){}),
     ];
     return Row(
-      children: List.generate(actions.length, (index) {
-        final action = actions[index];
+      children: List.generate(actionsButton.length, (index) {
+        final action = actionsButton[index];
         return Expanded(
           child: Padding(
             padding: EdgeInsets.only(
               right:
-                  index == actions.length - 1 ? 0 : AppDimensions.paddingMedium,
+                  index == actionsButton.length - 1 ? 0 : AppDimensions.paddingMedium,
             ),
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: action.action,
               icon: Icon(action.icon),
               label: Text(action.label),
               style: ElevatedButton.styleFrom(
@@ -197,7 +206,7 @@ class DocumentViewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMetadataSection() {
+  Widget _buildMetadataSection(_metadata) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),
@@ -265,6 +274,45 @@ class DocumentViewScreen extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+  Widget _buildDescriptionSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 18,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Description',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.loginTitleColor,
+            ),
+          ),
+          const SizedBox(height: AppDimensions.paddingMedium),
+
+          Text(document.description,
+            style: TextStyle(
+              color: AppColors.textMainPageColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+
         ],
       ),
     );
@@ -444,10 +492,11 @@ class _Metadata {
 }
 
 class _ActionButtonData {
-  const _ActionButtonData(this.icon, this.label);
+  const _ActionButtonData(this.icon, this.label, this.action);
 
   final IconData icon;
   final String label;
+  final VoidCallback action;
 }
 
 class _TimelineActivity {

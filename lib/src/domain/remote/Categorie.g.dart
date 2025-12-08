@@ -13,6 +13,7 @@ Categorie _$CategorieFromJson(Map<String, dynamic> json) => Categorie(
   json['code'] as String,
   json['insigne'] as String,
   json['description'] as String,
+  json['createdAt'] as String,
   json['documentCount'] as int
 
 );
@@ -24,5 +25,6 @@ Map<String, dynamic> _$CategorieToJson(Categorie instance) => <String, dynamic>{
   'code': instance.code,
   'insigne': instance.insigne,
   'description': instance.description,
+  'createdAt': instance.createdAt,
   'documentCount': instance.documentCount
 };

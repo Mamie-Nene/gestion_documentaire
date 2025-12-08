@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:gestion_documentaire/src/methods/token_interceptor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http_interceptor/http/intercepted_http.dart';
 
 import 'package:flutter/material.dart';
 
@@ -20,7 +22,7 @@ class DocumentApi{
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
-
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
     if(token==null)
     {
       globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
@@ -67,6 +69,7 @@ class DocumentApi{
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
 
     if(token==null)
     {
@@ -81,6 +84,7 @@ class DocumentApi{
         Uri.parse(uri),
         headers: {
           'Accept': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -91,6 +95,9 @@ class DocumentApi{
       if (response.statusCode == 200) {
 
         List data = json.decode(response.body);
+        if (data.isEmpty) {
+          return gieDocs;
+        }
         gieDocs = data.map((e) => Document.fromJson(e)).toList();
         return gieDocs;
       }
@@ -110,10 +117,142 @@ class DocumentApi{
     }
     }
   }
+
+  getRecentsDocuments( String URL) async {
+    List<Document> gieDocs = [] ;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
+
+    if(token==null)
+    {
+      globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
+      return;
+    }
+    else {
+      try{
+      var uri = "$URL";
+      print(uri);
+      var response = await http.get(
+        Uri.parse(uri),
+        headers: {
+          'Accept': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint("response.statusCode for get gieDocs ${response.statusCode}");
+      debugPrint("response.body for get gieDocs ${response.body}");
+
+
+      if (response.statusCode == 200) {
+
+        var data = json.decode(response.body);
+        List content = data['content'];
+        if (content.isEmpty) {
+          return gieDocs;
+        }
+        gieDocs = content.map((e) => Document.fromJson(e)).toList();
+
+        gieDocs.sort((a, b) => DateTime.parse(a.createdAt)
+            .compareTo(DateTime.parse(b.createdAt)));
+
+        return gieDocs.take(3).toList();
+
+      }
+      else if (response.statusCode == 400) {
+        globalResponseMessage.errorMessage("Pas documents!!");
+        return gieDocs;
+      }
+
+      else if (response.statusCode == 500) {//404
+        globalResponseMessage.errorMessage("Pas documents!!");
+        return gieDocs;
+      }
+    }
+    catch (e) {
+      debugPrint("error throw: ${e.toString()}");
+      return globalResponseMessage.errorMessage("Connexion impossible. Veuillez réessayer plus tard !!");
+    }
+    }
+  }
+
+  getDocumentsByCritera( String URL, String? category, String? event) async {
+    List<Document> gieDocs = [] ;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
+
+    if(token==null)
+    {
+      globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
+      return [];
+    }
+    else {
+      try{
+      var uri = "$URL";
+
+      var response = await http.get(
+        Uri.parse(uri),
+        headers: {
+          'Accept': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint("response.statusCode for get gieDocs ${response.statusCode}");
+      debugPrint("response.body for get gieDocs ${response.body}");
+
+
+      if (response.statusCode == 200) {
+
+        var data = json.decode(response.body);
+        List content = data['content'];
+
+        gieDocs = content.map((e) => Document.fromJson(e)).toList();
+
+        // ---- Filtering logic ----
+          List<Document> filtered = gieDocs;
+
+          if (category != null && event != null) {
+            filtered = gieDocs
+                .where((e) => e.categoryId == category && e.eventId == event)
+                .toList();
+
+          } else if (category != null) {
+            filtered = gieDocs
+                .where((e) => e.categoryId == category)
+                .toList();
+
+          } else if (event != null) {
+            filtered = gieDocs
+                .where((e) => e.eventId == event)
+                .toList();
+
+          }
+
+          return filtered;
+
+      }
+       if (response.statusCode == 400||response.statusCode ==500) {
+        globalResponseMessage.errorMessage("Pas documents!!");
+        return [];
+      }
+    }
+    catch (e) {
+      debugPrint("error throw: ${e.toString()}");
+      globalResponseMessage.errorMessage("Connexion impossible. Veuillez réessayer plus tard !!");
+      return [];
+    }
+    }
+  }
+
   voirDocuments( String URL,String fileName) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
     String? token = prefs.getString("token");
 
     if(token==null)
@@ -133,7 +272,7 @@ class DocumentApi{
             Uri.parse(uri),headers: headers
         );
         debugPrint("response.statusCode for view doc ${response.statusCode}");
-        debugPrint("response.body for view doc ${response.body}");
+
 
         if (response.statusCode == 200) {
             // Step 2: Get a temporary directory

@@ -2,9 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:gestion_documentaire/src/data/local/home_screen_data.dart';
+import 'package:gestion_documentaire/src/data/remote/category_api.dart';
+import 'package:gestion_documentaire/src/data/remote/document_api.dart';
+import 'package:gestion_documentaire/src/data/remote/events_api.dart';
 import 'package:gestion_documentaire/src/domain/local/Categorie.dart';
 import 'package:gestion_documentaire/src/domain/local/Document.dart';
 import 'package:gestion_documentaire/src/domain/local/QuickStats.dart';
+import 'package:gestion_documentaire/src/domain/remote/Categorie.dart';
+import 'package:gestion_documentaire/src/domain/remote/Document.dart';
+import 'package:gestion_documentaire/src/domain/remote/Event.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
 import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
 
@@ -15,12 +22,80 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+/*
+* thanks now I have card with events data (3 events data ) I want to add a card named "Tout" so we will have 4 card*/
 class _HomeScreenState extends State<HomeScreen> {
+  List<Event> last3Events = [];
+  List<Categorie> last3CategoriesGetted = [];
+  List<Document> last3DocumentsGetted = [];
+  bool _isEventsLoading=false;
+  bool _isCategoriesLoading=false;
+  bool _isDocumentsLoading=false;
+
    List<QuickStat> quickStats = HomeScreenData().quickStats;
-  List<CategoryCardData> categories  = HomeScreenData().categories;
+ /* List<CategoryCardData> categories  = HomeScreenData().categories;
   List<CategoryCardData> evenement = HomeScreenData().evenement;
   List<RecentDocument> recentDocuments = HomeScreenData().recentDocuments;
+*/
+   eventsGetted() async {
+     await EventsApi().getLastEvents( ApiUrl().getEventsUrl).then((value) {
+       setState(() {
+         last3Events = value;
+         _isEventsLoading=false;
+       });
+     }).catchError((error) {
+       setState(() {
+         _isEventsLoading=false;
+       });
+     });
+     last3Events.insert(0, Event(
+       "0",
+      "Tout",
+        "Voir tous les événements",
+        DateTime.now().toString(),
+     ));
+   }
 
+  getCategories() async {
+    await CategoriesApi().getLastCategories( ApiUrl().getCategoriesUrl).then((value) {
+      setState(() {
+        last3CategoriesGetted = value;
+        _isCategoriesLoading=false;
+      });
+    }).catchError((error) {
+      setState(() {
+        _isCategoriesLoading=false;
+      });
+    });
+    last3CategoriesGetted.insert(0, Categorie(
+      "0",
+      "Tout","0","0",
+      "Voir toutes les catégories",
+      DateTime.now().toString(),last3CategoriesGetted.length
+    ));
+  }
+
+  getRecentsDocs() async {
+    await DocumentApi().getRecentsDocuments( ApiUrl().getDocumentsUrl).then((value) {
+      setState(() {
+        last3DocumentsGetted = value;
+        _isDocumentsLoading=false;
+      });
+    }).catchError((error) {
+      setState(() {
+        _isDocumentsLoading=false;
+      });
+    });
+  }
+
+   @override
+  void initState() {
+    eventsGetted();
+    getCategories();
+    getRecentsDocs();
+
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -45,19 +120,29 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: AppDimensions.paddingLarge),
                         _buildSearchBar(),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildQuickStats(),
-                        const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSectionTitle('Documents récents', actionLabel: 'Tout voir'),
+                        TextButton(
+                          onPressed: (){Navigator.of(context).pushNamed(AppRoutesName.homePage);},
+                          child: Text(
+                            "test",
+                            style: TextStyle(
+                              color: AppColors.mainAppColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        /*x_buildQuickStats(),
+                        const SizedBox(height: AppDimensions.paddingLarge),*/
+                        _buildSectionTitle('Documents récents', 'Tout voir',(){Navigator.of(context).pushNamed(AppRoutesName.documentPage);}),
                         const SizedBox(height: AppDimensions.paddingMedium),
-                        _buildRecentDocuments(),
+                        _isDocumentsLoading?CircularProgressIndicator():last3DocumentsGetted.isEmpty?Text("Pas de documents pour le moment !"): _buildRecentDocuments(last3DocumentsGetted),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSectionTitle('Événement', actionLabel: 'Gérer'),
+                        _buildSectionTitle('Événement', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);}),
                         const SizedBox(height: AppDimensions.paddingMedium),
-                        _buildEvenementGrid(context),
+                        _isEventsLoading?CircularProgressIndicator():last3Events.isEmpty?Text("Pas d'évenement pour le moment !"):_buildEvenementGrid(context),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSectionTitle('Catégories', actionLabel: 'Gérer'),
+                        _buildSectionTitle('Catégories', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.categoryListPage);}),
                         const SizedBox(height: AppDimensions.paddingMedium),
-                        _buildCategoryGrid(context),
+                        _isCategoriesLoading?CircularProgressIndicator():last3CategoriesGetted.isEmpty?Text("Pas de catégories pour le moment !"):_buildCategoryGrid(context),
                       ],
                     ),
                   ),
@@ -263,7 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title, {String? actionLabel}) {
+  Widget _buildSectionTitle(String title, String? actionLabel, VoidCallback action) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -277,7 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         if (actionLabel != null)
           TextButton(
-            onPressed: () {},
+            onPressed: action,
             child: Text(
               actionLabel,
               style: TextStyle(
@@ -290,17 +375,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildRecentDocuments() {
+  Widget _buildRecentDocuments(List<Document> recentDocsGetted) {
     return SizedBox(
       height: 190,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: recentDocuments.length,
+        itemCount: recentDocsGetted.length,//recentDocuments.length,
         separatorBuilder: (_, __) =>
             const SizedBox(width: AppDimensions.paddingMedium),
         itemBuilder: (context, index) {
-          final doc = recentDocuments[index];
-          return _RecentDocumentCard(document: doc);
+          final doc = recentDocsGetted[index]; //recentDocuments[index];
+          List<Color> colors= [ AppColors.mainAppColor,AppColors.accentTeal,AppColors.accentPurple];
+          List<double> progress= [ 0.82,0.38,0.64];
+
+          return _RecentDocumentCard(document: doc,colorGetted: colors[index],progress:progress[index]);
         },
       ),
     );
@@ -317,17 +405,20 @@ class _HomeScreenState extends State<HomeScreen> {
         childAspectRatio: 2.1,
         // childAspectRatio: 1.2,
       ),
-      itemCount: categories.length,
+      itemCount: last3CategoriesGetted.length,//categories
       itemBuilder: (context, index) {
-        final category = categories[index];
+        final category = last3CategoriesGetted[index]; //categories[index];
+        List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[AppColors.accentTeal, Color(0xFF0BB6D9)],[AppColors.accentOrange, Color(0xFFFFD28C)],[Color(0xFF4E65FF), Color(0xFF92EFFD)],];
+        List<IconData> icon = [Icons.folder_open_rounded,Icons.task_alt_rounded,Icons.verified_rounded,Icons.archive_outlined,];
+
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context, category.route),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"category":index==0? null: category.id}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingLarge),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: category.gradient,
+                colors: gradient[index],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -335,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   BorderRadius.circular(AppDimensions.borderRadiusLarge),
               boxShadow: [
                 BoxShadow(
-                  color: category.gradient.last.withOpacity(0.25),
+                  color: gradient[index].last.withOpacity(0.25),
                   blurRadius: 18,
                   offset: const Offset(0, 10),
                 ),
@@ -351,10 +442,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(category.icon, color: Colors.white, size: 26),
+                  child: Icon(icon[index], color: Colors.white, size: 26),
                 ),
                 Text(
-                  category.title,
+                  category.name,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -371,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildEvenementGrid(BuildContext context) {
+  Widget _buildEvenementGrid(BuildContext context ) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -382,17 +473,22 @@ class _HomeScreenState extends State<HomeScreen> {
         childAspectRatio: 2.1,
         // childAspectRatio: 1.2,
       ),
-      itemCount: evenement.length,
+      itemCount: last3Events.length,//evenement.length,
       itemBuilder: (context, index) {
-        final even = evenement[index];
+
+        final event = last3Events[index];//evenement[index]
+
+        List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[Colors.purple, Color(0xFFC15BE3)],[Colors.orange, Color(0xFFFFD28C)],[Colors.blue, Color(0xFF92EFFD)],];
+        List<IconData> icon = [Icons.folder_open_rounded,Icons.task_alt_rounded,Icons.verified_rounded,Icons.archive_outlined,];
+
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context, even.route),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage, arguments: {"event": index==0? null : event.id}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingLarge),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: even.gradient,
+                colors: gradient[index],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -400,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   BorderRadius.circular(AppDimensions.borderRadiusLarge),
               boxShadow: [
                 BoxShadow(
-                  color: even.gradient.last.withOpacity(0.25),
+                  color:gradient[index].last.withOpacity(0.25),
                   blurRadius: 18,
                   offset: const Offset(0, 10),
                 ),
@@ -416,10 +512,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(even.icon, color: Colors.white, size: 26),
+                  child: Icon(icon[index], color: Colors.white, size: 26),
                 ),
                 Text(
-                  even.title,
+                  event.title,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -501,9 +597,13 @@ class _StatCard extends StatelessWidget {
 }
 
 class _RecentDocumentCard extends StatelessWidget {
-  const _RecentDocumentCard({required this.document});
+  //final RecentDocument document;
+  final Document document;
+  final Color colorGetted;
+  final double progress;
 
-  final RecentDocument document;
+  const _RecentDocumentCard({required this.document, required this.colorGetted, required this.progress});
+
 
   @override
   Widget build(BuildContext context) {
@@ -527,11 +627,11 @@ class _RecentDocumentCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppDimensions.paddingSmall),
             decoration: BoxDecoration(
-              color: document.accentColor.withOpacity(0.1),
+              color: colorGetted.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child:
-                Icon(Icons.picture_as_pdf_rounded, color: document.accentColor),
+                Icon(Icons.picture_as_pdf_rounded, color: colorGetted),
           ),
           const SizedBox(height: AppDimensions.paddingMedium),
           Text(
@@ -543,29 +643,29 @@ class _RecentDocumentCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            document.subtitle,
+          Text(document.fileName,
+            //document.subtitle,
             style: TextStyle(
               fontSize: 12,
               color: AppColors.textMainPageColor,
             ),
           ),
-          const Spacer(),
-          LinearProgressIndicator(
-            value: document.progress,
-            backgroundColor: document.accentColor.withOpacity(0.15),
-            valueColor: AlwaysStoppedAnimation<Color>(document.accentColor),
+         // const Spacer(),
+          /*LinearProgressIndicator(
+            value: progress,
+            backgroundColor: colorGetted.withOpacity(0.15),
+            valueColor: AlwaysStoppedAnimation<Color>(colorGetted),
             minHeight: 6,
             borderRadius: BorderRadius.circular(999),
           ),
           const SizedBox(height: 6),
           Text(
-            '${(document.progress * 100).round()} % vérifié',
+            '${(progress * 100).round()} % vérifié',
             style: TextStyle(
               fontSize: 12,
               color: AppColors.textMainPageColor,
             ),
-          ),
+          ),*/
         ],
       ),
     );

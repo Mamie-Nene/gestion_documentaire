@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gestion_documentaire/src/domain/remote/Categorie.dart';
+import 'package:gestion_documentaire/src/domain/remote/Event.dart';
 import 'package:gestion_documentaire/src/methods/token_interceptor.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,14 +13,14 @@ import '/src/utils/consts/routes/app_routes_name.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 
-class CategoriesApi{
+class EventsApi{
 
-  getListCategory( String URL) async {
+  getListEvents( String URL) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
-    List<Categorie> categories=[];
+    List<Event> evenements=[];
     if(token==null)
     {
       globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
@@ -36,18 +37,19 @@ class CategoriesApi{
         var response = await http.get(
             Uri.parse(uri),headers: headers
         );
-        debugPrint("response.statusCode for category ${response.statusCode}");
-        debugPrint("response.body for category ${response.body}");
+        debugPrint("response.statusCode for get events ${response.statusCode}");
+        debugPrint("response.body for get events ${response.body}");
 
         if (response.statusCode == 200) {
 
           List data = json.decode(response.body);
 
           if (data.isEmpty) {
-            return categories;
+            return evenements;
           }
-          categories = data.map((e) => Categorie.fromJson(e)).toList();
-          return categories;
+           evenements = data.map((e) => Event.fromJson(e)).toList();
+//          evenements = data.map((e) => Event.fromJson(e as Map<String, dynamic>)).toList();
+           return evenements;
         }
 
         else  {
@@ -63,13 +65,11 @@ class CategoriesApi{
       }
     }
   }
-  getLastCategories( String URL) async {
-
+  getLastEvents( String URL) async {
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
-    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
-
-    List<Categorie> categories=[];
+    List<Event> evenements=[];
     if(token==null)
     {
       globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
@@ -86,22 +86,69 @@ class CategoriesApi{
         var response = await http.get(
             Uri.parse(uri),headers: headers
         );
-        debugPrint("response.statusCode for category ${response.statusCode}");
-        debugPrint("response.body for category ${response.body}");
+        debugPrint("response.statusCode for get events ${response.statusCode}");
+        debugPrint("response.body for get events ${response.body}");
 
         if (response.statusCode == 200) {
 
           List data = json.decode(response.body);
 
           if (data.isEmpty) {
-            return categories;
+            return evenements;
           }
-          categories = data.map((e) => Categorie.fromJson(e)).toList();
+           evenements = data.map((e) => Event.fromJson(e)).toList();
+//          evenements = data.map((e) => Event.fromJson(e as Map<String, dynamic>)).toList();
+          evenements.sort((a, b) => DateTime.parse(b.eventDate)
+              .compareTo(DateTime.parse(a.eventDate)));
 
-          categories.sort((a, b) => DateTime.parse(b.createdAt)
-              .compareTo(DateTime.parse(a.createdAt)));
+          return evenements.take(3).toList();
+           //return evenements;
+        }
 
-          return categories.take(3).toList();
+        else  {
+          print(response.statusCode);
+          globalResponseMessage.errorMessage("Une Erreur est survenue!");
+
+        }
+      }
+
+      catch (e) {
+        debugPrint("error throw: ${e.toString()}");
+        globalResponseMessage.errorMessage(AppText.CATCH_ERROR_TEXT);
+      }
+    }
+  }
+
+  getDetailEvent( String URL, String idEvent) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+
+    if(token==null)
+    {
+      globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
+      return;
+    }
+    else {
+      var uri = "$URL/$idEvent";
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+      try {
+
+        print(uri);
+        var response = await http.get(
+            Uri.parse(uri),headers: headers
+        );
+        debugPrint("response.statusCode for detail event ${response.statusCode}");
+        debugPrint("response.body for detail event ${response.body}");
+
+        if (response.statusCode == 200) {
+
+          var data = json.decode(response.body);
+
+          Event event =Event.fromJson(data);
+          return event;
         }
 
         else  {
