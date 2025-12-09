@@ -26,9 +26,10 @@ class RouteGenerator {
         final args = settings.arguments as Map<String, dynamic>? ?? {};
         var event = args["event"];
         var category = args["category"];
+        var subtitle = args["subtitle"];
 
         return MaterialPageRoute(
-            builder: (context) => DocumentListScreen(event: event,categorie :category ,));
+            builder: (context) => DocumentListScreen(event: event,categorie :category ,subtitle:subtitle));
 
 
         case AppRoutesName.recentDocumentPage :

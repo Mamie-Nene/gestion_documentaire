@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/data/remote/document_api.dart';
-import 'package:gestion_documentaire/src/domain/remote/Document.dart';
-import 'package:gestion_documentaire/src/utils/api/api_url.dart';
-import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
+import '/src/data/remote/document_api.dart';
+import '/src/domain/remote/Document.dart';
+import '/src/utils/api/api_url.dart';
+import '/src/utils/consts/app_specifications/all_directories.dart';
 import 'package:intl/intl.dart';
 
 class DocumentViewScreen extends StatelessWidget {
@@ -17,7 +17,7 @@ class DocumentViewScreen extends StatelessWidget {
 
     final  _metadata = [
       _Metadata(
-          icon: Icons.person_outline, label: 'Propriétaire', value: 'Modou Diop'),
+          icon: Icons.person_outline, label: 'Propriétaire', value: 'Mame Néné BA'),
       _Metadata(
           icon: Icons.calendar_today_rounded,
           label: 'Créé le',
@@ -170,19 +170,19 @@ class DocumentViewScreen extends StatelessWidget {
   }
 
   Widget _buildActionButtons() {
-    List<_ActionButtonData> actionsButton = [
+    List<_ActionButtonData> actions = [
       _ActionButtonData(Icons.share_rounded, 'Partager',(){}),
       _ActionButtonData(Icons.download_rounded, 'Télécharger',(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);}),
       _ActionButtonData(Icons.print_rounded, 'Imprimer',(){}),
     ];
     return Row(
-      children: List.generate(actionsButton.length, (index) {
-        final action = actionsButton[index];
+      children: List.generate(actions.length, (index) {
+        final action = actions[index];
         return Expanded(
           child: Padding(
             padding: EdgeInsets.only(
               right:
-                  index == actionsButton.length - 1 ? 0 : AppDimensions.paddingMedium,
+                  index == actions.length - 1 ? 0 : AppDimensions.paddingMedium,
             ),
             child: ElevatedButton.icon(
               onPressed: action.action,
@@ -324,7 +324,7 @@ class DocumentViewScreen extends StatelessWidget {
           time: '08:32',
           description: 'Document partagé avec l\'équipe finance'),
       _TimelineActivity(
-          time: '09:12', description: 'Clara a relu la section 4.2'),
+          time: '09:12', description: 'Sano  a relu la section 4.2'),
       _TimelineActivity(
           time: '10:45',
           description: 'Commentaire ajouté sur le chapitre budget'),

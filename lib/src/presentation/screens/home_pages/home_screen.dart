@@ -120,23 +120,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: AppDimensions.paddingLarge),
                         _buildSearchBar(),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        TextButton(
-                          onPressed: (){Navigator.of(context).pushNamed(AppRoutesName.homePage);},
-                          child: Text(
-                            "test",
-                            style: TextStyle(
-                              color: AppColors.mainAppColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
                         /*x_buildQuickStats(),
                         const SizedBox(height: AppDimensions.paddingLarge),*/
-                        _buildSectionTitle('Documents récents', 'Tout voir',(){Navigator.of(context).pushNamed(AppRoutesName.documentPage);}),
+                        _buildSectionTitle('Documents récents', 'Tout voir',(){Navigator.of(context).pushNamed(AppRoutesName.documentPage,arguments: {"subtitle":"Tous les documents"});}),
                         const SizedBox(height: AppDimensions.paddingMedium),
                         _isDocumentsLoading?CircularProgressIndicator():last3DocumentsGetted.isEmpty?Text("Pas de documents pour le moment !"): _buildRecentDocuments(last3DocumentsGetted),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSectionTitle('Événement', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);}),
+                        _buildSectionTitle('Événements', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);}),
                         const SizedBox(height: AppDimensions.paddingMedium),
                         _isEventsLoading?CircularProgressIndicator():last3Events.isEmpty?Text("Pas d'évenement pour le moment !"):_buildEvenementGrid(context),
                         const SizedBox(height: AppDimensions.paddingLarge),
@@ -408,29 +398,31 @@ class _HomeScreenState extends State<HomeScreen> {
       itemCount: last3CategoriesGetted.length,//categories
       itemBuilder: (context, index) {
         final category = last3CategoriesGetted[index]; //categories[index];
-        List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[AppColors.accentTeal, Color(0xFF0BB6D9)],[AppColors.accentOrange, Color(0xFFFFD28C)],[Color(0xFF4E65FF), Color(0xFF92EFFD)],];
-        List<IconData> icon = [Icons.folder_open_rounded,Icons.task_alt_rounded,Icons.verified_rounded,Icons.archive_outlined,];
+        List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[AppColors.accentTeal, Color(0xFF0BB6D9)],[Colors.orange, Color(0xFFFFD28C)],[Color(0xFF4E65FF), Color(0xFF92EFFD)],];
+        List<IconData> icon = [Icons.picture_as_pdf_rounded,Icons.article_outlined,Icons.video_camera_back_outlined,Icons.document_scanner,];
 
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"category":index==0? null: category.id}),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"category":index==0? null: category.id,"subtitle":index==0?"Tous les documents":category.name}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingLarge),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+               color: Colors.white,
+              border: Border(top:  BorderSide(color: AppColors.secondAppColor) ),
+             /* gradient: LinearGradient(
                 colors: gradient[index],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-              ),
+              ),*/
               borderRadius:
                   BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              boxShadow: [
+             /* boxShadow: [
                 BoxShadow(
                   color: gradient[index].last.withOpacity(0.25),
                   blurRadius: 18,
                   offset: const Offset(0, 10),
                 ),
-              ],
+              ],*/
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,21 +431,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   padding: const EdgeInsets.all(AppDimensions.paddingSmall),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: AppColors.secondAppColor.withOpacity(0.2),
+                   // color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon[index], color: Colors.white, size: 26),
+                  child: Icon(icon[index], color: AppColors.secondAppColor, size: 26),
                 ),
                 Text(
                   category.name,
                   style: const TextStyle(
-                    color: Colors.white,
+                    //color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const Icon(Icons.arrow_outward_rounded,
-                    color: Colors.white70, size: 20),
+                    color:AppColors.mainAppColor,
+                    //color: Colors.white70,
+                    size: 20),
               ],
             ),
           ),
@@ -478,29 +473,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final event = last3Events[index];//evenement[index]
 
-        List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[Colors.purple, Color(0xFFC15BE3)],[Colors.orange, Color(0xFFFFD28C)],[Colors.blue, Color(0xFF92EFFD)],];
-        List<IconData> icon = [Icons.folder_open_rounded,Icons.task_alt_rounded,Icons.verified_rounded,Icons.archive_outlined,];
+       // List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[Colors.purple, Color(0xFFC15BE3)],[Colors.orange, Color(0xFFFFD28C)],[Colors.blue, Color(0xFF92EFFD)],];
+        List<IconData> icon = [Icons.folder_open_rounded,Icons.task_alt_rounded,Icons.verified_outlined,Icons.archive_outlined,];
 
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage, arguments: {"event": index==0? null : event.id}),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage, arguments: {"event": index==0? null : event.id,"subtitle":index==0?"Tous les documents":event.title}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingLarge),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradient[index],
+              color: Colors.white,
+              border: Border(top:  BorderSide(color: AppColors.secondAppColor) ),
+             //border: Border.all(color: AppColors.secondAppColor),
+              /*gradient: LinearGradient(
+               colors: gradient[index],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-              ),
+              ),*/
+
               borderRadius:
                   BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              boxShadow: [
+              /*boxShadow: [
                 BoxShadow(
                   color:gradient[index].last.withOpacity(0.25),
                   blurRadius: 18,
                   offset: const Offset(0, 10),
                 ),
-              ],
+              ],*/
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,21 +508,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   padding: const EdgeInsets.all(AppDimensions.paddingSmall),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: AppColors.secondAppColor.withOpacity(0.2),
+                    //color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon[index], color: Colors.white, size: 26),
+                  child: Icon(icon[index], color: AppColors.mainAppColor, size: 26),
                 ),
                 Text(
                   event.title,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    //color: AppColors.mainblueColor,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const Icon(Icons.arrow_outward_rounded,
-                    color: Colors.white70, size: 20),
+               Icon(Icons.arrow_outward_rounded,
+                    color: AppColors.mainblueColor, size: 20),
               ],
             ),
           ),

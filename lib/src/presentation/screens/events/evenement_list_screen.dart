@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/data/remote/events_api.dart';
-import 'package:gestion_documentaire/src/domain/remote/Event.dart';
-import 'package:gestion_documentaire/src/utils/api/api_url.dart';
-import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
-import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
+import '/src/data/remote/events_api.dart';
+import '/src/domain/remote/Event.dart';
+import '/src/utils/api/api_url.dart';
+import '/src/utils/consts/app_specifications/all_directories.dart';
+import '/src/utils/consts/routes/app_routes_name.dart';
+import 'package:intl/intl.dart';
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({super.key});
@@ -16,6 +19,7 @@ class _EventListScreenState extends State<EventListScreen> {
   static const _tabs = ['Récents', 'Partagés', 'Favoris'];
   static const _filters = ["Aujourd'hui", 'Cette semaine', 'Ce mois'];
   int _activeFilter = 0;
+  final TextEditingController _searchController = TextEditingController();
 
   List<Event> events = [];
   bool _isEventsLoading=false;
@@ -31,6 +35,16 @@ class _EventListScreenState extends State<EventListScreen> {
         _isEventsLoading=false;
       });
     });
+  }
+
+  List<Event> get _visibleEvents {
+    return events.where((event) {
+      final bool matchesSearch = event.title
+          .toLowerCase()
+          .contains(_searchController.text.toLowerCase());
+
+      return matchesSearch ;
+    }).toList();
   }
 
   @override
@@ -58,22 +72,70 @@ class _EventListScreenState extends State<EventListScreen> {
                   children: [
                     _buildTopBar(context),
                     const SizedBox(height: AppDimensions.paddingMedium),
-                    _buildSearchField(),
+                    //_buildSearchField(),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.cardSurface,
+                        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 12,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: (_) => setState(() {}),
+                              decoration: const InputDecoration(
+                                hintText: 'Rechercher ou filtrer par tags',
+                                prefixIcon: Icon(Icons.search_rounded, color: Colors.black54),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: AppDimensions.paddingMedium,
+                                  horizontal: AppDimensions.paddingMedium,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(right: AppDimensions.paddingSmall),
+                            decoration: BoxDecoration(
+                              color: AppColors.mainAppColor.withOpacity(0.12),
+                              borderRadius:
+                              BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                            ),
+                            child: IconButton(
+                              onPressed: () {},
+                              icon:
+                              const Icon(Icons.sort_rounded, color: AppColors.mainAppColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: AppDimensions.paddingMedium),
                     _buildFilterChips(),
+                    const SizedBox(height: AppDimensions.paddingMedium),
+
+                    _isEventsLoading?
+                    CircularProgressIndicator()
+                    :
+                    _visibleEvents.isEmpty?
+                    Text('La liste est vide !')
+
+                        :
+                    _buildEventList( _visibleEvents)
                   ],
                 ),
               ),
              // _buildTabBar(),
              // const Divider(height: 1, color: AppColors.dividerLight),
-              Expanded(
-                child: TabBarView(
-                  children: List.generate(
-                    _tabs.length,
-                    (index) => _buildDocumentList(index),
-                  ),
-                ),
-              ),
+
             ],
           ),
         ),
@@ -202,62 +264,103 @@ class _EventListScreenState extends State<EventListScreen> {
     );
   }
 
-  Widget _buildDocumentList(int tabIndex) {
-    final documents = events;
-    //final documents = _generateDocuments(tabIndex);
-    return ListView.separated(
-      padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-      itemCount: documents.length,
-      separatorBuilder: (_, __) =>
-          const SizedBox(height: AppDimensions.paddingMedium),
+
+  Widget _buildEventList(List<Event> events) {
+    final evenements = events;
+    //final evenement = _generateDocuments(tabIndex);
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: AppDimensions.paddingLarge,
+        mainAxisSpacing: AppDimensions.paddingLarge,
+        childAspectRatio: 2.3,
+        // childAspectRatio: 1.2,
+      ),
+      itemCount: evenements.length,//
       itemBuilder: (context, index) {
-        final doc = documents[index];
-        return _DocumentTile(
-          event: doc,
-          onTap: () =>
-              Navigator.of(context).pushNamed(AppRoutesName.viewDocumentPage,
-                  arguments: {"titleDoc": doc.title}
-              ),
+        final event = evenements[index]; //categories[index];
+       final Random random = Random();
+        Color accentPalette=Color.fromARGB(
+          255, // Alpha (opacity)
+          random.nextInt(256), // Red
+          random.nextInt(256), // Green
+          random.nextInt(256), // Blue
         );
-      },
-    );
-  }
+        DateTime dateCreation = DateTime.parse(event.eventDate);
+        String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
 
-  List<_DocumentListItem> _generateDocuments(int tabIndex) {
-    final accentPalette = [
-      AppColors.mainAppColor,
-      AppColors.accentTeal,
-      AppColors.accentPurple,
-      AppColors.accentOrange,
-      AppColors.accentPink,
-    ];
-    final baseTitles = [
-      'Rapport trimestriel',
-      'Accord juridique',
-      'Spécifications design',
-      'Audit sécurité',
-      'Brief marketing',
-      'Plan d\'approvisionnement',
-    ];
+        IconData iconGetted= Icons.article_outlined;
+        return InkWell(
+          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"event":index==0? null: event.id,"subtitle":event.title}),
+          child: Container(
+            padding: const EdgeInsets.all(AppDimensions.paddingLarge),//large
+            decoration: BoxDecoration(
+              color: AppColors.cardSurface,
+              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 20,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            /*decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: gradient[index],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius:
+              BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              boxShadow: [
+                BoxShadow(
+                  color: gradient[index].last.withOpacity(0.25),
+                  blurRadius: 18,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),*/
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
 
-    return List.generate(
-      6 - tabIndex,
-      (index) {
-        final color = accentPalette[(index + tabIndex) % accentPalette.length];
-        final title =
-            '${baseTitles[index % baseTitles.length]} ${2025 - tabIndex}';
-        final sizeValue =
-            ((index + 2) * 1.2).toStringAsFixed(1).replaceFirst('.', ',');
-        return _DocumentListItem(
-          title: title,
-          owner:
-              tabIndex == 1 ? 'Partagé par Clara' : 'Vous en êtes propriétaire',
-          size: '$sizeValue Mo',
-          updatedAt: 'il y a ${index + 1} h',
-          accent: color,
-          icon: index.isEven
-              ? Icons.picture_as_pdf_rounded
-              : Icons.article_outlined,
+                Text(
+                  event.title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.loginTitleColor,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.location_on_outlined,color: AppColors.textMainPageColor,size: 18,),
+                    RichText(
+                        text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Lieu : ",
+                          style: TextStyle(color: AppColors.textMainPageColor,fontSize: 18),
+                        ),
+                        TextSpan(
+                          text: "CICAD",
+                          style: TextStyle(color: AppColors.mainblueColor,fontSize: 19),
+                        )]
+                    )),
+                  ],
+                ),
+
+
+                Icon(Icons.arrow_outward_rounded, color: AppColors.mainblueColor, size: 20),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -269,13 +372,13 @@ class _EventListScreenState extends State<EventListScreen> {
       backgroundColor: AppColors.mainAppColor,
       foregroundColor: Colors.white,
       icon: const Icon(Icons.add),
-      label: const Text('Nouveau document'),
+      label: const Text("Ajout d'un évenement"),
     );
   }
 }
 
-class _DocumentTile extends StatelessWidget {
-  const _DocumentTile({
+class _EventTile extends StatelessWidget {
+  const _EventTile({
     required this.event,
     required this.onTap,
   });
@@ -285,6 +388,9 @@ class _DocumentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime dateCreation = DateTime.parse(event.eventDate);
+    String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
@@ -325,8 +431,7 @@ class _DocumentTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    event.description,
+                  Text("Gainde 2000",
                     style: TextStyle(color: AppColors.textMainPageColor),
                   ),
                   const SizedBox(height: 4),
@@ -336,8 +441,7 @@ class _DocumentTile extends StatelessWidget {
                           size: 14,
                           color: AppColors.textMainPageColor.withOpacity(0.7)),
                       const SizedBox(width: 4),
-                      Text(
-                        event.eventDate,
+                      Text(formatted,
                         style: TextStyle(
                             color:
                                 AppColors.textMainPageColor.withOpacity(0.8)),

@@ -1,16 +1,18 @@
 import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/data/remote/document_api.dart';
-import 'package:gestion_documentaire/src/domain/remote/Document.dart';
-import 'package:gestion_documentaire/src/utils/api/api_url.dart';
-import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
-import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
+
+import '/src/data/remote/document_api.dart';
+import '/src/domain/remote/Document.dart';
+import '/src/utils/api/api_url.dart';
+import '/src/utils/consts/app_specifications/all_directories.dart';
+import '/src/utils/consts/routes/app_routes_name.dart';
 
 class DocumentListScreen extends StatefulWidget {
   final String? categorie;
   final String? event;
-  const DocumentListScreen({super.key, this.categorie, this.event});
+  final String subtitle;
+  const DocumentListScreen({super.key, this.categorie, this.event, required this.subtitle});
 
   @override
   State<DocumentListScreen> createState() => _DocumentListScreenState();
@@ -20,6 +22,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   static const _tabs = ['Récents', 'Partagés', 'Favoris'];
   static const _filters = ["Aujourd'hui", 'Cette semaine', 'Ce mois'];
   int _activeFilter = 0;
+
   final TextEditingController _searchController = TextEditingController();
   List<Document> documentsGetted = [];
   List<Document> documentsFiltered = [];
@@ -133,7 +136,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               :
               _visibleDocs.isEmpty?
 
-              Text('Pas de documents pour le moment!')
+              Text('La liste ets vide !')
                   :
               Expanded(
                 child: TabBarView(
@@ -160,7 +163,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               color: AppColors.mainAppColor),
         ),
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Documents',
@@ -171,7 +174,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               ),
             ),
             Text(
-              'Gardez tout accessible',
+              widget.subtitle,
               style: TextStyle(
                 color: AppColors.textMainPageColor,
               ),
