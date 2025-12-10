@@ -295,7 +295,7 @@ class _EventListScreenState extends State<EventListScreen> {
         IconData iconGetted= Icons.article_outlined;
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"event":index==0? null: event.id,"subtitle":event.title}),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"event":event.id,"subtitle":event.title}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingLarge),//large
             decoration: BoxDecoration(

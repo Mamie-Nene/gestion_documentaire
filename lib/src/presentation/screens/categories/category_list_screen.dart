@@ -242,7 +242,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
         IconData iconGetted= Icons.article_outlined;
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"category":index==0? null: category.id, "subtitle":category.name}),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"category": category.id, "subtitle":category.name}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingMedium),//large
             decoration: BoxDecoration(
