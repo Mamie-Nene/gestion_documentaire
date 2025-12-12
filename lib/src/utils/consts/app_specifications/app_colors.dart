@@ -27,7 +27,8 @@ class AppColors {
   static Color greyColorForIcon = const Color(0xff515151);
   static Color forgotPWD = const Color(0xFF02566B);
   static Color loginTitleColor = const Color(0xFF212121);
-  static Color textMainPageColor = const Color(0xff4b5057);
+  static Color textMainPageColor = const Color(0xff343741);
+  static Color textMainPageColorAvant = const Color(0xff4b5057);
   static Color mainGrapheColor = const Color(0xFFC3D1F6);
 
   // -------------------- Modern Surfaces & Accents ----------------------

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gestion_documentaire/src/data/local/home_screen_data.dart';
 import 'package:gestion_documentaire/src/data/remote/category_api.dart';
 import 'package:gestion_documentaire/src/data/remote/document_api.dart';
@@ -11,6 +12,7 @@ import 'package:gestion_documentaire/src/domain/local/QuickStats.dart';
 import 'package:gestion_documentaire/src/domain/remote/Categorie.dart';
 import 'package:gestion_documentaire/src/domain/remote/Document.dart';
 import 'package:gestion_documentaire/src/domain/remote/Event.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
 import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
 import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
@@ -25,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 /*
 * thanks now I have card with events data (3 events data ) I want to add a card named "Tout" so we will have 4 card*/
 class _HomeScreenState extends State<HomeScreen> {
-  List<Event> last3Events = [];
+  List<Event> last4Events = [];
   List<Categorie> last3CategoriesGetted = [];
   List<Document> last3DocumentsGetted = [];
   bool _isEventsLoading=false;
@@ -40,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
    eventsGetted() async {
      await EventsApi().getLastEvents( ApiUrl().getEventsUrl).then((value) {
        setState(() {
-         last3Events = value;
+         last4Events = value;
          _isEventsLoading=false;
        });
      }).catchError((error) {
@@ -48,12 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
          _isEventsLoading=false;
        });
      });
-     last3Events.insert(0, Event(
+     /*last3Events.insert(0, Event(
        "0",
       "Tout",
         "Voir tous les événements",
         DateTime.now().toString(),
-     ));
+     ));*/
    }
 
   getCategories() async {
@@ -100,7 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: AppColors.mainBackgroundColor,
+      backgroundColor: Color(0xffEEF2F8),
+     // backgroundColor: AppColors.mainBackgroundColor,
       body: Stack(
         children: [
           _BackgroundDecor(),
@@ -120,19 +123,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: AppDimensions.paddingLarge),
                         _buildSearchBar(),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        /*x_buildQuickStats(),
-                        const SizedBox(height: AppDimensions.paddingLarge),*/
-                        _buildSectionTitle('Documents récents', 'Tout voir',(){Navigator.of(context).pushNamed(AppRoutesName.documentPage,arguments: {"subtitle":"Tous les documents"});}),
+
+                        _buildSectionTitle('Documents récents', 'Voir Tout ',(){Navigator.of(context).pushNamed(AppRoutesName.documentPage,arguments: {"subtitle":"Tous les documents"});}),
                         const SizedBox(height: AppDimensions.paddingMedium),
                         _isDocumentsLoading?CircularProgressIndicator():last3DocumentsGetted.isEmpty?Text("Pas de documents pour le moment !"): _buildRecentDocuments(last3DocumentsGetted),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSectionTitle('Événements', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);}),
+                        _buildSectionTitle('Événements', 'Voir Tout ',(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);}),
                         const SizedBox(height: AppDimensions.paddingMedium),
-                        _isEventsLoading?CircularProgressIndicator():last3Events.isEmpty?Text("Pas d'évenement pour le moment !"):_buildEvenementGrid(context),
+                        _isEventsLoading?CircularProgressIndicator():last4Events.isEmpty?Text("Pas d'évenement pour le moment !"):UtilsWidget().evenementGrid(context,last4Events),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSectionTitle('Catégories', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.categoryListPage);}),
+                        _buildSectionTitle('Catégories', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.categoriePage);}),//AppRoutesName.categoryListPage
                         const SizedBox(height: AppDimensions.paddingMedium),
-                        _isCategoriesLoading?CircularProgressIndicator():last3CategoriesGetted.isEmpty?Text("Pas de catégories pour le moment !"):_buildCategoryGrid(context),
+                        _isCategoriesLoading?CircularProgressIndicator():last3CategoriesGetted.isEmpty?Text("Pas de catégories pour le moment !"):UtilsWidget().categoryGrid(context,last3CategoriesGetted),
                       ],
                     ),
                   ),
@@ -345,9 +347,11 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(
           title,
           style: TextStyle(
+            fontFamily: "Roboto",
             fontSize: 20,
             fontWeight: FontWeight.w700,
-            color: AppColors.loginTitleColor,
+            //color: AppColors.loginTitleColor,
+            color: Color(0xff292D32),
           ),
         ),
         if (actionLabel != null)
@@ -366,171 +370,29 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRecentDocuments(List<Document> recentDocsGetted) {
-    return SizedBox(
-      height: 190,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: recentDocsGetted.length,//recentDocuments.length,
-        separatorBuilder: (_, __) =>
-            const SizedBox(width: AppDimensions.paddingMedium),
-        itemBuilder: (context, index) {
-          final doc = recentDocsGetted[index]; //recentDocuments[index];
+    return  GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      crossAxisSpacing: AppDimensions.paddingLarge,
+      mainAxisSpacing: AppDimensions.paddingLarge,
+      childAspectRatio: 3.8,
+      // childAspectRatio: 1.2,
+      ),
+      itemCount: recentDocsGetted.length,//evenement.length,
+      itemBuilder: (context, index) {
+
+        final doc = recentDocsGetted[index]; //recentDocuments[index];
           List<Color> colors= [ AppColors.mainAppColor,AppColors.accentTeal,AppColors.accentPurple];
           List<double> progress= [ 0.82,0.38,0.64];
 
           return _RecentDocumentCard(document: doc,colorGetted: colors[index],progress:progress[index]);
         },
-      ),
     );
   }
 
-  Widget _buildCategoryGrid(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppDimensions.paddingMedium,
-        mainAxisSpacing: AppDimensions.paddingMedium,
-        childAspectRatio: 2.1,
-        // childAspectRatio: 1.2,
-      ),
-      itemCount: last3CategoriesGetted.length,//categories
-      itemBuilder: (context, index) {
-        final category = last3CategoriesGetted[index]; //categories[index];
-        List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[AppColors.accentTeal, Color(0xFF0BB6D9)],[Colors.orange, Color(0xFFFFD28C)],[Color(0xFF4E65FF), Color(0xFF92EFFD)],];
-        List<IconData> icon = [Icons.picture_as_pdf_rounded,Icons.article_outlined,Icons.video_camera_back_outlined,Icons.document_scanner,];
 
-        return InkWell(
-          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"category":index==0? null: category.id,"subtitle":index==0?"Tous les documents":category.name}),
-          child: Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-            decoration: BoxDecoration(
-               color: Colors.white,
-              border: Border(top:  BorderSide(color: AppColors.secondAppColor) ),
-             /* gradient: LinearGradient(
-                colors: gradient[index],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),*/
-              borderRadius:
-                  BorderRadius.circular(AppDimensions.borderRadiusLarge),
-             /* boxShadow: [
-                BoxShadow(
-                  color: gradient[index].last.withOpacity(0.25),
-                  blurRadius: 18,
-                  offset: const Offset(0, 10),
-                ),
-              ],*/
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppDimensions.paddingSmall),
-                  decoration: BoxDecoration(
-                    color: AppColors.secondAppColor.withOpacity(0.2),
-                   // color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon[index], color: AppColors.secondAppColor, size: 26),
-                ),
-                Text(
-                  category.name,
-                  style: const TextStyle(
-                    //color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const Icon(Icons.arrow_outward_rounded,
-                    color:AppColors.mainAppColor,
-                    //color: Colors.white70,
-                    size: 20),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildEvenementGrid(BuildContext context ) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppDimensions.paddingMedium,
-        mainAxisSpacing: AppDimensions.paddingMedium,
-        childAspectRatio: 2.1,
-        // childAspectRatio: 1.2,
-      ),
-      itemCount: last3Events.length,//evenement.length,
-      itemBuilder: (context, index) {
-
-        final event = last3Events[index];//evenement[index]
-
-       // List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[Colors.purple, Color(0xFFC15BE3)],[Colors.orange, Color(0xFFFFD28C)],[Colors.blue, Color(0xFF92EFFD)],];
-        List<IconData> icon = [Icons.folder_open_rounded,Icons.task_alt_rounded,Icons.verified_outlined,Icons.archive_outlined,];
-
-        return InkWell(
-          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage, arguments: {"event": index==0? null : event.id,"subtitle":index==0?"Tous les documents":event.title}),
-          child: Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(top:  BorderSide(color: AppColors.secondAppColor) ),
-             //border: Border.all(color: AppColors.secondAppColor),
-              /*gradient: LinearGradient(
-               colors: gradient[index],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),*/
-
-              borderRadius:
-                  BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              /*boxShadow: [
-                BoxShadow(
-                  color:gradient[index].last.withOpacity(0.25),
-                  blurRadius: 18,
-                  offset: const Offset(0, 10),
-                ),
-              ],*/
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppDimensions.paddingSmall),
-                  decoration: BoxDecoration(
-                    color: AppColors.secondAppColor.withOpacity(0.2),
-                    //color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon[index], color: AppColors.mainAppColor, size: 26),
-                ),
-                Text(
-                  event.title,
-                  style: TextStyle(
-                    //color: AppColors.mainblueColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-               Icon(Icons.arrow_outward_rounded,
-                    color: AppColors.mainblueColor, size: 20),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
 
 class _StatCard extends StatelessWidget {
@@ -608,7 +470,6 @@ class _RecentDocumentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 220,
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
@@ -622,34 +483,68 @@ class _RecentDocumentCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        //crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingSmall),
-            decoration: BoxDecoration(
-              color: colorGetted.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child:
-                Icon(Icons.picture_as_pdf_rounded, color: colorGetted),
+          Row(
+            children: [
+              SvgPicture.asset("asset/images/pdf.svg"),
+             SizedBox(width: 10,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: [
+                    Text(
+                      document.title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.loginTitleColor,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text("DOCX",
+                          //document.subtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xff979797),
+                          ),
+                        ),
+                        SvgPicture.asset("asset/images/dots.svg"),
+
+                        Text("2.4MB",
+                          //document.subtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xff979797),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                height: 25,
+                padding: const EdgeInsets.all(AppDimensions.paddingSmall),
+                decoration: BoxDecoration(
+                  color: Color(0xffBC3618).withOpacity(0.1),
+                border: Border.all(color: Color(0xBA33164D)),
+                  //color: colorGetted,
+                //  color: colorGetted.withOpacity(0.12),
+                  borderRadius:
+                  BorderRadius.circular(AppDimensions.borderRadiusSmall),
+                ),
+               // child: Icon(Icons.more_vert_rounded, color: colorGetted),
+                child: Text('PDF',style: TextStyle(color: Color(0xffBC3618),fontSize: 10),)
+              ),
+
+            ],
           ),
-          const SizedBox(height: AppDimensions.paddingMedium),
-          Text(
-            document.title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.loginTitleColor,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(document.fileName,
-            //document.subtitle,
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textMainPageColor,
-            ),
-          ),
+
+
          // const Spacer(),
           /*LinearProgressIndicator(
             value: progress,

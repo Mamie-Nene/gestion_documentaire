@@ -19,9 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   bool _isRunning = false;
 
-
-
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -46,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoginCard(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 420),
+      constraints: const BoxConstraints(maxWidth: 500),
       padding: const EdgeInsets.all(AppDimensions.paddingLarge + 8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -83,17 +80,20 @@ class _LoginScreenState extends State<LoginScreen> {
             'Connexion',
             style: TextStyle(
               fontSize: 28,
+              fontFamily: "Chivo",
               fontWeight: FontWeight.w600,
-              color: AppColors.loginTitleColor,
+              //color: AppColors.loginTitleColor,
+              color: Color(0xff205DA9),
               letterSpacing: 0.3,
             ),
           ),
           const SizedBox(height: 8),
           // Subtitle
-          Text(
-            'Vos documents vous attendent',
+          Text('Accédez à votre espace personnel',
             style: TextStyle(
-              color: AppColors.textMainPageColor,
+              color: Color(0xff4B5563),
+              fontFamily: "Chivo",
+              //color: AppColors.textMainPageColor,
               fontSize: 15,
               fontWeight: FontWeight.w400,
             ),
@@ -143,7 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.symmetric(
                   vertical: AppDimensions.paddingMedium + 2,
                 ),
-                backgroundColor: AppColors.mainAppColor,
+                backgroundColor: Color(0xff7DAA40),
+               // backgroundColor: AppColors.mainAppColor,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
@@ -176,9 +177,15 @@ class _LoginScreenState extends State<LoginScreen> {
     bool isPassword = false,
   }) {
     final isObscured = isPassword && _obscurePassword;
-    return TextField(
+    return TextFormField(
       controller: controller,
       obscureText: isObscured,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Veuillez remplir ce champs';
+        }
+        return null;
+      },
       style: TextStyle(
         color: AppColors.loginTitleColor,
         fontSize: 15,
@@ -239,7 +246,9 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'Se souvenir de moi',
           style: TextStyle(
-            color: AppColors.textMainPageColor,
+           // color: AppColors.textMainPageColor,
+            color: Color(0xff111827),
+            fontFamily: "Chivo",
             fontSize: 14,
           ),
         ),

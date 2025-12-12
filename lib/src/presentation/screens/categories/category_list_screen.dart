@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
 import '/src/data/remote/category_api.dart';
 import '/src/domain/remote/Categorie.dart';
 import '/src/utils/api/api_url.dart';
@@ -55,12 +56,29 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: _tabs.length,
-      child: Scaffold(
-        backgroundColor: AppColors.mainBackgroundColor,
-        floatingActionButton: _buildFloatingActionButton(),
-        body: SafeArea(
+    // floatingActionButton: _buildFloatingActionButton(),
+    //
+    return  AppPageShell(
+      isForHomePage: false,
+      title: "Gestion Categorie",
+      actions:[
+        Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(color: Color(0xffF5F6F9)),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child:Row(
+            children: [
+              Icon(Icons.add, color: Colors.white, size: 20),
+              SizedBox(width: 10),
+              Text("Ajouter une catégorie",style: TextStyle(color: Colors.white,fontSize: 20),)
+            ],
+          ),
+        )
+      ],
+      child:
+         SafeArea(
           child: Column(
             children: [
               Padding(
@@ -135,8 +153,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildTopBar(BuildContext context) {

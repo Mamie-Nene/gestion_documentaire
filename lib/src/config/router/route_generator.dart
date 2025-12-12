@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gestion_documentaire/src/presentation/screens/categories/category_list_screen.dart';
+import 'package:gestion_documentaire/src/presentation/screens/categories/categorie_page.dart';
 import 'package:gestion_documentaire/src/presentation/screens/documents/recents_document_list_screen.dart';
 import 'package:gestion_documentaire/src/presentation/screens/events/evenement_list_screen.dart';
 import '../../presentation/screens/documents/document_list_screen.dart';
@@ -44,6 +45,9 @@ class RouteGenerator {
 
         case AppRoutesName.categoryListPage:
           return MaterialPageRoute(builder: (context) => const CategoryListScreen());
+
+        case AppRoutesName.categoriePage:
+          return MaterialPageRoute(builder: (context) => const CategoriePage());
 
       case AppRoutesName.viewDocumentPage:
         final args = settings.arguments;

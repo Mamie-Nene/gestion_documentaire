@@ -1,47 +1,49 @@
 import 'dart:math';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
-import '/src/data/remote/events_api.dart';
-import '/src/domain/remote/Event.dart';
+
+import '/src/data/remote/document_api.dart';
+import '/src/domain/remote/Document.dart';
 import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
-import 'package:intl/intl.dart';
 
-class EventListScreen extends StatefulWidget {
-  const EventListScreen({super.key});
+class DetailsEvenementScreen extends StatefulWidget {
+  final String? categorie;
+  final String? event;
+  final String subtitle;
+  const DetailsEvenementScreen({super.key, this.categorie, this.event, required this.subtitle});
 
   @override
-  State<EventListScreen> createState() => _EventListScreenState();
+  State<DetailsEvenementScreen> createState() => _DetailsEvenementScreenState();
 }
 
-class _EventListScreenState extends State<EventListScreen> {
+class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
   static const _tabs = ['Récents', 'Partagés', 'Favoris'];
   static const _filters = ["Aujourd'hui", 'Cette semaine', 'Ce mois'];
   int _activeFilter = 0;
+
   final TextEditingController _searchController = TextEditingController();
+  List<Document> documentsGetted = [];
+  List<Document> documentsFiltered = [];
+  bool _isDocumentsLoading=false;
 
-  List<Event> events = [];
-  bool _isEventsLoading=false;
-
-  eventsGetted() async {
-    await EventsApi().getListEvents( ApiUrl().getEventsUrl).then((value) {
+  getDocs() async {
+    await DocumentApi().getDocumentsByCritera( ApiUrl().getDocumentsUrl, widget.categorie,widget.event).then((value) {
       setState(() {
-        events = value;
-        _isEventsLoading=false;
+        documentsGetted = value;
+        documentsFiltered = documentsGetted;
+        _isDocumentsLoading=false;
       });
     }).catchError((error) {
       setState(() {
-        _isEventsLoading=false;
+        _isDocumentsLoading=false;
       });
     });
   }
-
-  List<Event> get _visibleEvents {
-    return events.where((event) {
-      final bool matchesSearch = event.title
+  List<Document> get _visibleDocs {
+    return documentsGetted.where((document) {
+      final bool matchesSearch = document.title
           .toLowerCase()
           .contains(_searchController.text.toLowerCase());
 
@@ -49,32 +51,37 @@ class _EventListScreenState extends State<EventListScreen> {
     }).toList();
   }
 
+
   @override
   void initState() {
-    eventsGetted();
+    getDocs();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    return  AppPageShell(
-      isForHomePage: false,
-        title: "Gestion des événements",
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingLarge,
-              vertical: AppDimensions.paddingMedium,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildTopBar(context),
-                const SizedBox(height: AppDimensions.paddingMedium),
-                //_buildSearchField(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.cardSurface,
+    return DefaultTabController(
+      length: _tabs.length,
+      child: Scaffold(
+        backgroundColor: AppColors.mainBackgroundColor,
+        floatingActionButton: _buildFloatingActionButton(),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingLarge,
+                  vertical: AppDimensions.paddingMedium,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTopBar(context),
+                    const SizedBox(height: AppDimensions.paddingMedium),
+                   // _buildSearchField(),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.cardSurface,
                         borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
                         boxShadow: [
                           BoxShadow(
@@ -118,31 +125,34 @@ class _EventListScreenState extends State<EventListScreen> {
                       ),
                     ),
                     const SizedBox(height: AppDimensions.paddingMedium),
-                    _buildFilterChips(),
-                    const SizedBox(height: AppDimensions.paddingMedium),
-
-                    _isEventsLoading?
-                    CircularProgressIndicator()
-                    :
-                    _visibleEvents.isEmpty?
-                    Text('La liste est vide !')
-
-                        :
-                    //_buildEventList( _visibleEvents),
-                    UtilsWidget().evenementGrid(context,_visibleEvents)
+                   // _buildFilterChips(),
                   ],
                 ),
               ),
-             // _buildTabBar(),
-             // const Divider(height: 1, color: AppColors.dividerLight),
+              _buildTabBar(),
+              const Divider(height: 1, color: AppColors.dividerLight),
+              _isDocumentsLoading?
+                  CircularProgressIndicator()
+              :
+              _visibleDocs.isEmpty?
 
+              Text('La liste ets vide !')
+                  :
+              Expanded(
+                child: TabBarView(
+                  children: List.generate(
+                    _tabs.length,
+                    (index) => _buildDocumentList(index,_visibleDocs),
+                  ),
+                ),
+              ),
             ],
           ),
-
-      );
+        ),
+      ),
+    );
   }
-//floatingActionButton: _buildFloatingActionButton(),
-//
+
   Widget _buildTopBar(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,16 +162,25 @@ class _EventListScreenState extends State<EventListScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded,
               color: AppColors.mainAppColor),
         ),
-
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
             Text(
-              'Evénements',
+              'Documents',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 color: AppColors.loginTitleColor,
               ),
             ),
-
+            Text(
+              widget.subtitle,
+              style: TextStyle(
+                color: AppColors.textMainPageColor,
+              ),
+            ),
+          ],
+        ),
         IconButton(
           onPressed: () {},
           icon:
@@ -264,91 +283,37 @@ class _EventListScreenState extends State<EventListScreen> {
     );
   }
 
-
-  Widget _buildEventList(List<Event> events) {
-    final evenements = events;
-    //final evenement = _generateDocuments(tabIndex);
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppDimensions.paddingLarge,
-        mainAxisSpacing: AppDimensions.paddingLarge,
-        childAspectRatio: 2.3,
-        // childAspectRatio: 1.2,
-      ),
-      itemCount: evenements.length,//
+  Widget _buildDocumentList(int tabIndex, List<Document>docsGetted) {
+    final documents = docsGetted;
+   // final documents = _generateDocuments(tabIndex);
+    return
+    ListView.separated(
+      padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+      itemCount: documents.length,
+      separatorBuilder: (_, __) => const SizedBox(height: AppDimensions.paddingMedium),
       itemBuilder: (context, index) {
-        final event = evenements[index]; //categories[index];
-       final Random random = Random();
-        Color accentPalette=Color.fromARGB(
-          255, // Alpha (opacity)
-          random.nextInt(256), // Red
-          random.nextInt(256), // Green
-          random.nextInt(256), // Blue
-        );
-        DateTime dateCreation = DateTime.parse(event.eventDate);
-        String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
-
-        IconData iconGetted= Icons.article_outlined;
-        return InkWell(
-          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"event":event.id,"subtitle":event.title}),
-          child: Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingLarge),//large
-            decoration: BoxDecoration(
-              color: AppColors.cardSurface,
-              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, 12),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-
-                Text(
-                  event.title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.loginTitleColor,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.location_on_outlined,color: AppColors.textMainPageColor,size: 18,),
-                    RichText(
-                        text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "Lieu : ",
-                          style: TextStyle(color: AppColors.textMainPageColor,fontSize: 18),
-                        ),
-                        TextSpan(
-                          text: "CICAD",
-                          style: TextStyle(color: AppColors.mainblueColor,fontSize: 19),
-                        )]
-                    )),
-                  ],
-                ),
-
-
-                Icon(Icons.arrow_outward_rounded, color: AppColors.mainblueColor, size: 20),
-              ],
-            ),
-          ),
+        final doc = documents[index];;
+        final Random random = Random();
+        return documentWidget(context,
+          document: doc,
+          accentPalette:AppColors.mainAppColor,
+          /*accentPalette:Color.fromARGB(
+            255, // Alpha (opacity)
+            random.nextInt(256), // Red
+            random.nextInt(256), // Green
+            random.nextInt(256), // Blue
+          ),*/
+          iconData: doc.mimeType.contains("pdf")? Icons.picture_as_pdf_rounded
+            : Icons.article_outlined,
+          onTap: () =>
+              Navigator.of(context).pushNamed(AppRoutesName.viewDocumentPage,
+                  arguments: {"document": doc}
+              ),
         );
       },
     );
   }
+
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton.extended(
@@ -356,23 +321,17 @@ class _EventListScreenState extends State<EventListScreen> {
       backgroundColor: AppColors.mainAppColor,
       foregroundColor: Colors.white,
       icon: const Icon(Icons.add),
-      label: const Text("Ajout d'un évenement"),
+      label: const Text('Nouveau document'),
     );
   }
-}
 
-class _EventTile extends StatelessWidget {
-  const _EventTile({
-    required this.event,
-    required this.onTap,
-  });
-
-  final Event event;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    DateTime dateCreation = DateTime.parse(event.eventDate);
+  Widget documentWidget(BuildContext context, {
+        required Document document,
+      required Color accentPalette,
+      required IconData iconData,
+      required VoidCallback onTap
+      }) {
+    DateTime dateCreation = DateTime.parse(document.createdAt);
     String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
 
     return InkWell(
@@ -396,10 +355,10 @@ class _EventTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingSmall),
               decoration: BoxDecoration(
-                color: AppColors.mainAppColor.withOpacity(0.12),
+                color: accentPalette.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.article_outlined, color:AppColors.mainAppColor, size: 28),
+              child: Icon(iconData, color: accentPalette, size: 28),
             ),
             const SizedBox(width: AppDimensions.paddingMedium),
             Expanded(
@@ -407,7 +366,7 @@ class _EventTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    event.title,
+                    document.title,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -415,7 +374,7 @@ class _EventTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text("Gainde 2000",
+                  Text("Partagé par Mame Néné BA",
                     style: TextStyle(color: AppColors.textMainPageColor),
                   ),
                   const SizedBox(height: 4),
@@ -425,10 +384,10 @@ class _EventTile extends StatelessWidget {
                           size: 14,
                           color: AppColors.textMainPageColor.withOpacity(0.7)),
                       const SizedBox(width: 4),
-                      Text(formatted,
+                      Text(formatted,//updated
                         style: TextStyle(
                             color:
-                                AppColors.textMainPageColor.withOpacity(0.8)),
+                            AppColors.textMainPageColor.withOpacity(0.8)),
                       ),
                       const SizedBox(width: 12),
                       Container(
@@ -439,7 +398,13 @@ class _EventTile extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                       ),
-
+                      const SizedBox(width: 12),
+                      Text(
+                        document.status,
+                        style: TextStyle(
+                            color:
+                            AppColors.textMainPageColor.withOpacity(0.8)),
+                      ),
                     ],
                   ),
                 ],
@@ -457,20 +422,6 @@ class _EventTile extends StatelessWidget {
   }
 }
 
-class _DocumentListItem {
-  const _DocumentListItem({
-    required this.title,
-    required this.owner,
-    required this.size,
-    required this.updatedAt,
-    required this.accent,
-    required this.icon,
-  });
 
-  final String title;
-  final String owner;
-  final String size;
-  final String updatedAt;
-  final Color accent;
-  final IconData icon;
-}
+
+
