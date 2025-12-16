@@ -12,6 +12,7 @@ import 'package:gestion_documentaire/src/domain/local/QuickStats.dart';
 import 'package:gestion_documentaire/src/domain/remote/Categorie.dart';
 import 'package:gestion_documentaire/src/domain/remote/Document.dart';
 import 'package:gestion_documentaire/src/domain/remote/Event.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
 import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
 import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
@@ -101,12 +102,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      backgroundColor: Color(0xffEEF2F8),
-     // backgroundColor: AppColors.mainBackgroundColor,
-      body: Stack(
+    return AppPageShell(
+      isForHomePage: true,
+      title: "Votre espace de travail",
+      subtitle: "Bon retour à",
+      whiteColorForMainCardIsHere:false,
+     actions: [
+       Container(
+         height: 48,
+         width: 48,
+         decoration: BoxDecoration(
+           border: Border.all(color: Color(0xffF5F6F9)),
+           borderRadius: BorderRadius.circular(12),
+         ),
+         child:
+         IconButton(
+           icon:Icon(Icons.person, color: Colors.white, size: 20),
+           onPressed:() => Navigator.pushNamed(context, AppRoutesName.profilePage),
+         ),
+       ),
+     ],
+     // backgroundColor: Color(0xffEEF2F8),
+
+      child: /*Stack(
         children: [
-          _BackgroundDecor(),
+          _BackgroundDecor(),*/
           SafeArea(
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
@@ -117,24 +137,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildHeader(context),
+                      /*  _buildHeroCard(),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildHeroCard(),
+                     _buildSearchBar(),
                         const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSearchBar(),
-                        const SizedBox(height: AppDimensions.paddingLarge),
-
+*/
+                        _buildStats(last3DocumentsGetted.length,last4Events.length,last3CategoriesGetted.length,2),
                         _buildSectionTitle('Documents récents', 'Voir Tout ',(){Navigator.of(context).pushNamed(AppRoutesName.documentPage,arguments: {"subtitle":"Tous les documents"});}),
                         const SizedBox(height: AppDimensions.paddingMedium),
-                        _isDocumentsLoading?CircularProgressIndicator():last3DocumentsGetted.isEmpty?Text("Pas de documents pour le moment !"): _buildRecentDocuments(last3DocumentsGetted),
+                        _isDocumentsLoading?CircularProgressIndicator():last3DocumentsGetted.isEmpty?Text("Pas de documents pour le moment !"): _buildRecentDocuments(context,last3DocumentsGetted),
                         const SizedBox(height: AppDimensions.paddingLarge),
                         _buildSectionTitle('Événements', 'Voir Tout ',(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);}),
                         const SizedBox(height: AppDimensions.paddingMedium),
-                        _isEventsLoading?CircularProgressIndicator():last4Events.isEmpty?Text("Pas d'évenement pour le moment !"):UtilsWidget().evenementGrid(context,last4Events),
-                        const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildSectionTitle('Catégories', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.categoriePage);}),//AppRoutesName.categoryListPage
-                        const SizedBox(height: AppDimensions.paddingMedium),
-                        _isCategoriesLoading?CircularProgressIndicator():last3CategoriesGetted.isEmpty?Text("Pas de catégories pour le moment !"):UtilsWidget().categoryGrid(context,last3CategoriesGetted),
+                        _isEventsLoading?CircularProgressIndicator():last4Events.isEmpty?Text("Pas d'évenement pour le moment !"):UtilsWidget().evenementGrid(context,last4Events,true),
+                        //const SizedBox(height: AppDimensions.paddingLarge),
+                       // _buildSectionTitle('Catégories', 'Gérer',(){Navigator.of(context).pushNamed(AppRoutesName.categoriePage);}),//AppRoutesName.categoryListPage
+                        //const SizedBox(height: AppDimensions.paddingMedium),
+                        //_isCategoriesLoading?CircularProgressIndicator():last3CategoriesGetted.isEmpty?Text("Pas de catégories pour le moment !"):UtilsWidget().categoryGrid(context,last3CategoriesGetted),
                       ],
                     ),
                   ),
@@ -142,8 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-        ],
-      ),
+
     );
   }
 
@@ -369,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildRecentDocuments(List<Document> recentDocsGetted) {
+  Widget _buildRecentDocuments(BuildContext context, List<Document> recentDocsGetted,) {
     return  GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -377,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisCount: 2,
       crossAxisSpacing: AppDimensions.paddingLarge,
       mainAxisSpacing: AppDimensions.paddingLarge,
-      childAspectRatio: 3.8,
+      childAspectRatio: 4.1,
       // childAspectRatio: 1.2,
       ),
       itemCount: recentDocsGetted.length,//evenement.length,
@@ -387,7 +405,163 @@ class _HomeScreenState extends State<HomeScreen> {
           List<Color> colors= [ AppColors.mainAppColor,AppColors.accentTeal,AppColors.accentPurple];
           List<double> progress= [ 0.82,0.38,0.64];
 
-          return _RecentDocumentCard(document: doc,colorGetted: colors[index],progress:progress[index]);
+          //colorGetted: colors[index],progress:progress[index]);
+        return Container(
+          padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+          decoration: BoxDecoration(
+            color: AppColors.cardSurface,
+            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+          ),
+          child: Column(
+            //crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  SvgPicture.asset("asset/images/pdf.svg"),
+                  SizedBox(width: 10,),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+                        Text(
+                          doc.title,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.loginTitleColor,
+                          ),
+                        ),
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Text("DOCX",
+                              //document.subtitle,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xff979797),
+                              ),
+                            ),
+                            SvgPicture.asset("asset/images/dots.svg"),
+
+                            Text("2.4MB",
+                              //document.subtitle,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xff979797),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                      width: 40,
+                      padding: const EdgeInsets.fromLTRB(5, 3, 5, 3),
+                     // padding: const EdgeInsets.all(5.5),
+                      decoration: BoxDecoration(
+                        color: Color(0xffBC3618).withOpacity(0.1),
+                        border: Border.all(color: Color(0xffBA3316)),
+                        //color: colorGetted,
+                        //  color: colorGetted.withOpacity(0.12),
+                        borderRadius:
+                        BorderRadius.circular(AppDimensions.borderRadiusSmall),
+                      ),
+                      // child: Icon(Icons.more_vert_rounded, color: colorGetted),
+                      child: Text('PDF',style: TextStyle(color: Color(0xffBC3618),fontSize: 10),)
+                  ),
+
+                ],
+              ),
+            ],
+          ),
+        );
+        },
+    );
+  }
+
+  Widget _buildStats(int documentsLength,int eventsLength,int categoriesLength,int storageLength) {
+    List<String> statTitles=["Documents enregistrés", "Évenements actifs","Catégories enregistrées","Stockage utilisé"];
+    List<int> statNumbers=[documentsLength,eventsLength,categoriesLength,storageLength];
+    List<String> statIcons=["Frame-6","Frame-4","Frame-5","Frame-7"];
+    List<Color> statColors=[Color(0xffF97316),Color(0xff16A6E3),Color(0xff00897B),Color(0xffE11D48)];
+    List<VoidCallback> statActions=[(){Navigator.of(context).pushNamed(AppRoutesName.documentPage,arguments: {"subtitle":"Tous les documents"});},(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);},(){Navigator.of(context).pushNamed(AppRoutesName.categoriePage);},(){Navigator.of(context).pushNamed(AppRoutesName.homePage);}];
+
+
+    return  GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      crossAxisSpacing: AppDimensions.paddingLarge,
+      mainAxisSpacing: AppDimensions.paddingLarge,
+      childAspectRatio: 2.9,
+      // childAspectRatio: 1.2,
+      ),
+      itemCount: statTitles.length,
+      itemBuilder: (context, index) {//recentDocuments[index];
+
+          return InkWell(
+            onTap: statActions[index],
+            child: Container(
+                padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+                decoration: BoxDecoration(
+                  color: AppColors.cardSurface,
+                  borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                ),
+                child:
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(statTitles[index],
+                                style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff6C757D),
+                                ),
+                              ),
+                              Text(statNumbers[index].toString(),
+                                style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24,
+                                  color: Color(0xff212529),
+                                ),
+
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Container(
+                          height: 48,
+                          width: 48,
+                          padding: const EdgeInsets.all(AppDimensions.paddingSmall),
+                          /* decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xffF5F6F9)),
+                              borderRadius: BorderRadius.circular(12),
+                            ),*/
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(11),
+                              color: statColors[index].withOpacity(0.1),
+                             // border: Border.all(color: Color(0xBA33164D)),
+                            ),
+                            // child: Icon(Icons.more_vert_rounded, color: colorGetted),
+                            child: SvgPicture.asset("asset/images/${statIcons[index]}.svg"),
+                        ),
+
+                      ],
+                    ),
+              ),
+          );
+
         },
     );
   }
@@ -457,116 +631,6 @@ class _StatCard extends StatelessWidget {
     );
   }
 }
-
-class _RecentDocumentCard extends StatelessWidget {
-  //final RecentDocument document;
-  final Document document;
-  final Color colorGetted;
-  final double progress;
-
-  const _RecentDocumentCard({required this.document, required this.colorGetted, required this.progress});
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        //crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              SvgPicture.asset("asset/images/pdf.svg"),
-             SizedBox(width: 10,),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-
-                children: [
-                    Text(
-                      document.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.loginTitleColor,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text("DOCX",
-                          //document.subtitle,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xff979797),
-                          ),
-                        ),
-                        SvgPicture.asset("asset/images/dots.svg"),
-
-                        Text("2.4MB",
-                          //document.subtitle,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xff979797),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              Container(
-                height: 25,
-                padding: const EdgeInsets.all(AppDimensions.paddingSmall),
-                decoration: BoxDecoration(
-                  color: Color(0xffBC3618).withOpacity(0.1),
-                border: Border.all(color: Color(0xBA33164D)),
-                  //color: colorGetted,
-                //  color: colorGetted.withOpacity(0.12),
-                  borderRadius:
-                  BorderRadius.circular(AppDimensions.borderRadiusSmall),
-                ),
-               // child: Icon(Icons.more_vert_rounded, color: colorGetted),
-                child: Text('PDF',style: TextStyle(color: Color(0xffBC3618),fontSize: 10),)
-              ),
-
-            ],
-          ),
-
-
-         // const Spacer(),
-          /*LinearProgressIndicator(
-            value: progress,
-            backgroundColor: colorGetted.withOpacity(0.15),
-            valueColor: AlwaysStoppedAnimation<Color>(colorGetted),
-            minHeight: 6,
-            borderRadius: BorderRadius.circular(999),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            '${(progress * 100).round()} % vérifié',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textMainPageColor,
-            ),
-          ),*/
-        ],
-      ),
-    );
-  }
-}
-
 
 class _BackgroundDecor extends StatelessWidget {
   const _BackgroundDecor({super.key});

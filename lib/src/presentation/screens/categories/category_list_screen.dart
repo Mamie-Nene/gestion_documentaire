@@ -61,6 +61,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
     return  AppPageShell(
       isForHomePage: false,
       title: "Gestion Categorie",
+        whiteColorForMainCardIsHere:true,
       actions:[
         Container(
           padding: EdgeInsets.all(12),

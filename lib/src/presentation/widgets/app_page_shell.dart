@@ -7,6 +7,7 @@ class AppPageShell extends StatelessWidget {
     required this.title,
     required this.child,
     required this.isForHomePage,
+    required this.whiteColorForMainCardIsHere,
     this.isItAnExtendedFloatingButton,
     this.subtitle,
     this.bgColor,
@@ -20,6 +21,7 @@ class AppPageShell extends StatelessWidget {
   final String? subtitle;
   final Color? bgColor;
   final bool isForHomePage;
+  final bool whiteColorForMainCardIsHere;
   final bool? isItAnExtendedFloatingButton;
   final VoidCallback? actionForFloatingButton;
   final EdgeInsetsGeometry? padding;
@@ -36,6 +38,7 @@ class AppPageShell extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             // Blue header section only
             Container(
               width: double.infinity,
@@ -43,8 +46,9 @@ class AppPageShell extends StatelessWidget {
                     color: Color(0xff305A9D),
                   ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 50),
-                child: Row(
+                padding: const EdgeInsets.only(left: 24, right: 24, top: 50, bottom: 100),
+                child:
+                Row(
                   children: [
                     Container(
                       height: 48,
@@ -55,44 +59,41 @@ class AppPageShell extends StatelessWidget {
                       ),
                       child:
                       IconButton(
-                        icon:Icon(Icons.arrow_back, color: Colors.white, size: 20),
-                        onPressed: (){Navigator.of(context).pop();},
+                        icon:Icon(isForHomePage?Icons.menu:Icons.arrow_back, color: Colors.white, size: 20),
+                        onPressed: isForHomePage?null:(){Navigator.of(context).pop();},
                       ),
                     ),
-
                     SizedBox(width: 10,),
                     Expanded(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                                title,
-                                style:
-                        TextStyle(
-                        color: Colors.white /* white */,
-                        fontSize: 24,
-                        fontFamily: 'Archivo',
-                        fontWeight: FontWeight.w500,
-                        height: 1.40,
-                      )
-
-                      //theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w600,),
-                            ),
                             if (subtitle != null)
                               Text(
                                   subtitle!,
-                                  /*style: TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: Color(0xffDEE8EE),
                                     fontSize: 16,
-                                    fontFamily: 'Archivo',
-                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Lato',
+                                    fontWeight: FontWeight.w500,
                                     height: 1.40,
-                                  ),*/
-                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                  ),
+                                 /* style: theme.textTheme.bodyLarge?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
-                                  )
+                                  )*/
                               ),
+                            Text(
+                                title,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontFamily: 'Archivo',
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.40,
+                                )
+                              //theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w600,),
+                            ),
                           ]
                       ),
                     ),
@@ -103,35 +104,25 @@ class AppPageShell extends StatelessWidget {
             ),
             // White content card
             Flexible(
+              fit: FlexFit.loose,
               child: Transform.translate(
-                offset: const Offset(0, -20),
-                child: Container(
+                offset: const Offset(0, -70),
+                child: whiteColorForMainCardIsHere?Container(
                   margin: const EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 5),
                   width: double.infinity,
-                  constraints: const BoxConstraints(
-                    minHeight: 200,
-                  ),
                   decoration:  BoxDecoration(
                     color:Colors.white,
                    // color: bgColor ?? (isForHomePage?AppColors.mainAppColor:AppColors.secondAppColor),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 12,
-                        offset: Offset(0, -2),
-                      ),
-                    ],
+                    borderRadius: BorderRadius.circular(12.0)
                   ),
                   child: Padding(
                     padding: padding ?? const EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 5),
                     // padding: padding ?? const EdgeInsets.all(20),
                     child: child,
                   ),
-                ),
+                )
+                    :
+                child
               ),
             ),
           ],

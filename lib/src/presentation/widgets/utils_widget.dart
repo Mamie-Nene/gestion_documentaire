@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gestion_documentaire/src/domain/remote/Categorie.dart';
+import 'package:gestion_documentaire/src/domain/remote/Document.dart';
 import 'package:gestion_documentaire/src/domain/remote/Event.dart';
 import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
 
@@ -48,7 +49,7 @@ class UtilsWidget{
     );
   }
 
-  Widget evenementGrid(BuildContext context, List<Event> events ) {
+  Widget documentGrid(BuildContext context, List<Document> documents , bool isItForHomePage) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -59,22 +60,19 @@ class UtilsWidget{
         childAspectRatio: 2.4,
         // childAspectRatio: 1.2,
       ),
-      itemCount: events.length,
+      itemCount: documents.length,
       itemBuilder: (context, index) {
 
-        final event = events[index];//evenement[index]
-
-        // List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[Colors.purple, Color(0xFFC15BE3)],[Colors.orange, Color(0xFFFFD28C)],[Colors.blue, Color(0xFF92EFFD)],];
-        List<IconData> icon = [Icons.folder_open_rounded,Icons.task_alt_rounded,Icons.verified_outlined,Icons.archive_outlined,];
+        final document = documents[index];//evenement[index]
 
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage, arguments: {"event": event.id,"subtitle":event.title}),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": document.id,"subtitle":document.title}),
           child: Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+            padding: const EdgeInsets.all(AppDimensions.paddingMedium),
             decoration: BoxDecoration(
               color: Colors.white,
-              //border: Border(top:  BorderSide(color: AppColors.secondAppColor) ),
+              border: isItForHomePage?null:Border.all(color: Color(0xffDEE8EE)),
               //border: Border.all(color: AppColors.secondAppColor),
               /*gradient: LinearGradient(
                colors: gradient[index],
@@ -107,7 +105,162 @@ class UtilsWidget{
                         decoration: BoxDecoration(
                           color: Color(0xff3B82F6).withOpacity(0.1),
                           border: Border.all(color: Color(0xff3B82F6).withOpacity(0.1)),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("nov.",style: TextStyle( color: Color(0xff3B82F6), fontSize: 14,fontWeight: FontWeight.bold)),
+                            Text("14",style: TextStyle( color: Color(0xff3B82F6), fontSize: 16,fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            document.title,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              //color: AppColors.mainblueColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Row(
+                            spacing: 8,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                spacing: 5,
+                                children: [
+                                  SvgPicture.asset("asset/images/hour.svg"),
+
+                                  Text("14:00",
+                                    style: TextStyle(color: AppColors.textMainPageColor,fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w400),
+                                  ),
+                                ],
+                              ),
+                              Flexible(
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    SvgPicture.asset("asset/images/location.svg"),
+
+                                    Flexible(
+                                      child: Text("Salle de réunion A",
+                                        style: TextStyle(color: AppColors.textMainPageColor,fontSize: 12),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(color: Color(0xffDEE8EE),),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      spacing: 5,
+                      children: [
+                        SvgPicture.asset("asset/images/docs.svg"),
+                        Text("1 document(s) lié(s) ",
+                          style: TextStyle(color: AppColors.textMainPageColor,fontSize: 12),
+                        ),
+                      ],
+                    ),
+                    /*Icon(Icons.arrow_outward_rounded,
+                        color: AppColors.mainblueColor, size: 20),*/
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Text("Voir les détails",
+                          style: TextStyle(color: Color(0xff3B82F6),fontSize: 12),
+                        ),
+                        SvgPicture.asset("asset/images/arrow_back.svg"),
+
+                      ],
+                    ),
+                  ],
+                )
+
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+  Widget evenementGrid(BuildContext context, List<Event> events , bool isItForHomePage) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: AppDimensions.paddingLarge,
+        mainAxisSpacing: AppDimensions.paddingLarge,
+        childAspectRatio: 2.4,
+        // childAspectRatio: 1.2,
+      ),
+      itemCount: events.length,
+      itemBuilder: (context, index) {
+
+        final event = events[index];//evenement[index]
+
+        // List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[Colors.purple, Color(0xFFC15BE3)],[Colors.orange, Color(0xFFFFD28C)],[Colors.blue, Color(0xFF92EFFD)],];
+        List<IconData> icon = [Icons.folder_open_rounded,Icons.task_alt_rounded,Icons.verified_outlined,Icons.archive_outlined,];
+
+        return InkWell(
+          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": event.id,"subtitle":event.title}),
+          child: Container(
+            padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: isItForHomePage?null:Border.all(color: Color(0xffDEE8EE)),
+              //border: Border.all(color: AppColors.secondAppColor),
+              /*gradient: LinearGradient(
+               colors: gradient[index],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),*/
+
+              borderRadius:
+              BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              /*boxShadow: [
+                BoxShadow(
+                  color:gradient[index].last.withOpacity(0.25),
+                  blurRadius: 18,
+                  offset: const Offset(0, 10),
+                ),
+              ],*/
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      flex: 0,
+                      child: Container(
+                        height: 55,
+                        width:65,
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Color(0xff3B82F6).withOpacity(0.1),
+                          border: Border.all(color: Color(0xff3B82F6).withOpacity(0.1)),
+                          borderRadius: BorderRadius.circular(11),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

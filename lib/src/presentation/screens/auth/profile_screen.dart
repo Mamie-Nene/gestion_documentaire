@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gestion_documentaire/src/data/remote/auth_api.dart';
 import 'package:gestion_documentaire/src/domain/remote/UserInfo.dart';
 import 'package:gestion_documentaire/src/methods/signout.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
 import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
@@ -14,20 +15,18 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
- UserInfo? userInfo;
- bool _infoLoader= true;
-
+  UserInfo? userInfo;
+  bool _infoLoader = true;
 
   getInfoUser() async {
-    await AuthApi().getUserInfo( ApiUrl().getUserInfoUrl).then((value) {
+    await AuthApi().getUserInfo(ApiUrl().getUserInfoUrl).then((value) {
       setState(() {
         userInfo = value;
-        _infoLoader=false;
+        _infoLoader = false;
       });
     }).catchError((error) {
       setState(() {
-        _infoLoader=false;
+        _infoLoader = false;
       });
     });
   }
@@ -40,210 +39,292 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.mainBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.mainAppColor),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Profil',
-          style: TextStyle(
-            color: AppColors.loginTitleColor,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit_outlined, color: AppColors.mainAppColor),
-            onPressed: () {
-              // TODO: Implement edit functionality
-            },
-          ),
-        ],
+    return AppPageShell(
+      isForHomePage: false,
+      title: "Mon compte",
+      padding: EdgeInsets.zero,
+        whiteColorForMainCardIsHere:false,
+      child: _infoLoader
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : userInfo == null
+              ? const Center(
+                  child: Text("Une erreur est survenue"),
+                )
+              : SafeArea(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 5),
+                      child: Column(
+                        children: [
+                          // Profile Card - Full width
+                          Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                children: [
+                                  // Profile Picture
+                                  CircleAvatar(
+                                    radius: 50,
+                                    backgroundColor: AppColors.mainBackgroundColor,
+                                    foregroundImage: AssetImage(AppImages.PROFIL_IMAGES),
+                                  ),
+                                  const SizedBox(height: AppDimensions.paddingMedium),
+                                  // Name
+                                  Text(
+                                    '${userInfo!.firstName} ${userInfo!.lastName}',
+                                    style:  TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.loginTitleColor,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  // Email
+                                  Text(
+                                    userInfo!.email,
+                                    style:  TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textMainPageColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          const SizedBox(height: AppDimensions.paddingLarge),
+                          // Account Settings Section
+                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                 Text(
+                                  'Paramètres du compte',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.loginTitleColor,
+                                  ),
+                                ),
+                                const SizedBox(height: AppDimensions.paddingMedium),
+                                // Settings Grid
+                                _buildSettingsGrid(),
+                                const SizedBox(height: AppDimensions.paddingLarge * 2),
+                                // Logout Button
+                                _buildLogoutButton(),
+                                const SizedBox(height: AppDimensions.paddingLarge),
+                              ],
+                            ),
+
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+    );
+  }
+
+  Widget _buildSettingsGrid() {
+    final settings = [
+      {
+        'title': 'Informations personnelles',
+        'subtitle': 'Modifier votre profil et vos coordonnées',
+        'icon': Icons.person_outline,
+        'color': const Color(0xFF9C6EF3),
+      },
+      {
+        'title': 'Sécurité et connexion',
+        'subtitle': 'Mot de passe et authentification',
+        'icon': Icons.shield_outlined,
+        'color': const Color(0xFF6B46C1),
+      },
+      {
+        'title': 'Notifications',
+        'subtitle': 'Gérer vos préférences d\'alertes',
+        'icon': Icons.notifications_outlined,
+        'color': const Color(0xFF9C6EF3),
+      },
+      {
+        'title': 'Moyens de paiement',
+        'subtitle': 'Cartes enregistrées et historique',
+        'icon': Icons.credit_card_outlined,
+        'color': const Color(0xFF10B981),
+      },
+      {
+        'title': 'Préférences',
+        'subtitle': 'Langue, thème et affichage',
+        'icon': Icons.settings_outlined,
+        'color': Colors.orange,
+      },
+      {
+        'title': 'Aide et support',
+        'subtitle': 'FAQ et contact service client',
+        'icon': Icons.help_outline,
+        'color': const Color(0xFF3B82F6),
+      },
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: AppDimensions.paddingMedium,
+        mainAxisSpacing: AppDimensions.paddingMedium,
+        childAspectRatio: 4.6,
       ),
-      body: SingleChildScrollView(
-        child:
-        _infoLoader?
-           Center(child: CircularProgressIndicator())
-        :
-            userInfo == null
-            ? Center(child:Text("Une erreur est survenue"))
-            :
-          Column(
-          children: [
-            // Profile Header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+      itemCount: settings.length,
+      itemBuilder: (context, index) {
+        final setting = settings[index];
+        return _buildSettingCard(
+          title: setting['title'] as String,
+          subtitle: setting['subtitle'] as String,
+          icon: setting['icon'] as IconData,
+          color: setting['color'] as Color,
+        );
+      },
+    );
+  }
+
+  Widget _buildSettingCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+  }) {
+    return InkWell(
+      onTap: () {
+        // TODO: Navigate to setting page
+      },
+      borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+        child: Container(
+          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: AppColors.mainBackgroundColor,
-                    foregroundImage: AssetImage(AppImages.PROFIL_IMAGES),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: color,
+                      size: 20,
+                    ),
                   ),
-                  const SizedBox(height: AppDimensions.paddingMedium),
+              SizedBox(width: 15,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+
+                  const SizedBox(height: AppDimensions.paddingSmall),
                   Text(
-                    '${userInfo!.firstName} ${userInfo!.lastName}',
+                    title,
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
                       color: AppColors.loginTitleColor,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(userInfo!.email,
+                  Text(
+                    subtitle,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 10,
                       color: AppColors.textMainPageColor,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: AppDimensions.paddingLarge),
-            // User Information
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.paddingLarge,
+
+              const Spacer(),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 12,
+                color: AppColors.textMainPageColor.withOpacity(0.5),
               ),
+            ],
+          ),
+        ),
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return InkWell(
+      onTap: () {
+        SignOutMethod().signOut(context);
+      },
+      borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+          decoration: BoxDecoration(
+            border: Border.all(color:Color(0xFFDC2626) ),
+            color: const Color(0xFFDC2626).withOpacity(0.1), // Dark red color
+            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+          ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Color(0xFFDC2626),
+               // color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.logout,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: AppDimensions.paddingMedium),
+            Expanded(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInfoCard(
-                    icon: Icons.person_outline_rounded,
-                    label: 'Nom complet',
-                    value: '${userInfo!.firstName} ${userInfo!.lastName}',
-                  ),
-                  const SizedBox(height: AppDimensions.paddingMedium),
-                  _buildInfoCard(
-                    icon: Icons.email_outlined,
-                    label: 'Email',
-                    value: userInfo!.email,
-                  ),
-                  const SizedBox(height: AppDimensions.paddingMedium),
-                  _buildInfoCard(
-                    icon: Icons.phone_outlined,
-                    label: 'Profil',
-                    value: userInfo!.role,
-                  ),
-                  const SizedBox(height: AppDimensions.paddingLarge * 2),
-                  // Logout button
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        SignOutMethod().signOut(context);
-                        /*Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRoutesName.loginPage,
-                          (route) => false,
-                        );*/
-                      },
-                      icon: Icon(Icons.logout, color: AppColors.mainRedColor),
-                      label: Text(
-                        'Déconnexion',
-                        style: TextStyle(
-                          color: AppColors.mainRedColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppDimensions.paddingMedium,
-                        ),
-                        side: BorderSide(color: AppColors.mainRedColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            AppDimensions.borderRadiusLarge,
-                          ),
-                        ),
-                      ),
+                  const Text(
+                    'Déconnexion',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFDC2626),
                     ),
                   ),
-                  const SizedBox(height: AppDimensions.paddingLarge),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Se déconnecter de votre compte en toute sécurité',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFFDC2626).withOpacity(0.6),
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoCard({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.mainAppColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: AppColors.mainAppColor,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: AppDimensions.paddingMedium),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textMainPageColor,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.loginTitleColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

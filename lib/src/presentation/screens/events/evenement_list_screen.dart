@@ -26,6 +26,18 @@ class _EventListScreenState extends State<EventListScreen> {
   List<Event> events = [];
   bool _isEventsLoading=false;
 
+  // Pagination state
+  int _currentPage = 1;
+  int _itemsPerPage = 10;
+  final List<int> _itemsPerPageOptions = [10, 20, 30, 50];
+
+
+  @override
+  void initState() {
+    eventsGetted();
+    super.initState();
+  }
+
   eventsGetted() async {
     await EventsApi().getListEvents( ApiUrl().getEventsUrl).then((value) {
       setState(() {
@@ -49,40 +61,49 @@ class _EventListScreenState extends State<EventListScreen> {
     }).toList();
   }
 
-  @override
-  void initState() {
-    eventsGetted();
-    super.initState();
+  List<Event> get _paginatedEvents {
+    final filtered = _visibleEvents;
+    final startIndex = (_currentPage - 1) * _itemsPerPage;
+    final endIndex = startIndex + _itemsPerPage;
+    return filtered.length > startIndex
+        ? filtered.sublist(
+      startIndex,
+      endIndex > filtered.length ? filtered.length : endIndex,
+    )
+        : [];
   }
+
+  int get _totalPages {
+    return (_visibleEvents.length / _itemsPerPage).ceil();
+  }
+
   @override
   Widget build(BuildContext context) {
     return  AppPageShell(
       isForHomePage: false,
         title: "Gestion des événements",
+      whiteColorForMainCardIsHere:true,
       child: Column(
+       mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingLarge,
-              vertical: AppDimensions.paddingMedium,
-            ),
-            child: Column(
+           Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildTopBar(context),
+              /*  _buildTopBar(context),
                 const SizedBox(height: AppDimensions.paddingMedium),
-                //_buildSearchField(),
+                //_buildSearchField(),*/
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.cardSurface,
+                   // color: AppColors.cardSurface,
+                    color: Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-                        boxShadow: [
+                       /* boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.04),
                             blurRadius: 12,
                             offset: const Offset(0, 8),
                           ),
-                        ],
+                        ],*/
                       ),
                       child: Row(
                         children: [
@@ -117,24 +138,26 @@ class _EventListScreenState extends State<EventListScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: AppDimensions.paddingMedium),
-                    _buildFilterChips(),
-                    const SizedBox(height: AppDimensions.paddingMedium),
+                const SizedBox(height: AppDimensions.paddingMedium),
+                _buildFilterChips(),
+                const SizedBox(height: AppDimensions.paddingMedium),
 
-                    _isEventsLoading?
-                    CircularProgressIndicator()
+                _isEventsLoading
+                    ? Center(
+                    child: CircularProgressIndicator()
+                )
+                    : _visibleEvents.isEmpty
+                    ? Center(
+                    child: Text('La liste est vide !')
+                )
                     :
-                    _visibleEvents.isEmpty?
-                    Text('La liste est vide !')
-
-                        :
-                    //_buildEventList( _visibleEvents),
-                    UtilsWidget().evenementGrid(context,_visibleEvents)
-                  ],
-                ),
-              ),
+                UtilsWidget().evenementGrid(context,_visibleEvents,false),
+                // UtilsWidget().evenementGrid(context,_visibleEvents),
+                // UtilsWidget().evenementGrid(context,_visibleEvents),
+              ],
+           ),
+          _buildPaginationControls()
              // _buildTabBar(),
-             // const Divider(height: 1, color: AppColors.dividerLight),
 
             ],
           ),
@@ -359,118 +382,109 @@ class _EventListScreenState extends State<EventListScreen> {
       label: const Text("Ajout d'un évenement"),
     );
   }
-}
 
-class _EventTile extends StatelessWidget {
-  const _EventTile({
-    required this.event,
-    required this.onTap,
-  });
+  Widget _buildPaginationControls() {
+    final totalItems = _visibleEvents.length;
+    final startItem = totalItems == 0 ? 0 : ((_currentPage - 1) * _itemsPerPage) + 1;
+    final endItem = totalItems == 0
+        ? 0
+        : (_currentPage * _itemsPerPage > totalItems
+        ? totalItems
+        : _currentPage * _itemsPerPage);
 
-  final Event event;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    DateTime dateCreation = DateTime.parse(event.eventDate);
-    String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-      child: Container(
-        padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-        decoration: BoxDecoration(
-          color: AppColors.cardSurface,
-          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 12),
-            ),
-          ],
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingLarge,
+        vertical: AppDimensions.paddingMedium,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey.withOpacity(0.2),
+            width: 1,
+          ),
         ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(AppDimensions.paddingSmall),
-              decoration: BoxDecoration(
-                color: AppColors.mainAppColor.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Text(
+                'éléments par page:',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
+                ),
               ),
-              child: Icon(Icons.article_outlined, color:AppColors.mainAppColor, size: 28),
-            ),
-            const SizedBox(width: AppDimensions.paddingMedium),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    event.title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.loginTitleColor,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text("Gainde 2000",
-                    style: TextStyle(color: AppColors.textMainPageColor),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.schedule,
-                          size: 14,
-                          color: AppColors.textMainPageColor.withOpacity(0.7)),
-                      const SizedBox(width: 4),
-                      Text(formatted,
-                        style: TextStyle(
-                            color:
-                                AppColors.textMainPageColor.withOpacity(0.8)),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        width: 4,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: AppColors.dividerLight,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-
-                    ],
-                  ),
-                ],
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: DropdownButton<int>(
+                  value: _itemsPerPage,
+                  underline: const SizedBox(),
+                  isDense: true,
+                  items: _itemsPerPageOptions.map((int value) {
+                    return DropdownMenuItem<int>(
+                      value: value,
+                      child: Text(value.toString()),
+                    );
+                  }).toList(),
+                  onChanged: (int? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _itemsPerPage = newValue;
+                        _currentPage = 1;
+                      });
+                    }
+                  },
+                ),
               ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.more_vert_rounded,
-                  color: AppColors.textMainPageColor),
-            ),
-          ],
-        ),
+            ],
+          ),
+          Row(
+            children: [
+              Text(
+                '$startItem - $endItem sur $totalItems',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(width: 16),
+              IconButton(
+                onPressed: _currentPage > 1
+                    ? () {
+                  setState(() {
+                    _currentPage--;
+                  });
+                }
+                    : null,
+                icon: const Icon(Icons.arrow_back_ios, size: 16),
+                color: _currentPage > 1 ? AppColors.mainAppColor : Colors.grey,
+              ),
+              IconButton(
+                onPressed: _currentPage < _totalPages
+                    ? () {
+                  setState(() {
+                    _currentPage++;
+                  });
+                }
+                    : null,
+                icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                color: _currentPage < _totalPages ? AppColors.mainAppColor : Colors.grey,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
+
 }
 
-class _DocumentListItem {
-  const _DocumentListItem({
-    required this.title,
-    required this.owner,
-    required this.size,
-    required this.updatedAt,
-    required this.accent,
-    required this.icon,
-  });
-
-  final String title;
-  final String owner;
-  final String size;
-  final String updatedAt;
-  final Color accent;
-  final IconData icon;
-}

@@ -77,6 +77,7 @@ class _CategoriePageState extends State<CategoriePage> {
     return AppPageShell(
       isForHomePage: false,
       title: "Gestion des catégorie",
+        whiteColorForMainCardIsHere:true,
       actions: [
         GestureDetector(
           onTap: () {
@@ -108,30 +109,24 @@ class _CategoriePageState extends State<CategoriePage> {
       ],
       child: SafeArea(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.paddingLarge,
-                vertical: AppDimensions.paddingMedium,
+              padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingSmall, vertical: AppDimensions.paddingSmall,
               ),
               child: _buildSearchAndFilter(),
             ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingLarge,
-                ),
-                child: _isCategoriesLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : _visibleCategories.isEmpty
-                        ? const Center(
-                            child: Text('Aucune catégorie trouvée'),
-                          )
-                        : _buildCategoryGrid(),
-              ),
-            ),
+            const SizedBox(height: AppDimensions.paddingLarge),
+            _isCategoriesLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : _visibleCategories.isEmpty
+                      ? const Center(
+                          child: Text('Aucune catégorie trouvée'),
+                        )
+                      : _buildCategoryGrid(),
+
             _buildPaginationControls(),
           ],
         ),
@@ -145,15 +140,10 @@ class _CategoriePageState extends State<CategoriePage> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.cardSurface,
+              color: Colors.grey.shade50,
+              //color: AppColors.cardSurface,
               borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 12,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+
             ),
             child: TextField(
               controller: _searchController,
@@ -176,14 +166,8 @@ class _CategoriePageState extends State<CategoriePage> {
         Container(
           decoration: BoxDecoration(
             color: AppColors.cardSurface,
+            border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 8),
-              ),
-            ],
           ),
           child: Material(
             color: Colors.transparent,
@@ -223,27 +207,17 @@ class _CategoriePageState extends State<CategoriePage> {
   Widget _buildCategoryGrid() {
     final categories = _paginatedCategories;
     
-    // Calculate the number of rows needed
-    final int rowCount = (categories.length / 2).ceil();
-    final double itemHeight = 120; // Approximate height of each card
-    final double spacing = AppDimensions.paddingLarge;
-    final double totalHeight = (rowCount * itemHeight) + ((rowCount - 1) * spacing);
-    
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final bool needsScroll = totalHeight > constraints.maxHeight;
-        
-        return GridView.builder(
-          shrinkWrap: !needsScroll,
-          physics: needsScroll ? const AlwaysScrollableScrollPhysics() : const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: AppDimensions.paddingLarge,
-            mainAxisSpacing: AppDimensions.paddingLarge,
-            childAspectRatio: 1.5,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: AppDimensions.paddingLarge,
+        mainAxisSpacing: AppDimensions.paddingLarge,
+        childAspectRatio: 3.5,
+      ),
+      itemCount: categories.length,
+      itemBuilder: (context, index) {
         final category = categories[index];
         
         return InkWell(
@@ -257,65 +231,66 @@ class _CategoriePageState extends State<CategoriePage> {
             },
           ),
           child: Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+            padding: const EdgeInsets.all(AppDimensions.paddingMedium),
             decoration: BoxDecoration(
-              color: AppColors.cardSurface,
+              color: Colors.grey.shade100,
+             // color: AppColors.cardSurface,
               borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, 12),
-                ),
-              ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            category.documentCount.toString(),
-                            style:  TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.loginTitleColor,
+            child:  Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              category.documentCount.toString(),
+                              style:  TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff212529),
+                                //color: AppColors.loginTitleColor,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            category.name,
-                            style:  TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textMainPageColor,
+                            const SizedBox(height: 4),
+                            Text(
+                              category.name,
+                              style:  TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textMainPageColor,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Icon(
-                      Icons.folder,
-                      color: Colors.orange,
-                      size: 32,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.folder,
+                          color: Colors.orange,
+                          size: 32,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
           ),
         );
-      },
-    );
       },
     );
   }

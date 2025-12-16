@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
 import '/src/data/remote/document_api.dart';
 import '/src/domain/remote/Document.dart';
 import '/src/utils/api/api_url.dart';
@@ -17,53 +19,47 @@ class DocumentViewScreen extends StatelessWidget {
 
     final  _metadata = [
       _Metadata(
-          icon: Icons.person_outline, label: 'Propriétaire', value: 'Mame Néné BA'),
+          icon: "blue_user", label: 'Propriétaire', value: 'Mame Néné BA'),
       _Metadata(
-          icon: Icons.calendar_today_rounded,
+          icon: "green_calendar",
           label: 'Créé le',
           value: formatted),
       _Metadata(
-          icon: Icons.sync_rounded,
+          icon: "orange_hour",
           label: 'Dernière mise à jour',
           value: formatted),
       _Metadata(
-          icon: Icons.approval_rounded,
+          icon: "orange_hour",
           label: 'Statut',
           value: document.status),
     ];
-    return Scaffold(
-      backgroundColor: AppColors.mainBackgroundColor,
-      body: Stack(
+    return AppPageShell(
+      isForHomePage: false,
+      title: "Détails",
+      whiteColorForMainCardIsHere:false,
+      child: /*Stack(
         children: [
-          _SoftBackground(),
+          _SoftBackground(),*/
           SafeArea(
-            child: Column(
-              children: [
-                _buildTopBar(context),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildPreviewCard(),
-                        const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildActionButtons(),
-                        const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildDescriptionSection(),
-                        const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildMetadataSection(_metadata),
-                        const SizedBox(height: AppDimensions.paddingLarge),
-                        _buildActivityTimeline(),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildPreviewCard(),
+                  const SizedBox(height: AppDimensions.paddingLarge),
+                /*  _buildActionButtons(),
+                  const SizedBox(height: AppDimensions.paddingLarge),
+                 */ _buildDescriptionSection(),
+                  const SizedBox(height: AppDimensions.paddingLarge),
+                  _buildMetadataSection(_metadata),
+                  const SizedBox(height: AppDimensions.paddingLarge),
+                  _buildActivityTimeline(),
+                ],
+              ),
             ),
           ),
-        ],
-      ),
+
     );
   }
 
@@ -95,59 +91,40 @@ class DocumentViewScreen extends StatelessWidget {
   }
 
   Widget _buildPreviewCard() {
+    List<_ActionButtonData> actions = [
+      _ActionButtonData(Icons.share_rounded, 'Partager',Colors.white,(){}),
+      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);}),
+      _ActionButtonData(Icons.print_rounded, 'Imprimer',Color(0xff305A9D),(){}),
+    ];
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.mainAppColor.withOpacity(0.85),
-            AppColors.secondAppColor.withOpacity(0.85),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius:
-            BorderRadius.circular(AppDimensions.borderRadiusLarge + 12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.mainAppColor.withOpacity(0.25),
-            blurRadius: 32,
-            offset: const Offset(0, 20),
-          ),
-        ],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge + 12),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: const Icon(Icons.picture_as_pdf_rounded,
-                color: Colors.white, size: 48),
-          ),
-          const SizedBox(width: AppDimensions.paddingLarge),
-          Expanded(
-            child: Column(
+          SvgPicture.asset("asset/images/pdf.svg"),
+          const SizedBox(width: AppDimensions.paddingMedium),
+           Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                  Text(document.title,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Color(0xff212529),
                     fontWeight: FontWeight.w700,
-                    fontSize: 20,
+                    fontSize: 18,
                   ),
                 ),
                 const SizedBox(height: 6),
                 const Text(
                   'PDF • 12,8 Mo • 38 pages',
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(color: Color(0xff979797)),
                 ),
                 const SizedBox(height: AppDimensions.paddingMedium),
-                Wrap(
+                /*Wrap(
                   spacing: 12,
                   runSpacing: 8,
                   children: const [
@@ -160,10 +137,67 @@ class DocumentViewScreen extends StatelessWidget {
                         icon: Icons.cloud_done_rounded,
                         label: 'Synchronisé au cloud'),
                   ],
-                ),
+                ),*/
               ],
             ),
-          ),
+          const SizedBox(width: AppDimensions.paddingMedium),
+
+          Expanded(
+        child:
+            Row(
+              spacing: 10,
+              children: [
+                ElevatedButton.icon(
+                      onPressed:(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);},
+                      icon: SvgPicture.asset("asset/images/eye.svg"),
+                      label: Text("Visualiser"),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: AppDimensions.paddingMedium,horizontal: AppDimensions.paddingMedium),
+                        backgroundColor: Colors.grey.shade50,
+                        foregroundColor: AppColors.loginTitleColor,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                        ),
+                      ),
+                    ),
+                ElevatedButton.icon(
+                      onPressed:(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);},
+                      icon: SvgPicture.asset("asset/images/archive.svg"),
+                      label: Text("Archiver",style: TextStyle(fontSize: 15,fontFamily: "Chivo",color: Colors.white),),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: AppDimensions.paddingMedium,horizontal: AppDimensions.paddingMedium),
+                        backgroundColor: Color(0xff7DAA40),
+                        foregroundColor: AppColors.loginTitleColor,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                        ),
+                      ),
+                    ),
+                ElevatedButton.icon(
+                      onPressed:(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);},
+                      icon: SvgPicture.asset("asset/images/download.svg"),
+                      label: Text("Télécharger",style: TextStyle(fontSize: 15,fontFamily: "Chivo",color: Colors.white),),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: AppDimensions.paddingMedium,horizontal: AppDimensions.paddingMedium),
+                        backgroundColor: Color(0xff305A9D),
+                        foregroundColor: AppColors.loginTitleColor,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                        ),
+                      ),
+                    ),
+              ],
+            ),
+                ),
         ],
       ),
     );
@@ -171,38 +205,14 @@ class DocumentViewScreen extends StatelessWidget {
 
   Widget _buildActionButtons() {
     List<_ActionButtonData> actions = [
-      _ActionButtonData(Icons.share_rounded, 'Partager',(){}),
-      _ActionButtonData(Icons.download_rounded, 'Télécharger',(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);}),
-      _ActionButtonData(Icons.print_rounded, 'Imprimer',(){}),
+      _ActionButtonData(Icons.share_rounded, 'Partager',Colors.white,(){}),
+      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);}),
+      _ActionButtonData(Icons.print_rounded, 'Imprimer',Color(0xff305A9D),(){}),
     ];
     return Row(
-      children: List.generate(actions.length, (index) {
-        final action = actions[index];
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(
-              right:
-                  index == actions.length - 1 ? 0 : AppDimensions.paddingMedium,
-            ),
-            child: ElevatedButton.icon(
-              onPressed: action.action,
-              icon: Icon(action.icon),
-              label: Text(action.label),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    vertical: AppDimensions.paddingMedium),
-                backgroundColor: AppColors.cardSurface,
-                foregroundColor: AppColors.loginTitleColor,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.borderRadiusLarge),
-                ),
-              ),
-            ),
-          ),
-        );
-      }),
+      children: [
+
+      ]
     );
   }
 
@@ -213,13 +223,6 @@ class DocumentViewScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 12),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,7 +239,7 @@ class DocumentViewScreen extends StatelessWidget {
           ..._metadata.map(
             (item) => Padding(
               padding:
-                  const EdgeInsets.only(bottom: AppDimensions.paddingSmall),
+                  const EdgeInsets.only(bottom: AppDimensions.paddingMedium,),
               child: Row(
                 children: [
                   Container(
@@ -245,10 +248,11 @@ class DocumentViewScreen extends StatelessWidget {
                       color: AppColors.mainAppColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(item.icon,
-                        color: AppColors.mainAppColor, size: 20),
+                    child: SvgPicture.asset("asset/images/${item.icon}.svg"),
+
+                   // Icon(item.icon, color: AppColors.mainAppColor, size: 20),
                   ),
-                  const SizedBox(width: AppDimensions.paddingMedium),
+                  const SizedBox(width: AppDimensions.paddingLarge),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,13 +289,7 @@ class DocumentViewScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 12),
-          ),
-        ],
+
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -480,22 +478,24 @@ class _TimelineTile extends StatelessWidget {
 }
 
 class _Metadata {
-  const _Metadata({
+  const _Metadata( {
+
     required this.icon,
     required this.label,
     required this.value,
   });
 
-  final IconData icon;
+  final String icon;
   final String label;
   final String value;
 }
 
 class _ActionButtonData {
-  const _ActionButtonData(this.icon, this.label, this.action);
+  const _ActionButtonData(this.icon, this.label, this.color, this.action);
 
   final IconData icon;
   final String label;
+  final Color color;
   final VoidCallback action;
 }
 

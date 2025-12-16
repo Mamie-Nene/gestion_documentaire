@@ -18,6 +18,8 @@ class AppRoutesName {
 
      static const String evenementListPage = '/evenementListPage';
      static const String evenementDocsPage = '/evenementDocsPage';
+     static const String eventCalendarPage = '/eventCalendarPage';
+     static const String detailsEventPage = '/detailsEventPage';
 
      // ----------------------- Category Pages ------------------------
 
