@@ -137,7 +137,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
   @override
   Widget build(BuildContext context) {
     return AppPageShell(
-        isForHomePage: false,
+      isForHomePage: false,
       title: "Detail d'un évenement",
       whiteColorForMainCardIsHere: false,
       padding: EdgeInsets.zero,
@@ -145,23 +145,11 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingLarge,
-                  vertical: AppDimensions.paddingMedium,
-                ),
-              child: Column(
-                children: [
-                    // Information générales Section
-                    _buildGeneralInfoSection(),
-                    const SizedBox(height: AppDimensions.paddingLarge),
-                    // Liste des documents Section
-                    _buildDocumentsSection(),
-
-                  ],
-                ),
-              ),
-
+              // Information générales Section
+              _buildGeneralInfoSection(),
+              const SizedBox(height: AppDimensions.paddingLarge),
+              // Liste des documents Section
+              _buildDocumentsSection(),
             ],
           ),
         ),
@@ -195,12 +183,15 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
               color: AppColors.loginTitleColor,
             ),
            ),
+          Divider(),
           const SizedBox(height: AppDimensions.paddingLarge),
+
           _isEventLoading
               ? const Center(child: CircularProgressIndicator())
               : event == null
                   ? const Text('Chargement...')
                   : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Libellé, Comité, Date Grid
                         Row(
@@ -233,7 +224,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
                           label: 'Description',
                           value: event!.description.isNotEmpty
                               ? event!.description
-                              : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled.',
+                              : 'pas de description!',
                           isVertical: true,
                         ),
                       ],
@@ -255,17 +246,19 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
           Text(
             label,
             style:  TextStyle(
-              fontSize: 12,
+              fontFamily: "Roboto",
+              fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: AppColors.textMainPageColor,
+              color: Color(0xff465668),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             value,
             style:  TextStyle(
-              fontSize: 14,
-              color: AppColors.loginTitleColor,
+              fontFamily: "Chivo",
+              fontSize: 16,
+              color: Color(0xff212121),
             ),
           ),
         ],
@@ -278,16 +271,17 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         Text(
           label,
           style:  TextStyle(
-            fontSize: 12,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: AppColors.textMainPageColor,
+            color: Color(0xff465668),
           ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
           style:  TextStyle(
-            fontSize: 14,
+            fontSize: 18,
+            fontFamily: "Chivo",
             fontWeight: FontWeight.w600,
             color: AppColors.loginTitleColor,
           ),
@@ -392,7 +386,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
           ),
         ),
         const SizedBox(width: AppDimensions.paddingMedium),
-    Container(
+        Container(
       decoration: BoxDecoration(
             color: AppColors.cardSurface,
             borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),

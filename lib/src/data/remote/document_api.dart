@@ -18,6 +18,49 @@ import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class DocumentApi{
 
+  archiverDocument( String URL, String idDocument, BuildContext context) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
+    if(token==null)
+    {
+      globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
+      return;
+    }
+    else {
+      var uri = "$URL/$idDocument/archive";
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+      try {
+        print(uri);
+        var response = await http.get(
+            Uri.parse(uri),headers: headers
+        );
+        debugPrint("response.statusCode for getDetailCandidat ${response.statusCode}");
+        debugPrint("response.body for getDetailCandidat ${response.body}");
+
+        if (response.statusCode == 200) {
+
+         return Navigator.pushReplacementNamed(context, AppRoutesName.documentPage);
+        }
+
+        else  {
+          print(response.statusCode);
+          globalResponseMessage.errorMessage("Une Erreur est survenue!");
+
+        }
+      }
+
+      catch (e) {
+        debugPrint("error throw: ${e.toString()}");
+        globalResponseMessage.errorMessage(AppText.CATCH_ERROR_TEXT);
+      }
+    }
+
+  }
+
   getDetailDocument( String URL, String idDocument) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -38,8 +81,8 @@ class DocumentApi{
         var response = await http.get(
             Uri.parse(uri),headers: headers
         );
-        debugPrint("response.statusCode for getDetailCandidat ${response.statusCode}");
-        debugPrint("response.body for getDetailCandidat ${response.body}");
+        debugPrint("response.statusCode for getDetaildocs ${response.statusCode}");
+        debugPrint("response.body for getDetaildocs ${response.body}");
 
         if (response.statusCode == 200) {
 
@@ -148,17 +191,18 @@ class DocumentApi{
 
       if (response.statusCode == 200) {
 
-        var data = json.decode(response.body);
-        List content = data['content'];
-        if (content.isEmpty) {
+        List data = json.decode(response.body);
+       // List content = data['content'];
+        if (data.isEmpty) {
           return gieDocs;
         }
-        gieDocs = content.map((e) => Document.fromJson(e)).toList();
+        gieDocs = data.map((e) => Document.fromJson(e)).toList();
 
-        gieDocs.sort((a, b) => DateTime.parse(a.createdAt)
+       /* gieDocs.sort((a, b) => DateTime.parse(a.createdAt)
             .compareTo(DateTime.parse(b.createdAt)));
 
-        return gieDocs.take(3).toList();
+        return gieDocs.take(3).toList();*/
+        return gieDocs;
 
       }
       else if (response.statusCode == 400) {
@@ -301,4 +345,5 @@ class DocumentApi{
       }
     }
   }
+
 }

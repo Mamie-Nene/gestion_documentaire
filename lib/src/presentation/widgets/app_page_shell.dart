@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
+import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/app_specifications/app_colors.dart';
 
 class AppPageShell extends StatelessWidget {
@@ -38,27 +40,20 @@ class AppPageShell extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // Blue header section only
             Container(
               width: double.infinity,
               decoration: decoration ?? const BoxDecoration(
-                    color: Color(0xff305A9D),
-                  ),
+                color: Color(0xff305A9D),
+              ),
               child: Padding(
                 padding: const EdgeInsets.only(left: 24, right: 24, top: 50, bottom: 100),
-                child:
-                Row(
+                child: Row(
                   children: [
-                    Container(
-                      height: 48,
-                      width: 48,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xffF5F6F9)),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child:
-                      IconButton(
+                    UtilsWidget().iconContainerCard(
+                      isItWithBorder: true,
+                      bgColor: null,
+                      widget:IconButton(
                         icon:Icon(isForHomePage?Icons.menu:Icons.arrow_back, color: Colors.white, size: 20),
                         onPressed: isForHomePage?null:(){Navigator.of(context).pop();},
                       ),
@@ -88,8 +83,8 @@ class AppPageShell extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
-                                  fontFamily: 'Archivo',
-                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'Roboto',
+                                  fontWeight: FontWeight.w700,
                                   height: 1.40,
                                 )
                               //theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w600,),
@@ -107,22 +102,26 @@ class AppPageShell extends StatelessWidget {
               fit: FlexFit.loose,
               child: Transform.translate(
                 offset: const Offset(0, -70),
-                child: whiteColorForMainCardIsHere?Container(
-                  margin: const EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 5),
-                  width: double.infinity,
-                  decoration:  BoxDecoration(
-                    color:Colors.white,
-                   // color: bgColor ?? (isForHomePage?AppColors.mainAppColor:AppColors.secondAppColor),
-                    borderRadius: BorderRadius.circular(12.0)
-                  ),
-                  child: Padding(
-                    padding: padding ?? const EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 5),
-                    // padding: padding ?? const EdgeInsets.all(20),
-                    child: child,
-                  ),
-                )
-                    :
-                child
+                child: whiteColorForMainCardIsHere
+                    ? Container(
+                        margin: const EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 5),
+                        width: double.infinity,
+                        decoration:  BoxDecoration(
+                          color:Colors.white,
+                         // color: bgColor ?? (isForHomePage?AppColors.mainAppColor:AppColors.secondAppColor),
+                          borderRadius: BorderRadius.circular(12.0)
+                        ),
+                        child: Padding(
+                          padding: padding ?? const EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 5),
+                          // padding: padding ?? const EdgeInsets.all(20),
+                          child: child,
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 5),
+                        //padding:  EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge, vertical: AppDimensions.paddingMedium,),
+                        child: child,
+                      )
               ),
             ),
           ],

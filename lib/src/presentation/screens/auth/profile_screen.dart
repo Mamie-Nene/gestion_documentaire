@@ -54,9 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 )
               : SafeArea(
                   child: SingleChildScrollView(
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 5),
-                      child: Column(
+                    child: Column(
                         children: [
                           // Profile Card - Full width
                           Container(
@@ -79,9 +77,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   Text(
                                     '${userInfo!.firstName} ${userInfo!.lastName}',
                                     style:  TextStyle(
-                                      fontSize: 20,
+                                      fontFamily: "Roboto",
+                                      fontSize: 28,
                                       fontWeight: FontWeight.bold,
-                                      color: AppColors.loginTitleColor,
+                                      color: Color(0xff030319),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -89,15 +88,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   Text(
                                     userInfo!.email,
                                     style:  TextStyle(
-                                      fontSize: 14,
-                                      color: AppColors.textMainPageColor,
+                                      fontFamily: "Roboto",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color:Color(0xff757575),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
 
-                          const SizedBox(height: AppDimensions.paddingLarge),
+                          const SizedBox(height: AppDimensions.paddingMedium),
                           // Account Settings Section
                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,9 +106,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                  Text(
                                   'Paramètres du compte',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontFamily: "Roboto",
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.loginTitleColor,
+                                    color: Color(0xff292D32),
                                   ),
                                 ),
                                 const SizedBox(height: AppDimensions.paddingMedium),
@@ -122,7 +124,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         ],
                       ),
-                    ),
                   ),
                 ),
     );
@@ -136,19 +137,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'icon': Icons.person_outline,
         'color': const Color(0xFF9C6EF3),
       },
-      {
+      /*{
         'title': 'Sécurité et connexion',
         'subtitle': 'Mot de passe et authentification',
         'icon': Icons.shield_outlined,
         'color': const Color(0xFF6B46C1),
-      },
+      },*/
       {
         'title': 'Notifications',
         'subtitle': 'Gérer vos préférences d\'alertes',
         'icon': Icons.notifications_outlined,
         'color': const Color(0xFF9C6EF3),
       },
-      {
+     /* {
         'title': 'Moyens de paiement',
         'subtitle': 'Cartes enregistrées et historique',
         'icon': Icons.credit_card_outlined,
@@ -165,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'subtitle': 'FAQ et contact service client',
         'icon': Icons.help_outline,
         'color': const Color(0xFF3B82F6),
-      },
+      },*/
     ];
 
     return GridView.builder(
@@ -269,11 +270,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
     );
   }
-
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text('Déconnexion'),
+          content: const Text(
+            'Êtes-vous sûr de vouloir vous déconnecter ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Annuler'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                SignOutMethod().signOut(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.mainRedColor,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Déconnexion'),
+            ),
+          ],
+        );
+      },
+    );
+  }
   Widget _buildLogoutButton() {
     return InkWell(
       onTap: () {
-        SignOutMethod().signOut(context);
+        _showLogoutDialog(context);
       },
       borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
         child: Container(

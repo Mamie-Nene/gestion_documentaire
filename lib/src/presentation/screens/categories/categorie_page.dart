@@ -77,12 +77,11 @@ class _CategoriePageState extends State<CategoriePage> {
     return AppPageShell(
       isForHomePage: false,
       title: "Gestion des catégorie",
-        whiteColorForMainCardIsHere:true,
-      actions: [
+      whiteColorForMainCardIsHere:true,
+     /* actions: [
         GestureDetector(
-          onTap: () {
-            // TODO: Navigate to add category page
-          },
+          onTap: () {Navigator.of(context).pushNamed(AppRoutesName.addCategoryPage);},
+
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
@@ -106,7 +105,7 @@ class _CategoriePageState extends State<CategoriePage> {
             ),
           ),
         ),
-      ],
+      ],*/
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,

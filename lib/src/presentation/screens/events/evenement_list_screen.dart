@@ -83,6 +83,35 @@ class _EventListScreenState extends State<EventListScreen> {
       isForHomePage: false,
         title: "Gestion des événements",
       whiteColorForMainCardIsHere:true,
+      actions: [
+        GestureDetector(
+          onTap: () {Navigator.of(context).pushNamed(AppRoutesName.eventCalendarPage);},
+         // onTap: () {Navigator.of(context).pushNamed(AppRoutesName.addEventPage);},
+
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xffF5F6F9)),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.add, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  "Ajouter un évenement",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
       child: Column(
        mainAxisSize: MainAxisSize.min,
         children: [
@@ -92,7 +121,7 @@ class _EventListScreenState extends State<EventListScreen> {
               /*  _buildTopBar(context),
                 const SizedBox(height: AppDimensions.paddingMedium),
                 //_buildSearchField(),*/
-                Container(
+               /* Container(
                   decoration: BoxDecoration(
                    // color: AppColors.cardSurface,
                     color: Colors.grey.shade50,
@@ -139,7 +168,8 @@ class _EventListScreenState extends State<EventListScreen> {
                       ),
                     ),
                 const SizedBox(height: AppDimensions.paddingMedium),
-                _buildFilterChips(),
+               */// _buildFilterChips(),
+                _buildSearchAndFilter(),
                 const SizedBox(height: AppDimensions.paddingMedium),
 
                 _isEventsLoading
@@ -194,6 +224,75 @@ class _EventListScreenState extends State<EventListScreen> {
     );
   }
 
+  Widget _buildSearchAndFilter() {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              //color: AppColors.cardSurface,
+              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (_) => setState(() {
+                _currentPage = 1; // Reset to first page on search
+              }),
+              decoration: const InputDecoration(
+                hintText: 'Rechercher un fichier....',
+                prefixIcon: Icon(Icons.search_rounded, color: Colors.black54),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: AppDimensions.paddingMedium,
+                  horizontal: AppDimensions.paddingMedium,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: AppDimensions.paddingMedium),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.cardSurface,
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                // TODO: Show filter dialog
+              },
+              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingMedium,
+                  vertical: AppDimensions.paddingMedium,
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.filter_list, color: Colors.black54, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Filtrer',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
   Widget _buildSearchField() {
     return Container(
       decoration: BoxDecoration(

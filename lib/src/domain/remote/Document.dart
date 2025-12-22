@@ -5,11 +5,11 @@ part 'Document.g.dart';
 
 @JsonSerializable()
 class Document {
-  final String id,code,title,description,fileName,mimeType,createdAt,status,eventId,categoryId;
+  final String id,code,title,description,fileName,mimeType,createdAt,status,uploadedBy,eventId,categoryId;
 
 
   Document(this.id,  this.code, this.title, this.description,
-      this.fileName, this.mimeType, this.createdAt, this.status,this.eventId,this.categoryId);
+      this.fileName, this.mimeType, this.createdAt, this.status,this.uploadedBy,this.eventId,this.categoryId);
 
 
 

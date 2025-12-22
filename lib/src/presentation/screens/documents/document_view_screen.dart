@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gestion_documentaire/src/data/local/DocumentLocalData.dart';
 import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
 import '/src/data/remote/document_api.dart';
 import '/src/domain/remote/Document.dart';
@@ -17,21 +18,27 @@ class DocumentViewScreen extends StatelessWidget {
     DateTime dateCreation = DateTime.parse(document.createdAt);
     String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
 
-    final  _metadata = [
-      _Metadata(
-          icon: "blue_user", label: 'Propriétaire', value: 'Mame Néné BA'),
-      _Metadata(
+    final  metadata = [
+      Metadata(
+          icon: "blue_user",
+          bgColor:Color(0xffEFF6FF),
+          label: 'Propriétaire',
+          value: document.uploadedBy),
+      Metadata(
           icon: "green_calendar",
+          bgColor:Color(0xff00897B).withOpacity(0.12),
           label: 'Créé le',
           value: formatted),
-      _Metadata(
+      Metadata(
           icon: "orange_hour",
+          bgColor: Color(0xffF97316).withOpacity(0.12),
           label: 'Dernière mise à jour',
           value: formatted),
-      _Metadata(
+      /*_Metadata(
           icon: "orange_hour",
+
           label: 'Statut',
-          value: document.status),
+          value: document.status),*/
     ];
     return AppPageShell(
       isForHomePage: false,
@@ -40,24 +47,24 @@ class DocumentViewScreen extends StatelessWidget {
       child: /*Stack(
         children: [
           _SoftBackground(),*/
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+         /* SafeArea(
+            child: */SingleChildScrollView(
+              //padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildPreviewCard(),
+                  _buildPreviewCard(context),
                   const SizedBox(height: AppDimensions.paddingLarge),
                 /*  _buildActionButtons(),
                   const SizedBox(height: AppDimensions.paddingLarge),
                  */ _buildDescriptionSection(),
                   const SizedBox(height: AppDimensions.paddingLarge),
-                  _buildMetadataSection(_metadata),
+                  _buildMetadataSection(metadata),
                   const SizedBox(height: AppDimensions.paddingLarge),
                   _buildActivityTimeline(),
                 ],
               ),
-            ),
+           // ),
           ),
 
     );
@@ -90,41 +97,45 @@ class DocumentViewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPreviewCard() {
+  Widget _buildPreviewCard(BuildContext context) {
     List<_ActionButtonData> actions = [
       _ActionButtonData(Icons.share_rounded, 'Partager',Colors.white,(){}),
       _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);}),
       _ActionButtonData(Icons.print_rounded, 'Imprimer',Color(0xff305A9D),(){}),
     ];
+   // index == quickStats.length - 1 ? 0
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge + 12),
+        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SvgPicture.asset("asset/images/pdf.svg"),
-          const SizedBox(width: AppDimensions.paddingMedium),
-           Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                 Text(document.title,
-                  style: TextStyle(
-                    color: Color(0xff212529),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
+          Row(
+            children: [
+              SvgPicture.asset("asset/images/pdf.svg"),
+              const SizedBox(width: AppDimensions.paddingMedium),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(document.title,
+                    style: TextStyle(
+                      color: Color(0xff212529),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'PDF • 12,8 Mo • 38 pages',
-                  style: TextStyle(color: Color(0xff979797)),
-                ),
-                const SizedBox(height: AppDimensions.paddingMedium),
-                /*Wrap(
+                  const SizedBox(height: 6),
+                  const Text(
+                    'PDF • 12,8 Mo • 38 pages',
+                    style: TextStyle(color: Color(0xff979797)),
+                  ),
+                  const SizedBox(height: AppDimensions.paddingMedium),
+                  /*Wrap(
                   spacing: 12,
                   runSpacing: 8,
                   children: const [
@@ -138,13 +149,12 @@ class DocumentViewScreen extends StatelessWidget {
                         label: 'Synchronisé au cloud'),
                   ],
                 ),*/
-              ],
-            ),
-          const SizedBox(width: AppDimensions.paddingMedium),
+                ],
+              ),
+            ],
+          ),
 
-          Expanded(
-        child:
-            Row(
+          Row(
               spacing: 10,
               children: [
                 ElevatedButton.icon(
@@ -152,30 +162,29 @@ class DocumentViewScreen extends StatelessWidget {
                       icon: SvgPicture.asset("asset/images/eye.svg"),
                       label: Text("Visualiser"),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: AppDimensions.paddingMedium,horizontal: AppDimensions.paddingMedium),
-                        backgroundColor: Colors.grey.shade50,
+                        padding: const EdgeInsets.symmetric(vertical: 12,horizontal: AppDimensions.paddingMedium),
+                        backgroundColor: AppColors.cardSurface,
                         foregroundColor: AppColors.loginTitleColor,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
                         ),
+                        side: BorderSide(color:Color(0xffD0D5DD))
                       ),
                     ),
                 ElevatedButton.icon(
-                      onPressed:(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);},
+                      onPressed:(){archivageDocPopUp(context,document.id);},
                       icon: SvgPicture.asset("asset/images/archive.svg"),
                       label: Text("Archiver",style: TextStyle(fontSize: 15,fontFamily: "Chivo",color: Colors.white),),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            vertical: AppDimensions.paddingMedium,horizontal: AppDimensions.paddingMedium),
+                            vertical: 12,horizontal: AppDimensions.paddingMedium),
                         backgroundColor: Color(0xff7DAA40),
                         foregroundColor: AppColors.loginTitleColor,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius:
-                          BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                          BorderRadius.circular(AppDimensions.borderRadiusMedium),
                         ),
                       ),
                     ),
@@ -185,19 +194,19 @@ class DocumentViewScreen extends StatelessWidget {
                       label: Text("Télécharger",style: TextStyle(fontSize: 15,fontFamily: "Chivo",color: Colors.white),),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            vertical: AppDimensions.paddingMedium,horizontal: AppDimensions.paddingMedium),
+                            vertical: 12,horizontal: AppDimensions.paddingMedium),
                         backgroundColor: Color(0xff305A9D),
                         foregroundColor: AppColors.loginTitleColor,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius:
-                          BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                          BorderRadius.circular(AppDimensions.borderRadiusMedium),
                         ),
                       ),
                     ),
               ],
             ),
-                ),
+
         ],
       ),
     );
@@ -245,7 +254,8 @@ class DocumentViewScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.mainAppColor.withOpacity(0.1),
+                      color: item.bgColor,
+                      //color: AppColors.mainAppColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: SvgPicture.asset("asset/images/${item.icon}.svg"),
@@ -352,6 +362,39 @@ class DocumentViewScreen extends StatelessWidget {
       ),
     );
   }
+
+  void archivageDocPopUp(BuildContext context, String idDocument) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Text('Déconnexion'),
+            content: const Text(
+              'Êtes-vous sûr de vouloir vous déconnecter ?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Annuler'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  DocumentApi().archiverDocument(ApiUrl().archiverDocumentUrl,idDocument,context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.mainRedColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Archiver'),
+              ),
+            ],
+          );
+        },
+      );
+    }
 }
 
 class _InfoChip extends StatelessWidget {
@@ -477,15 +520,17 @@ class _TimelineTile extends StatelessWidget {
   }
 }
 
-class _Metadata {
-  const _Metadata( {
+class Metadata {
+  const Metadata( {
 
     required this.icon,
+    required this.bgColor,
     required this.label,
     required this.value,
   });
 
   final String icon;
+  final Color bgColor;
   final String label;
   final String value;
 }

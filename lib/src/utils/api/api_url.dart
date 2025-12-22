@@ -5,16 +5,23 @@ class ApiUrl {
   //              ---------------------- auth ----------------------
   String getLoginUrl = '$baseUrl/auth/login';
   String getUserInfoUrl = '$baseUrl/users/email';
+
+  // --------------- dashboard ------------
+
+  String getDashboardUrl = '$baseUrl/dashboard/stats';
   //              ---------------------- categorie ----------------------
 
   String getCategoriesUrl = '$baseUrl/categories';
   //              ---------------------- docs ----------------------
 
   String getDocumentsUrl = '$baseUrl/documents';
+  String getRecentsDocumentsUrl = '$baseUrl/documents/last-four';
   String voirDocumentUrl = '$baseUrl/documents/getDocument';
+  String archiverDocumentUrl = '$baseUrl/documents';
 
 //              ---------------------- events ----------------------
   String getEventsUrl = '$baseUrl/events';
+  String getRecentsEventsUrl = '$baseUrl/events/last-four';
 
 
 }

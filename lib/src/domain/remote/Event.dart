@@ -5,13 +5,14 @@ part 'Event.g.dart';
 
 @JsonSerializable()
 class Event {
-  final String id,title,description,eventDate;
+  final String id,title,description,eventDate,location;
+  final int documentCount;
     //  categoryId;
   //final List<String> committeeIds;
 
 
 
-  Event(this.id, this.title, this.description, this.eventDate,
+  Event(this.id, this.title, this.description, this.eventDate, this.location, this.documentCount
       // this.categoryId , this.committeeIds
       );
 

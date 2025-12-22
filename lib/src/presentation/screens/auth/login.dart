@@ -25,14 +25,13 @@ class _LoginPageState extends State<LoginPage> {
     final size= MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xffEEF2F8),
 
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: size.height/6.4),// vertical 200, horizontal : 16
         child: SingleChildScrollView(
           child: Column( //listView
             children: [
-
               Container(
                 height: size.height/10,
                 // padding:const EdgeInsets.symmetric(horizontal: 16.0,),

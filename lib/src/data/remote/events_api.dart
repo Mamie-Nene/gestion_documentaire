@@ -65,6 +65,7 @@ class EventsApi{
       }
     }
   }
+
   getLastEvents( String URL) async {
     final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -97,12 +98,12 @@ class EventsApi{
             return evenements;
           }
            evenements = data.map((e) => Event.fromJson(e)).toList();
-//          evenements = data.map((e) => Event.fromJson(e as Map<String, dynamic>)).toList();
+/*//          evenements = data.map((e) => Event.fromJson(e as Map<String, dynamic>)).toList();
           evenements.sort((a, b) => DateTime.parse(b.eventDate)
               .compareTo(DateTime.parse(a.eventDate)));
 
-          return evenements.take(4).toList();
-           //return evenements;
+          return evenements.take(4).toList();*/
+           return evenements;
         }
 
         else  {

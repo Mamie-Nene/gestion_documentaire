@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gestion_documentaire/src/presentation/screens/categories/category_list_screen.dart';
 import 'package:gestion_documentaire/src/presentation/screens/categories/categorie_page.dart';
+import 'package:gestion_documentaire/src/presentation/screens/categories/add_category_screen.dart';
 import 'package:gestion_documentaire/src/presentation/screens/documents/recents_document_list_screen.dart';
+import 'package:gestion_documentaire/src/presentation/screens/documents/add_document_screen.dart';
 import 'package:gestion_documentaire/src/presentation/screens/events/details_evenement_screen.dart';
 import 'package:gestion_documentaire/src/presentation/screens/events/evenement_list_screen.dart';
 import 'package:gestion_documentaire/src/presentation/screens/events/event_calendar_screen.dart';
+import 'package:gestion_documentaire/src/presentation/screens/events/add_event_screen.dart';
 import '../../presentation/screens/documents/document_list_screen.dart';
 import '../../presentation/screens/documents/document_view_screen.dart';
 import '/src/presentation/screens/home_pages/home_screen.dart';
@@ -48,8 +51,11 @@ class RouteGenerator {
         var eventId = args["event"] ?? args["eventId"];
         return MaterialPageRoute(builder: (context) => DetailsEvenementScreen(eventId: eventId));
 
-      case AppRoutesName.eventCalendarPage:
+        case AppRoutesName.eventCalendarPage:
           return MaterialPageRoute(builder: (context) => const EventCalendarScreen());
+
+        case AppRoutesName.addEventPage:
+          return MaterialPageRoute(builder: (context) => const AddEventScreen());
 
         // ----------------------- Category Pages ------------------------
 
@@ -58,6 +64,14 @@ class RouteGenerator {
 
         case AppRoutesName.categoriePage:
           return MaterialPageRoute(builder: (context) => const CategoriePage());
+
+        case AppRoutesName.addCategoryPage:
+          return MaterialPageRoute(builder: (context) => const AddCategoryScreen());
+
+        // ----------------------- Document Pages ------------------------
+
+        case AppRoutesName.addDocumentPage:
+          return MaterialPageRoute(builder: (context) => const AddDocumentScreen());
 
       case AppRoutesName.viewDocumentPage:
         final args = settings.arguments;

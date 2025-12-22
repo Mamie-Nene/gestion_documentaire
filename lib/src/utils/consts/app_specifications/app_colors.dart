@@ -8,6 +8,9 @@ class AppColors {
   //static const mainAppColor = Color(0xFF7EAA41); chat
   static const mainBlueFirst = Color(0xFF0056D6);
   static const secondAppColor = Color(0xFF3A88FE);
+  static const iconBorderColor = Color(0xffF5F6F9);
+  static const cardBorderColor = Color(0xffDEE8EE);
+  static const mainEventsBlueColor = Color(0xff3B82F6);
 
   // -------------------- Background Color ----------------------
 

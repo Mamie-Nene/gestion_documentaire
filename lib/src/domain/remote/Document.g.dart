@@ -16,6 +16,7 @@ Document _$DocumentFromJson(Map<String, dynamic> json) => Document(
     json['mimeType'] as String,
     json['createdAt'] as String,
     json['status'] as String,
+    json['uploadedBy']??"Mame Néné BA",
     json['eventId'] as String,
     json['categoryId'] as String,
 );
@@ -30,6 +31,7 @@ Map<String, dynamic> _$DocumentToJson(Document instance) => <String, dynamic>{
   'mimeType': instance.mimeType,
   'createdAt': instance.createdAt,
   'status': instance.status,
+  'uploadedBy': instance.uploadedBy,
   'eventId' : instance.eventId,
   'categoryId' : instance.categoryId,
 };
