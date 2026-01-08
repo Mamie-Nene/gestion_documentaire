@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gestion_documentaire/src/data/local/DocumentLocalData.dart';
 import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/helper.dart';
 import '/src/data/remote/document_api.dart';
 import '/src/domain/remote/Document.dart';
 import '/src/utils/api/api_url.dart';
@@ -104,6 +105,13 @@ class DocumentViewScreen extends StatelessWidget {
       _ActionButtonData(Icons.print_rounded, 'Imprimer',Color(0xff305A9D),(){}),
     ];
    // index == quickStats.length - 1 ? 0
+
+    final fileType = Helper().getFileExtension(document.mimeType, document.fileName);
+    final fileColor = Helper().getFileTypeColor(fileType);
+    final fileIcon = Helper().getFileTypeIcon(fileType);
+    final fileSize = Helper().formatFileSize(document.fileName);
+
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),
@@ -117,21 +125,27 @@ class DocumentViewScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              SvgPicture.asset("asset/images/pdf.svg"),
+              SvgPicture.asset("asset/images/$fileIcon.svg"),
               const SizedBox(width: AppDimensions.paddingMedium),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(document.title,
-                    style: TextStyle(
-                      color: Color(0xff212529),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
+                  SizedBox(
+                    width: 200,
+                    child: Text(document.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(0xff212529),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 6),
                   const Text(
                     'PDF • 12,8 Mo • 38 pages',
+                    //'PDF • 12,8 Mo • 38 pages',
                     style: TextStyle(color: Color(0xff979797)),
                   ),
                   const SizedBox(height: AppDimensions.paddingMedium),
@@ -330,14 +344,13 @@ class DocumentViewScreen extends StatelessWidget {
     const activities = [
       _TimelineActivity(
           time: '08:32',
-          description: 'Document partagé avec l\'équipe finance'),
-      _TimelineActivity(
-          time: '09:12', description: 'Sano  a relu la section 4.2'),
+          description: 'Document partagé avec l\'équipe Infinity'),
+      //_TimelineActivity(time: '09:12', description: 'Sano  a relu la section 4.2'),
       _TimelineActivity(
           time: '10:45',
-          description: 'Commentaire ajouté sur le chapitre budget'),
+          description: 'Commentaire ajouté sur le document'),
       _TimelineActivity(
-          time: '11:05', description: 'En attente de validation du DAF'),
+          time: '11:05', description: 'En attente de validation'),
     ];
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),

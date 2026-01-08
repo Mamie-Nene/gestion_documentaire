@@ -11,13 +11,13 @@ Document _$DocumentFromJson(Map<String, dynamic> json) => Document(
     json['id'] as String,
   json['code'] as String,
   json['title'] as String,
-  json['description'] as String,
+  json['description']??"AUCUN",
   json['fileName'] as String,
     json['mimeType'] as String,
     json['createdAt'] as String,
     json['status'] as String,
     json['uploadedBy']??"Mame Néné BA",
-    json['eventId'] as String,
+    json['eventId']?? "AUCUN",
     json['categoryId'] as String,
 );
 

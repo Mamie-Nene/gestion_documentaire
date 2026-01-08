@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:gestion_documentaire/src/config/router_observer.dart';
 import 'package:gestion_documentaire/src/utils/variable/global_variable.dart';
@@ -16,7 +17,12 @@ class MyHttpOverrides extends HttpOverrides{
 }
 void main() {
    HttpOverrides.global = MyHttpOverrides();
-  runApp(MyApp());
+  runApp(
+     /* DevicePreview( // for ios simulator
+        enabled: true,
+        builder: (context) =>*/ MyApp()
+       //)
+  );
 }
 
 class MyApp extends StatelessWidget {

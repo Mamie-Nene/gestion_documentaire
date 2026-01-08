@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/helper.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
 import 'package:intl/intl.dart';
 import '/src/data/remote/document_api.dart';
 import '/src/data/remote/events_api.dart';
@@ -138,7 +140,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
   Widget build(BuildContext context) {
     return AppPageShell(
       isForHomePage: false,
-      title: "Detail d'un évenement",
+      title: "Détail d'un événement",
       whiteColorForMainCardIsHere: false,
       padding: EdgeInsets.zero,
       child: SafeArea(
@@ -330,7 +332,9 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
           const SizedBox(height: AppDimensions.paddingLarge),
 
          Divider(thickness: 0.5,),
-         _isDocumentsLoading
+          const SizedBox(height: AppDimensions.paddingLarge),
+
+          _isDocumentsLoading
               ? const Center(
                   child: Padding(
                     padding: EdgeInsets.all(20.0),
@@ -345,6 +349,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
                       ),
                     )
                   : _buildDocumentsGrid(),
+          const SizedBox(height: AppDimensions.paddingLarge),
 
           _buildPaginationControls(),
         ],
@@ -358,7 +363,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.cardSurface,
+              color: Color(0xffF9F9F9),
               borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
              /* boxShadow: [
                 BoxShadow(
@@ -387,7 +392,12 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         ),
         const SizedBox(width: AppDimensions.paddingMedium),
         Container(
-      decoration: BoxDecoration(
+          decoration: BoxDecoration(
+            color: AppColors.cardSurface,
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+          ),
+      /*decoration: BoxDecoration(
             color: AppColors.cardSurface,
             borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
             boxShadow: [
@@ -397,7 +407,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
                 offset: const Offset(0, 8),
               ),
             ],
-          ),
+          ),*/
           child: Material(
             color: Colors.transparent,
             child: InkWell(
@@ -453,13 +463,15 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         final fileIcon = _getFileTypeIcon(fileType);
         final fileSize = _formatFileSize(document.fileName);
 
-        return _buildDocumentCard(
+        return UtilsWidget().documentGrid(context, document,);
+
+       /* return _buildDocumentCard(
           document: document,
           fileType: fileType,
           fileColor: fileColor,
           fileIcon: fileIcon,
           fileSize: fileSize,
-        );
+        );*/
       },
     );
   }
@@ -471,61 +483,85 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     required String fileIcon,
     required String fileSize,
   }) {
+    final fileTypeText = Helper().getFileTypeText(fileType);
+
     return InkWell(
       onTap: () => Navigator.pushNamed(
         context,
         AppRoutesName.viewDocumentPage,
         arguments: {"document": document},
       ),
-      borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+     // borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
       child: Container(
         padding: const EdgeInsets.all(AppDimensions.paddingMedium),
         decoration: BoxDecoration(
-          border: Border.all(color: Color(0xffDEE8EE)),
-          color: Colors.white,
+          color: AppColors.cardSurface,
+          border: Border.all(color: AppColors.cardBorderColor),
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
 
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SvgPicture.asset("asset/images/pdf.svg"),
-            const SizedBox(height: AppDimensions.paddingMedium),
-            Column(
-              children: [
-                Text(
-                  document.title,
-                  style:  TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.loginTitleColor,
+            SvgPicture.asset("asset/images/$fileIcon.svg"),
+            SizedBox(width: 10,),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+
+                children: [
+                  Text(
+                    document.title,
+                    style:  TextStyle(
+                      fontFamily: "Roboto",
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff212529),
+                    ),
+                    //maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '$fileType • $fileSize',
-                  style:  TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textMainPageColor,
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Text(fileType,
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: Color(0xff979797),
+                        ),
+                      ),
+                      SvgPicture.asset("asset/images/dots.svg"),
+                      Text(fileSize,
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: Color(0xff979797),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+
+                ],
+              ),
             ),
 
-            const Spacer(),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              width: 40,
+              padding: const EdgeInsets.all(4.5),
+             // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: fileColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: fileColor),
+                borderRadius: BorderRadius.circular(AppDimensions.borderRadiusSmall),
               ),
               child: Text(
-                fileType,
+                fileTypeText,
+                textAlign: TextAlign.center,
                 style:  TextStyle(
                   fontSize: 10,
-                  fontWeight: FontWeight.w600,
                   color: fileColor,
                 ),
               ),

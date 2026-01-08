@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ?Center(
                   child: Text("Pas d'évenement pour le moment !")
                 )
-                :UtilsWidget().evenementGrid(context,last4Events,true),
+                :UtilsWidget().evenementGridForViewList(context,last4Events,true),
          ],
         ),
       ),

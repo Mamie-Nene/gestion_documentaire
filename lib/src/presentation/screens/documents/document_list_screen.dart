@@ -82,6 +82,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     return  AppPageShell(
       isForHomePage: false,
       title: "Gestion des documents",
+      subtitle: widget.subtitle,
       whiteColorForMainCardIsHere:true,
       /*actions: [
         GestureDetector(
@@ -187,9 +188,11 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               :
               _visibleDocs.isEmpty?
 
-              Text('La liste ets vide !')
+              Text('La liste est vide !')
                   :
-              _buildDocumentsGrid(),    //child:  _buildDocumentList(_visibleDocs),
+              _buildDocumentsGrid(),
+              //child:  _buildDocumentList(_visibleDocs),
+              const SizedBox(height: AppDimensions.paddingLarge),
 
               _buildPaginationControls(),
 
@@ -199,7 +202,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
       );
   }
   Widget _buildDocumentsGrid() {
-    final documents = _paginatedDocs;
+    final documents = _paginatedDocs.reversed;
 
     return GridView.builder(
       shrinkWrap: true,
@@ -212,7 +215,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
       ),
       itemCount: documents.length,
       itemBuilder: (context, index) {
-        final document = documents[index];
+        final document = documents.elementAt(index);
 
         final fileType = Helper().getFileExtension(document.mimeType, document.fileName);
         final fileColor = Helper().getFileTypeColor(fileType);
@@ -257,72 +260,92 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     required String fileIcon,
     required String fileSize,
   }) {
+    final fileType = Helper().getFileExtension(document.mimeType, document.fileName);
+    final fileColor = Helper().getFileTypeColor(fileType);
+    final fileIcon = Helper().getFileTypeIcon(fileType);
+    final fileSize = Helper().formatFileSize(document.fileName);
+    final fileTypeText = Helper().getFileTypeText(fileType);
+
     return InkWell(
       onTap: () => Navigator.pushNamed(context, AppRoutesName.viewDocumentPage, arguments: {"document": document},),
-      borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+     // borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
       child: Container(
         padding: const EdgeInsets.all(AppDimensions.paddingMedium),
         decoration: BoxDecoration(
-          border: Border.all(color: Color(0xffDEE8EE)),
-          color: Colors.white,
+          border: Border.all(color: AppColors.cardBorderColor),
+          color: AppColors.cardSurface,
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
 
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SvgPicture.asset("asset/images/pdf.svg"),
-            const SizedBox(height: AppDimensions.paddingMedium),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  document.title,
-                  style:  TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.loginTitleColor,
+            SvgPicture.asset("asset/images/$fileIcon.svg"),
+            SizedBox(width: 10,),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    document.title,
+                    overflow: TextOverflow.ellipsis,
+                    style:  TextStyle(
+                      fontFamily: "Roboto",
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff212529),
+                      /*fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.loginTitleColor,*/
+                    ),
+                    //maxLines: 2,
+
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  spacing: 8,
-                  children: [
-                    Text(fileType,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xff979797),
+                  Row(
+                    spacing: 8,
+                    children: [
+                      Text(fileType,
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: Color(0xff979797),
+                        ),
                       ),
-                    ),
 
-                    SvgPicture.asset("asset/images/dots.svg"),
+                      SvgPicture.asset("asset/images/dots.svg"),
 
-                    Text(fileSize,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xff979797),
+                      Text(fileSize,
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: Color(0xff979797),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
-              ],
+                ],
+              ),
             ),
 
-            const Spacer(),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              width: 40,
+              padding: const EdgeInsets.all(4.5),
+             // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: fileColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
+                color:fileColor.withOpacity(0.1),
+                border: Border.all(color: fileColor),
+                borderRadius: BorderRadius.circular(AppDimensions.borderRadiusSmall),
+
               ),
               child: Text(
-                fileType,
+                fileTypeText,
+                textAlign: TextAlign.center,
                 style:  TextStyle(
                   fontSize: 10,
-                  fontWeight: FontWeight.w600,
+                 // fontWeight: FontWeight.w600,
                   color: fileColor,
                 ),
               ),

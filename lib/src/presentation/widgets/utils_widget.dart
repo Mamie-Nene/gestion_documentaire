@@ -148,7 +148,7 @@ class UtilsWidget{
     );
   }
 
-  Widget evenementGrid(BuildContext context, List<Event> events , bool isItForHomePage) {
+  Widget evenementGridForViewList(BuildContext context, Iterable<Event> events , bool isItForHomePage) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -162,7 +162,7 @@ class UtilsWidget{
       itemCount: events.length,
       itemBuilder: (context, index) {
 
-        final event = events[index];
+        final event = events.elementAt(index);
         final DateTime eventDate = Helper().parseEventDate(event.eventDate);
 
         return InkWell(

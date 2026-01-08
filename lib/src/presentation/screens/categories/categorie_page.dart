@@ -76,7 +76,7 @@ class _CategoriePageState extends State<CategoriePage> {
   Widget build(BuildContext context) {
     return AppPageShell(
       isForHomePage: false,
-      title: "Gestion des catégorie",
+      title: "Gestion des catégories",
       whiteColorForMainCardIsHere:true,
      /* actions: [
         GestureDetector(
@@ -125,6 +125,7 @@ class _CategoriePageState extends State<CategoriePage> {
                           child: Text('Aucune catégorie trouvée'),
                         )
                       : _buildCategoryGrid(),
+            const SizedBox(height: AppDimensions.paddingLarge),
 
             _buildPaginationControls(),
           ],

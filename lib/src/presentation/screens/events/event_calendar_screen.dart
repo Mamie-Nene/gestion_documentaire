@@ -134,7 +134,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
   Widget build(BuildContext context) {
     return AppPageShell(
       isForHomePage: false,
-      title: "Gestion des événement",
+      title: "Gestion des événements",
         whiteColorForMainCardIsHere:true,
       actions: [
         GestureDetector(

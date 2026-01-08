@@ -21,8 +21,13 @@ class _EventListScreenState extends State<EventListScreen> {
   static const _tabs = ['Récents', 'Partagés', 'Favoris'];
   static const _filters = ["Aujourd'hui", 'Cette semaine', 'Ce mois'];
   int _activeFilter = 0;
+
   final TextEditingController _searchController = TextEditingController();
 
+  DateTime _currentMonth = DateTime.now();
+  final DateTime _today = DateTime.now();
+
+  bool listView=true;
   List<Event> events = [];
   bool _isEventsLoading=false;
 
@@ -35,19 +40,27 @@ class _EventListScreenState extends State<EventListScreen> {
   @override
   void initState() {
     eventsGetted();
+    listView =true;
     super.initState();
   }
 
   eventsGetted() async {
+    setState(() {
+      _isEventsLoading = true;
+    });
     await EventsApi().getListEvents( ApiUrl().getEventsUrl).then((value) {
       setState(() {
-        events = value;
+        events = value ?? [];
+       // events = value;
         _isEventsLoading=false;
+
+        debugPrint('Loaded ${events.length} events from API');
       });
     }).catchError((error) {
       setState(() {
         _isEventsLoading=false;
       });
+      debugPrint('Error loading events: $error');
     });
   }
 
@@ -59,6 +72,76 @@ class _EventListScreenState extends State<EventListScreen> {
 
       return matchesSearch ;
     }).toList();
+  }
+
+  String _formatDateKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  Map<String, List<Event>> get _eventsByDate {
+    final Map<String, List<Event>> map = {};
+    debugPrint('=== Mapping events by date ===');
+    debugPrint('Total visible events: ${_visibleEvents.length}');
+
+    for (var event in _visibleEvents) {
+      try {
+        // Parse the date string - API returns ISO 8601 format: "2025-11-24T08:00:00"
+        DateTime eventDate;
+        String dateStr = event.eventDate.trim();
+
+        // Remove timezone info if present (Z, +HH:MM, etc.)
+        if (dateStr.contains('Z')) {
+          dateStr = dateStr.replaceAll('Z', '');
+        }
+        if (dateStr.contains('+')) {
+          dateStr = dateStr.split('+')[0].trim();
+        }
+        if (dateStr.contains('-') && dateStr.split('-').length > 4) {
+          // Remove timezone offset like "-05:00"
+          final parts = dateStr.split('-');
+          if (parts.length > 4) {
+            dateStr = '${parts[0]}-${parts[1]}-${parts[2]}T${parts[3]}';
+            if (parts[3].contains(':')) {
+              final timeParts = parts[3].split(':');
+              if (timeParts.length >= 3) {
+                dateStr = '${parts[0]}-${parts[1]}-${parts[2]}T${timeParts[0]}:${timeParts[1]}:${timeParts[2].split('+')[0].split('-')[0]}';
+              }
+            }
+          }
+        }
+
+        // Remove milliseconds if present
+        if (dateStr.contains('.')) {
+          final parts = dateStr.split('.');
+          dateStr = parts[0];
+        }
+
+        // Parse the date - should work for "2025-11-24T08:00:00"
+        eventDate = DateTime.parse(dateStr);
+
+        final key = _formatDateKey(eventDate);
+      //  debugPrint('✓ Event: "${event.title}" | Date: "${event.eventDate}" → Parsed: $eventDate → Key: $key');
+
+        if (map[key] == null) {
+          map[key] = [];
+        }
+        map[key]!.add(event);
+      } catch (e) {
+        debugPrint('Erreur de transformation de date events de "${event.title}": "${event.eventDate}" - Erreur: $e');
+        // Skip invalid dates
+      }
+    }
+
+   /* debugPrint('Events mapped to ${map.keys.length} unique dates');
+    debugPrint('All date keys: ${map.keys.toList()}');
+    debugPrint('Looking for November 24: ${map.keys.where((k) => k.contains('11-24')).toList()}');
+    debugPrint('==============================');*/
+    return map;
+  }
+
+  List<Event> _getEventsForDate(DateTime date) {
+    final key = _formatDateKey(date);
+    return _eventsByDate[key] ?? [];
   }
 
   List<Event> get _paginatedEvents {
@@ -83,7 +166,7 @@ class _EventListScreenState extends State<EventListScreen> {
       isForHomePage: false,
         title: "Gestion des événements",
       whiteColorForMainCardIsHere:true,
-      actions: [
+      /*actions: [
         GestureDetector(
           onTap: () {Navigator.of(context).pushNamed(AppRoutesName.eventCalendarPage);},
          // onTap: () {Navigator.of(context).pushNamed(AppRoutesName.addEventPage);},
@@ -111,13 +194,11 @@ class _EventListScreenState extends State<EventListScreen> {
             ),
           ),
         ),
-      ],
+      ],*/
       child: Column(
-       mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min,
         children: [
-           Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+
               /*  _buildTopBar(context),
                 const SizedBox(height: AppDimensions.paddingMedium),
                 //_buildSearchField(),*/
@@ -169,7 +250,9 @@ class _EventListScreenState extends State<EventListScreen> {
                     ),
                 const SizedBox(height: AppDimensions.paddingMedium),
                */// _buildFilterChips(),
+
                 _buildSearchAndFilter(),
+
                 const SizedBox(height: AppDimensions.paddingMedium),
 
                 _isEventsLoading
@@ -181,12 +264,28 @@ class _EventListScreenState extends State<EventListScreen> {
                     child: Text('La liste est vide !')
                 )
                     :
-                UtilsWidget().evenementGrid(context,_visibleEvents,false),
+                listView?
+                Container(
+                  child: Column(
+                    children: [
+                      UtilsWidget().evenementGridForViewList(context,_visibleEvents.reversed,false),
+                      _buildPaginationControls()
+                    ],
+                  ),
+                )
+                :
+                SizedBox(
+                    height: MediaQuery.of(context).size.height/1.7,
+                    child: _buildCalendarView()
+                ),
+             /* TextButton(
+                  onPressed: (){Navigator.of(context).pushNamed(AppRoutesName.eventCalendarPage);},
+                  child: Text('vu calendar')
+              )*/
                 // UtilsWidget().evenementGrid(context,_visibleEvents),
-                // UtilsWidget().evenementGrid(context,_visibleEvents),
-              ],
-           ),
-          _buildPaginationControls()
+
+
+
              // _buildTabBar(),
 
             ],
@@ -226,11 +325,12 @@ class _EventListScreenState extends State<EventListScreen> {
 
   Widget _buildSearchAndFilter() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Container(
+        Container(
+          width: 300,
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: Color(0xffF9F9F9),
               //color: AppColors.cardSurface,
               borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
 
@@ -251,45 +351,94 @@ class _EventListScreenState extends State<EventListScreen> {
               ),
             ),
           ),
-        ),
         const SizedBox(width: AppDimensions.paddingMedium),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.cardSurface,
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                // TODO: Show filter dialog
-              },
+        InkWell(
+          onTap: () {
+            // TODO: Show filter dialog
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimensions.paddingMedium,
+              vertical: AppDimensions.paddingMedium,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.cardSurface,
+              border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingMedium,
-                  vertical: AppDimensions.paddingMedium,
+            ),
+            child:  const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.filter_list, color: Colors.black54, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  'Filtrer',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.filter_list, color: Colors.black54, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Filtrer',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
           ),
         ),
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingMedium,
+            vertical: AppDimensions.paddingSmall,
+          ),
+          decoration: BoxDecoration(
+            color: Color(0xffF2F5F9),
+            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
+          ),
+          child: Row(
+            spacing: 8,
+            children: [
+              InkWell(
+                onTap: (){
+                  setState(() {
+                    listView=true;
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: listView?Color(0xffE4ECF5):Colors.transparent,
+                      borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
+                    ),
+                    child: Text("Vu liste",
+                    style: TextStyle(
+                      color: listView? Color(0xff205DA9):Color(0xff2D3748),
+                      fontFamily: "Chivo",
+                      fontSize: 14
+                    ),)),
+              ),
+
+              InkWell(
+                onTap: (){
+                  setState(() {
+                    listView=false;
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: listView?Colors.transparent:Color(0xffE4ECF5),
+                    borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                  ),
+                  child: Text("Vu calendrier",
+                    style: TextStyle(
+                      color: listView? Color(0xff2D3748):Color(0xff205DA9),
+                      fontFamily: "Chivo",
+                      fontSize: 14
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
@@ -581,6 +730,190 @@ class _EventListScreenState extends State<EventListScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+
+  Widget _buildCalendarView() {
+    final DateTime firstDayOfMonth = DateTime(_currentMonth.year, _currentMonth.month, 1);
+    final int firstWeekday = (firstDayOfMonth.weekday + 6) % 7; // 0 = Monday
+    final DateTime gridStart = firstDayOfMonth.subtract(Duration(days: firstWeekday));
+    final DateTime nextMonth = DateTime(_currentMonth.year, _currentMonth.month + 1, 1);
+    final DateTime lastDayOfMonth = nextMonth.subtract(const Duration(days: 1));
+    final int daysInMonth = lastDayOfMonth.day;
+    final int totalCells = ((firstWeekday + daysInMonth) / 7).ceil() * 7;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingSmall),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Month navigation
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _currentMonth = DateTime(_currentMonth.year, _currentMonth.month - 1, 1);
+                  });
+                },
+                icon: const Icon(Icons.chevron_left),
+              ),
+              Text(
+                DateFormat('MMMM yyyy', 'fr_FR').format(_currentMonth),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.loginTitleColor,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1, 1);
+                  });
+                },
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppDimensions.paddingMedium),
+          // Days of week header
+          Row(
+            children: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+                .map((day) => Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Center(
+                  child: Text(
+                    day,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+            ))
+                .toList(),
+          ),
+          const Divider(height: 1),
+          // Calendar grid
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final double itemHeight = (constraints.maxHeight - (4 * 5)) / 6; // 6 rows max
+                final double itemWidth = (constraints.maxWidth - (4 * 6)) / 7;
+                final double aspectRatio = itemWidth / itemHeight ;
+
+                return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 7,
+                    crossAxisSpacing: 4,
+                    mainAxisSpacing: 4,
+                    childAspectRatio: 0.9,
+                   // childAspectRatio: aspectRatio,
+                  ),
+                  itemCount: totalCells,
+                  itemBuilder: (context, index) {
+                    final DateTime day = gridStart.add(Duration(days: index));
+                    final bool isCurrentMonth = day.month == _currentMonth.month;
+                    final bool isToday = _formatDateKey(day) == _formatDateKey(_today);
+                    final List<Event> dayEvents = _getEventsForDate(day);
+
+                    // Debug for November 24 (any year)
+                    if (day.month == 11 && day.day == 24) {
+                      debugPrint('Date key: ${_formatDateKey(day)}');
+                      debugPrint('Looking for events in: ${_eventsByDate.keys.where((key) => key.contains('11-24')).toList()}');
+                      if (dayEvents.isNotEmpty) {
+                        debugPrint('Events found: ${dayEvents.map((e) => e.title).toList()}');
+                      }
+                    }
+
+                    return _buildCalendarDay(context,day, isCurrentMonth, isToday, dayEvents);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildCalendarDay(BuildContext context,DateTime day, bool isCurrentMonth, bool isToday, List<Event> dayEvents) {
+    Color? backgroundColor;
+    String? labelText;
+    Color? labelColor;
+
+    if (isToday) {
+      backgroundColor = Colors.green[50];
+      labelText = 'Aujourd\'hui';
+      labelColor = Colors.green;
+    } else if (dayEvents.isNotEmpty) {
+      // Use different colors for different events
+      final event = dayEvents.first;
+      if (event.title.toLowerCase().contains('numerique') || event.title.toLowerCase().contains('numérique')) {
+        backgroundColor = Colors.blue[50];
+        labelText = event.title;
+        labelColor = Colors.blue;
+      } else if (event.title.toLowerCase().contains('e-commerce') || event.title.toLowerCase().contains('forum')) {
+        backgroundColor = Colors.orange[50];
+        labelText = event.title;
+        labelColor = Colors.orange;
+      } else {
+        backgroundColor = Colors.blue[50];
+        labelText = event.title;
+        labelColor = Colors.blue;
+      }
+    }
+
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": dayEvents.first.id,"subtitle":dayEvents.first.title});
+      },
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: backgroundColor ?? Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Text(
+              day.day.toString(),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isCurrentMonth ? Colors.black87 : Colors.grey[400],
+              ),
+            ),
+            if (labelText != null && dayEvents.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                decoration: BoxDecoration(
+                  color: labelColor,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  labelText.length > 15 ? '${labelText.substring(0, 15)}...' : labelText,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+
+          ],
+        ),
       ),
     );
   }
