@@ -1,8 +1,10 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
+
+import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/data/remote/category_api.dart';
 import '/src/data/remote/events_api.dart';
 import '/src/domain/remote/Categorie.dart';

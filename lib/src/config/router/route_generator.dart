@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/screens/categories/category_list_screen.dart';
-import 'package:gestion_documentaire/src/presentation/screens/categories/categorie_page.dart';
-import 'package:gestion_documentaire/src/presentation/screens/categories/add_category_screen.dart';
-import 'package:gestion_documentaire/src/presentation/screens/documents/recents_document_list_screen.dart';
-import 'package:gestion_documentaire/src/presentation/screens/documents/add_document_screen.dart';
-import 'package:gestion_documentaire/src/presentation/screens/events/details_evenement_screen.dart';
-import 'package:gestion_documentaire/src/presentation/screens/events/evenement_list_screen.dart';
-import 'package:gestion_documentaire/src/presentation/screens/events/event_calendar_screen.dart';
-import 'package:gestion_documentaire/src/presentation/screens/events/add_event_screen.dart';
-import '../../presentation/screens/documents/document_list_screen.dart';
-import '../../presentation/screens/documents/document_view_screen.dart';
+import '/src/presentation/screens/categories/categorie_page.dart';
+import '/src/presentation/screens/categories/add_category_screen.dart';
+import '/src/presentation/screens/documents/recents_document_list_screen.dart';
+import '/src/presentation/screens/documents/add_document_screen.dart';
+import '/src/presentation/screens/events/details_evenement_screen.dart';
+
+import '/src/presentation/screens/events/evenement_list_screen.dart';
+import '/src/presentation/screens/events/event_calendar_screen.dart';
+import '/src/presentation/screens/events/add_event_screen.dart';
+import '/src/presentation/screens/documents/document_list_screen.dart';
+import '/src/presentation/screens/documents/document_view_screen.dart';
+
 import '/src/presentation/screens/home_pages/home_screen.dart';
-import '../../presentation/screens/auth/profile_screen.dart';
+import '/src/presentation/screens/auth/profile_screen.dart';
 import '/src/presentation/screens/login_screen.dart';
 import '/src/presentation/screens/home_pages/splash_first_page.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
@@ -59,11 +60,9 @@ class RouteGenerator {
 
         // ----------------------- Category Pages ------------------------
 
-        case AppRoutesName.categoryListPage:
-          return MaterialPageRoute(builder: (context) => const CategoryListScreen());
 
         case AppRoutesName.categoriePage:
-          return MaterialPageRoute(builder: (context) => const CategoriePage());
+          return MaterialPageRoute(builder: (context) => const CategorieListScreen());
 
         case AppRoutesName.addCategoryPage:
           return MaterialPageRoute(builder: (context) => const AddCategoryScreen());

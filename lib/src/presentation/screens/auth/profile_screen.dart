@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/data/remote/auth_api.dart';
-import 'package:gestion_documentaire/src/domain/remote/UserInfo.dart';
-import 'package:gestion_documentaire/src/methods/signout.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
-import 'package:gestion_documentaire/src/utils/api/api_url.dart';
+
+import '/src/data/remote/auth_api.dart';
+import '/src/domain/remote/UserInfo.dart';
+import '/src/methods/signout.dart';
+
+import '/src/presentation/widgets/app_page_shell.dart';
+import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
-import '/src/utils/consts/routes/app_routes_name.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

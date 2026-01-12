@@ -163,7 +163,7 @@ class UtilsWidget{
       itemBuilder: (context, index) {
 
         final event = events.elementAt(index);
-        final DateTime eventDate = Helper().parseEventDate(event.eventDate);
+        final DateTime eventDate = Helper().parseEventDate(event.startDate);
 
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
@@ -284,6 +284,81 @@ class UtilsWidget{
           ),
         );
       },
+    );
+  }
+
+  Widget evenementGridForCalendarDay(BuildContext context,DateTime day, bool isCurrentMonth, bool isToday, List<Event> dayEvents) {
+    Color? backgroundColor;
+    String? labelText;
+    Color? labelColor;
+
+    if (isToday) {
+      backgroundColor = Colors.green[50];
+      labelText = 'Aujourd\'hui';
+      labelColor = Colors.green;
+    } else if (dayEvents.isNotEmpty) {
+      // Use different colors for different events
+      final event = dayEvents.first;
+      if (event.title.toLowerCase().contains('numerique') || event.title.toLowerCase().contains('numérique')) {
+        backgroundColor = Colors.blue[50];
+        labelText = event.title;
+        labelColor = Colors.blue;
+      } else if (event.title.toLowerCase().contains('e-commerce') || event.title.toLowerCase().contains('forum')) {
+        backgroundColor = Colors.orange[50];
+        labelText = event.title;
+        labelColor = Colors.orange;
+      } else {
+        backgroundColor = Colors.blue[50];
+        labelText = event.title;
+        labelColor = Colors.blue;
+      }
+    }
+
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": dayEvents.first.id,"subtitle":dayEvents.first.title});
+      },
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: backgroundColor ?? Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Text(
+              day.day.toString(),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isCurrentMonth ? Colors.black87 : Colors.grey[400],
+              ),
+            ),
+            if (labelText != null && dayEvents.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                decoration: BoxDecoration(
+                  color: labelColor,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  labelText.length > 15 ? '${labelText.substring(0, 15)}...' : labelText,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+
+          ],
+        ),
+      ),
     );
   }
 

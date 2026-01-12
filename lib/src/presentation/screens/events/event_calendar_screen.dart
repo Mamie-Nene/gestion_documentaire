@@ -40,7 +40,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
         // Debug: Print events to verify they're loaded
         debugPrint('Loaded ${events.length} events from API');
         for (var event in events) {
-          debugPrint('Event: ${event.title} on ${event.eventDate}');
+          debugPrint('Event: ${event.title} on ${event.startDate}');
         }
       });
     }).catchError((error) {
@@ -73,7 +73,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
       try {
         // Parse the date string - API returns ISO 8601 format: "2025-11-24T08:00:00"
         DateTime eventDate;
-        String dateStr = event.eventDate.trim();
+        String dateStr = event.startDate.trim();
         
         // Remove timezone info if present (Z, +HH:MM, etc.)
         if (dateStr.contains('Z')) {
@@ -106,14 +106,14 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
         eventDate = DateTime.parse(dateStr);
         
         final key = _formatDateKey(eventDate);
-        debugPrint('✓ Event: "${event.title}" | Date: "${event.eventDate}" → Parsed: $eventDate → Key: $key');
+        debugPrint('✓ Event: "${event.title}" | Date: "${event.startDate}" → Parsed: $eventDate → Key: $key');
         
         if (map[key] == null) {
           map[key] = [];
         }
         map[key]!.add(event);
       } catch (e) {
-        debugPrint('✗ ERROR parsing event date for "${event.title}": "${event.eventDate}" - Error: $e');
+        debugPrint('✗ ERROR parsing event date for "${event.title}": "${event.startDate}" - Error: $e');
         // Skip invalid dates
       }
     }

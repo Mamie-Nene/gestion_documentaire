@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
 import 'package:intl/intl.dart';
+
+import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class AddEventScreen extends StatefulWidget {

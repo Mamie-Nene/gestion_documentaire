@@ -1,7 +1,9 @@
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
+
+import '/src/presentation/widgets/search_and_filter.dart';
+import '/src/presentation/widgets/utils_widget.dart';
 
 import '/src/data/remote/document_api.dart';
 import '/src/domain/remote/Document.dart';
@@ -117,73 +119,17 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
 
-              _buildSearchAndFilter(),
+             // _buildSearchAndFilter(),
+              SearchAndFilter(
+                  searchController: _searchController,
+                  onChangeFunction: (_)=> setState(() {_currentPage = 1;}),
+                  text: 'Rechercher un fichier....',
+                  isExpanded: true
+              ),
+
               const SizedBox(height: AppDimensions.paddingLarge),
 
-              /*Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingLarge,
-                  vertical: AppDimensions.paddingMedium,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTopBar(context),
-                    const SizedBox(height: AppDimensions.paddingMedium),
-                   // _buildSearchField(),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.cardSurface,
-                        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
-                            blurRadius: 12,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: (_) => setState(() {}),
-                              decoration: const InputDecoration(
-                                hintText: 'Rechercher ou filtrer par tags',
-                                prefixIcon: Icon(Icons.search_rounded, color: Colors.black54),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: AppDimensions.paddingMedium,
-                                  horizontal: AppDimensions.paddingMedium,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: AppDimensions.paddingSmall),
-                            decoration: BoxDecoration(
-                              color: AppColors.mainAppColor.withOpacity(0.12),
-                              borderRadius:
-                              BorderRadius.circular(AppDimensions.borderRadiusLarge),
-                            ),
-                            child: IconButton(
-                              onPressed: () {},
-                              icon:
-                              const Icon(Icons.sort_rounded, color: AppColors.mainAppColor),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: AppDimensions.paddingMedium),
-                   // _buildFilterChips(),
-                  ],
-                ),
-              ),
-              _buildTabBar(),
-              const Divider(height: 1, color: AppColors.dividerLight),
-              */_isDocumentsLoading?
+              _isDocumentsLoading?
                   CircularProgressIndicator()
               :
               _visibleDocs.isEmpty?
@@ -364,13 +310,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
             decoration: BoxDecoration(
               color: Color(0xffF9F9F9),
               borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              /* boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 12,
-                  offset: const Offset(0, 8),
-                ),
-              ],*/
+
             ),
             child: TextField(
               controller: _searchController,

@@ -24,7 +24,6 @@ class AppRoutesName {
 
      // ----------------------- Category Pages ------------------------
 
-     static const String categoryListPage = '/categoryListPage';
      static const String categoriePage = '/categoriePage';
      static const String addCategoryPage = '/addCategoryPage';
 

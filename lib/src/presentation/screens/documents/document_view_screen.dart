@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gestion_documentaire/src/data/local/DocumentLocalData.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/helper.dart';
+import 'package:intl/intl.dart';
+
+import '/src/presentation/widgets/app_page_shell.dart';
+import '/src/presentation/widgets/helper.dart';
 import '/src/data/remote/document_api.dart';
 import '/src/domain/remote/Document.dart';
 import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
-import 'package:intl/intl.dart';
+
 
 class DocumentViewScreen extends StatelessWidget {
   final Document document;

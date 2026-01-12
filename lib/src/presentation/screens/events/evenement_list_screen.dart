@@ -1,14 +1,17 @@
-import 'dart:math';
 
+import 'package:gestion_documentaire/src/presentation/widgets/search_and_filter.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
+
+import '/src/presentation/widgets/app_page_shell.dart';
+import '/src/presentation/widgets/utils_widget.dart';
+
 import '/src/data/remote/events_api.dart';
 import '/src/domain/remote/Event.dart';
+
 import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
-import '/src/utils/consts/routes/app_routes_name.dart';
-import 'package:intl/intl.dart';
+
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({super.key});
@@ -18,10 +21,6 @@ class EventListScreen extends StatefulWidget {
 }
 
 class _EventListScreenState extends State<EventListScreen> {
-  static const _tabs = ['Récents', 'Partagés', 'Favoris'];
-  static const _filters = ["Aujourd'hui", 'Cette semaine', 'Ce mois'];
-  int _activeFilter = 0;
-
   final TextEditingController _searchController = TextEditingController();
 
   DateTime _currentMonth = DateTime.now();
@@ -87,7 +86,7 @@ class _EventListScreenState extends State<EventListScreen> {
       try {
         // Parse the date string - API returns ISO 8601 format: "2025-11-24T08:00:00"
         DateTime eventDate;
-        String dateStr = event.eventDate.trim();
+        String dateStr = event.startDate.trim();
 
         // Remove timezone info if present (Z, +HH:MM, etc.)
         if (dateStr.contains('Z')) {
@@ -127,7 +126,7 @@ class _EventListScreenState extends State<EventListScreen> {
         }
         map[key]!.add(event);
       } catch (e) {
-        debugPrint('Erreur de transformation de date events de "${event.title}": "${event.eventDate}" - Erreur: $e');
+        debugPrint('Erreur de transformation de date events de "${event.title}": "${event.startDate}" - Erreur: $e');
         // Skip invalid dates
       }
     }
@@ -144,18 +143,6 @@ class _EventListScreenState extends State<EventListScreen> {
     return _eventsByDate[key] ?? [];
   }
 
-  List<Event> get _paginatedEvents {
-    final filtered = _visibleEvents;
-    final startIndex = (_currentPage - 1) * _itemsPerPage;
-    final endIndex = startIndex + _itemsPerPage;
-    return filtered.length > startIndex
-        ? filtered.sublist(
-      startIndex,
-      endIndex > filtered.length ? filtered.length : endIndex,
-    )
-        : [];
-  }
-
   int get _totalPages {
     return (_visibleEvents.length / _itemsPerPage).ceil();
   }
@@ -164,7 +151,7 @@ class _EventListScreenState extends State<EventListScreen> {
   Widget build(BuildContext context) {
     return  AppPageShell(
       isForHomePage: false,
-        title: "Gestion des événements",
+      title: "Gestion des événements",
       whiteColorForMainCardIsHere:true,
       /*actions: [
         GestureDetector(
@@ -198,136 +185,51 @@ class _EventListScreenState extends State<EventListScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          _buildSearchAndFilter(),
 
-              /*  _buildTopBar(context),
-                const SizedBox(height: AppDimensions.paddingMedium),
-                //_buildSearchField(),*/
-               /* Container(
-                  decoration: BoxDecoration(
-                   // color: AppColors.cardSurface,
-                    color: Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-                       /* boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
-                            blurRadius: 12,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],*/
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: (_) => setState(() {}),
-                              decoration: const InputDecoration(
-                                hintText: 'Rechercher ou filtrer par tags',
-                                prefixIcon: Icon(Icons.search_rounded, color: Colors.black54),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: AppDimensions.paddingMedium,
-                                  horizontal: AppDimensions.paddingMedium,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: AppDimensions.paddingSmall),
-                            decoration: BoxDecoration(
-                              color: AppColors.mainAppColor.withOpacity(0.12),
-                              borderRadius:
-                              BorderRadius.circular(AppDimensions.borderRadiusLarge),
-                            ),
-                            child: IconButton(
-                              onPressed: () {},
-                              icon:
-                              const Icon(Icons.sort_rounded, color: AppColors.mainAppColor),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                const SizedBox(height: AppDimensions.paddingMedium),
-               */// _buildFilterChips(),
+          const SizedBox(height: AppDimensions.paddingMedium),
 
-                _buildSearchAndFilter(),
-
-                const SizedBox(height: AppDimensions.paddingMedium),
-
-                _isEventsLoading
-                    ? Center(
-                    child: CircularProgressIndicator()
-                )
-                    : _visibleEvents.isEmpty
-                    ? Center(
-                    child: Text('La liste est vide !')
-                )
-                    :
-                listView?
-                Container(
-                  child: Column(
-                    children: [
-                      UtilsWidget().evenementGridForViewList(context,_visibleEvents.reversed,false),
-                      _buildPaginationControls()
-                    ],
-                  ),
-                )
-                :
-                SizedBox(
-                    height: MediaQuery.of(context).size.height/1.7,
-                    child: _buildCalendarView()
-                ),
-             /* TextButton(
-                  onPressed: (){Navigator.of(context).pushNamed(AppRoutesName.eventCalendarPage);},
-                  child: Text('vu calendar')
-              )*/
-                // UtilsWidget().evenementGrid(context,_visibleEvents),
-
-
-
-             // _buildTabBar(),
-
-            ],
-          ),
-
-      );
-  }
-//floatingActionButton: _buildFloatingActionButton(),
-//
-  Widget _buildTopBar(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.mainAppColor),
-        ),
-
-            Text(
-              'Evénements',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: AppColors.loginTitleColor,
-              ),
+          _isEventsLoading
+              ? Center(
+              child: CircularProgressIndicator()
+          )
+              : _visibleEvents.isEmpty
+              ? Center(
+              child: Text('La liste est vide !')
+          )
+              :
+          listView?
+          Container(
+            child: Column(
+              children: [
+                UtilsWidget().evenementGridForViewList(context,_visibleEvents.reversed,false),
+                _buildPaginationControls()
+              ],
             ),
+          )
+              :
+          SizedBox(
+              height: MediaQuery.of(context).size.height/1.7,
+              child: _buildCalendarView()
+          ),
+        ],
+      ),
 
-        IconButton(
-          onPressed: () {},
-          icon:
-              Icon(Icons.more_horiz_rounded, color: AppColors.loginTitleColor),
-        ),
-      ],
     );
   }
+//floatingActionButton: _buildFloatingActionButton(),
 
   Widget _buildSearchAndFilter() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
+        SearchAndFilter(
+            searchController: _searchController,
+            onChangeFunction: (_)=> setState(() {_currentPage = 1;}),
+            text: 'Rechercher un événement....',
+            isExpanded: false
+        ),
+        /*Container(
           width: 300,
             decoration: BoxDecoration(
               color: Color(0xffF9F9F9),
@@ -350,8 +252,8 @@ class _EventListScreenState extends State<EventListScreen> {
                 ),
               ),
             ),
-          ),
-        const SizedBox(width: AppDimensions.paddingMedium),
+          ),*/
+       /* const SizedBox(width: AppDimensions.paddingMedium),
         InkWell(
           onTap: () {
             // TODO: Show filter dialog
@@ -382,7 +284,7 @@ class _EventListScreenState extends State<EventListScreen> {
               ],
             ),
           ),
-        ),
+        ),*/
         Container(
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.paddingMedium,
@@ -440,184 +342,6 @@ class _EventListScreenState extends State<EventListScreen> {
           ),
         )
       ],
-    );
-  }
-  Widget _buildSearchField() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Rechercher ou filtrer par tags',
-                prefixIcon: Icon(Icons.search_rounded, color: Colors.black54),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: AppDimensions.paddingMedium,
-                  horizontal: AppDimensions.paddingMedium,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(right: AppDimensions.paddingSmall),
-            decoration: BoxDecoration(
-              color: AppColors.mainAppColor.withOpacity(0.12),
-              borderRadius:
-                  BorderRadius.circular(AppDimensions.borderRadiusLarge),
-            ),
-            child: IconButton(
-              onPressed: () {},
-              icon:
-                  const Icon(Icons.sort_rounded, color: AppColors.mainAppColor),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFilterChips() {
-    return SizedBox(
-      height: 36,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _filters.length,
-        separatorBuilder: (_, __) =>
-            const SizedBox(width: AppDimensions.paddingSmall),
-        itemBuilder: (context, index) {
-          final selected = _activeFilter == index;
-          return ChoiceChip(
-            label: Text(_filters[index]),
-            selected: selected,
-            onSelected: (_) => setState(() => _activeFilter = index),
-            backgroundColor: AppColors.cardSurfaceMuted,
-            selectedColor: AppColors.mainAppColor.withOpacity(0.15),
-            labelStyle: TextStyle(
-              color: selected
-                  ? AppColors.mainAppColor
-                  : AppColors.textMainPageColor,
-              fontWeight: FontWeight.w600,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(999),
-              side: BorderSide(
-                color: selected ? AppColors.mainAppColor : Colors.transparent,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return TabBar(
-      labelColor: AppColors.mainAppColor,
-      unselectedLabelColor: AppColors.textMainPageColor.withOpacity(0.6),
-      indicator: UnderlineTabIndicator(
-        borderSide: const BorderSide(color: AppColors.mainAppColor, width: 3),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      labelStyle: const TextStyle(fontWeight: FontWeight.w700),
-      tabs: _tabs.map((text) => Tab(text: text)).toList(),
-    );
-  }
-
-
-  Widget _buildEventList(List<Event> events) {
-    final evenements = events;
-    //final evenement = _generateDocuments(tabIndex);
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppDimensions.paddingLarge,
-        mainAxisSpacing: AppDimensions.paddingLarge,
-        childAspectRatio: 2.3,
-        // childAspectRatio: 1.2,
-      ),
-      itemCount: evenements.length,//
-      itemBuilder: (context, index) {
-        final event = evenements[index]; //categories[index];
-       final Random random = Random();
-        Color accentPalette=Color.fromARGB(
-          255, // Alpha (opacity)
-          random.nextInt(256), // Red
-          random.nextInt(256), // Green
-          random.nextInt(256), // Blue
-        );
-        DateTime dateCreation = DateTime.parse(event.eventDate);
-        String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
-
-        IconData iconGetted= Icons.article_outlined;
-        return InkWell(
-          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"event":event.id,"subtitle":event.title}),
-          child: Container(
-            padding: const EdgeInsets.all(AppDimensions.paddingLarge),//large
-            decoration: BoxDecoration(
-              color: AppColors.cardSurface,
-              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, 12),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-
-                Text(
-                  event.title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.loginTitleColor,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.location_on_outlined,color: AppColors.textMainPageColor,size: 18,),
-                    RichText(
-                        text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "Lieu : ",
-                          style: TextStyle(color: AppColors.textMainPageColor,fontSize: 18),
-                        ),
-                        TextSpan(
-                          text: "CICAD",
-                          style: TextStyle(color: AppColors.mainblueColor,fontSize: 19),
-                        )]
-                    )),
-                  ],
-                ),
-
-
-                Icon(Icons.arrow_outward_rounded, color: AppColors.mainblueColor, size: 20),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -749,7 +473,7 @@ class _EventListScreenState extends State<EventListScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Month navigation
+          // ----------- Month navigation --------------
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -780,7 +504,7 @@ class _EventListScreenState extends State<EventListScreen> {
             ],
           ),
           const SizedBox(height: AppDimensions.paddingMedium),
-          // Days of week header
+          // // ----------- Days of week header -----------
           Row(
             children: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
                 .map((day) => Expanded(
@@ -801,7 +525,8 @@ class _EventListScreenState extends State<EventListScreen> {
                 .toList(),
           ),
           const Divider(height: 1),
-          // Calendar grid
+
+          // -----------  Calendar grid -----------
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -833,87 +558,13 @@ class _EventListScreenState extends State<EventListScreen> {
                       }
                     }
 
-                    return _buildCalendarDay(context,day, isCurrentMonth, isToday, dayEvents);
+                    return UtilsWidget().evenementGridForCalendarDay(context,day, isCurrentMonth, isToday, dayEvents);
                   },
                 );
               },
             ),
           ),
         ],
-      ),
-    );
-  }
-  Widget _buildCalendarDay(BuildContext context,DateTime day, bool isCurrentMonth, bool isToday, List<Event> dayEvents) {
-    Color? backgroundColor;
-    String? labelText;
-    Color? labelColor;
-
-    if (isToday) {
-      backgroundColor = Colors.green[50];
-      labelText = 'Aujourd\'hui';
-      labelColor = Colors.green;
-    } else if (dayEvents.isNotEmpty) {
-      // Use different colors for different events
-      final event = dayEvents.first;
-      if (event.title.toLowerCase().contains('numerique') || event.title.toLowerCase().contains('numérique')) {
-        backgroundColor = Colors.blue[50];
-        labelText = event.title;
-        labelColor = Colors.blue;
-      } else if (event.title.toLowerCase().contains('e-commerce') || event.title.toLowerCase().contains('forum')) {
-        backgroundColor = Colors.orange[50];
-        labelText = event.title;
-        labelColor = Colors.orange;
-      } else {
-        backgroundColor = Colors.blue[50];
-        labelText = event.title;
-        labelColor = Colors.blue;
-      }
-    }
-
-    return InkWell(
-      onTap: () {
-        Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": dayEvents.first.id,"subtitle":dayEvents.first.title});
-      },
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: backgroundColor ?? Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Text(
-              day.day.toString(),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: isCurrentMonth ? Colors.black87 : Colors.grey[400],
-              ),
-            ),
-            if (labelText != null && dayEvents.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                decoration: BoxDecoration(
-                  color: labelColor,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  labelText.length > 15 ? '${labelText.substring(0, 15)}...' : labelText,
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-
-          ],
-        ),
       ),
     );
   }

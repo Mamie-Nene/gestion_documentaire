@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/helper.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
 import 'package:intl/intl.dart';
+
+import '/src/presentation/widgets/app_page_shell.dart';
+import '/src/presentation/widgets/helper.dart';
+import '/src/presentation/widgets/utils_widget.dart';
+
 import '/src/data/remote/document_api.dart';
 import '/src/data/remote/events_api.dart';
 import '/src/domain/remote/Document.dart';
@@ -215,7 +217,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
                             Expanded(
                               child: _buildInfoItem(
                                 label: 'Date',
-                                value: _formatDate(event!.eventDate),
+                                value: _formatDate(event!.startDate),
                               ),
                             ),
                           ],

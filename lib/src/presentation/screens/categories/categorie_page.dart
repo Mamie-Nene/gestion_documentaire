@@ -1,21 +1,22 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/search_and_filter.dart';
+
+import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/data/remote/category_api.dart';
 import '/src/domain/remote/Categorie.dart';
+
 import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
-class CategoriePage extends StatefulWidget {
-  const CategoriePage({super.key});
+class CategorieListScreen extends StatefulWidget {
+  const CategorieListScreen({super.key});
 
   @override
-  State<CategoriePage> createState() => _CategoriePageState();
+  State<CategorieListScreen> createState() => _CategorieListScreenState();
 }
 
-class _CategoriePageState extends State<CategoriePage> {
+class _CategorieListScreenState extends State<CategorieListScreen> {
   final TextEditingController _searchController = TextEditingController();
   bool _isCategoriesLoading = false;
   List<Categorie> categoriesGetted = [];
@@ -110,10 +111,16 @@ class _CategoriePageState extends State<CategoriePage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
+           /* Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingSmall, vertical: AppDimensions.paddingSmall,
               ),
               child: _buildSearchAndFilter(),
+            ),*/
+            SearchAndFilter(
+                searchController: _searchController,
+                onChangeFunction: (_)=> setState(() {_currentPage = 1;}),
+                text: 'Rechercher une catégorie....',
+              isExpanded: true,
             ),
             const SizedBox(height: AppDimensions.paddingLarge),
             _isCategoriesLoading
@@ -397,5 +404,6 @@ class _CategoriePageState extends State<CategoriePage> {
       ),
     );
   }
+
 }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/data/remote/auth_api.dart';
-import 'package:gestion_documentaire/src/utils/api/api_url.dart';
+
+import '/src/data/remote/auth_api.dart';
+import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
-import '/src/utils/consts/routes/app_routes_name.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

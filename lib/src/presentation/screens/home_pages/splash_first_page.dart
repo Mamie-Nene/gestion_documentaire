@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/screens/login_screen.dart';
-import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
+
+import '/src/presentation/screens/login_screen.dart';
+import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
-import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
+
+import '/src/utils/consts/app_specifications/all_directories.dart';
+import '/src/utils/consts/routes/app_routes_name.dart';
 
 class RecentDocumentListScreen extends StatefulWidget {
   const RecentDocumentListScreen({super.key});

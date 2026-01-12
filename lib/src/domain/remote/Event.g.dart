@@ -11,11 +11,15 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event(
   json['id'] as String,
   json['title'] as String,
     json['description'] as String,
-  json['eventDate'] as String,
+  json['startDate'] as String ,
+  json['endDate']??"AUCUN" ,
   json['location'] as String,
-  json['documentCount']??0
-  //json['categoryId'] as String,
-  //(json['committeeIds'] as List).map((e) => e['committeeIds'].toString()).toList(),
+  json['code'] as String,
+  json['documentCount']??0,
+  json['status'] as String,
+ // List<String>.from(userGroups.map((item) => item as String))
+  (json['userGroups'] as List).map((e) => e.toString()).toList(),
+
 
 );
 
@@ -24,9 +28,9 @@ Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
   'id': instance.id,
   'title': instance.title,
   'description': instance.description,
-  'eventDate': instance.eventDate,
+  'eventDate': instance.startDate,
   'location': instance.location,
   'documentCount': instance.documentCount,
-  //'categoryId': instance.categoryId,
- // 'committeeIds': instance.committeeIds
+  'status': instance.status,
+  'userGroups': instance.userGroups
 };
