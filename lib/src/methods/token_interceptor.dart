@@ -1,15 +1,13 @@
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/methods/service.dart';
-import 'package:gestion_documentaire/src/presentation/screens/auth/login.dart';
-import 'package:gestion_documentaire/src/presentation/screens/login_screen.dart';
-import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '/src/methods/service.dart';
+import '/src/utils/consts/routes/app_routes_name.dart';
+import '/src/utils/variable/global_variable.dart';
 
-import '../utils/variable/global_variable.dart';
-import 'dart:convert';
 
 
 class TokenInterceptor extends InterceptorContract {

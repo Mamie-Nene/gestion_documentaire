@@ -11,14 +11,14 @@ Document _$DocumentFromJson(Map<String, dynamic> json) => Document(
     json['id'] as String,
   json['code'] as String,
   json['title'] as String,
-  json['description']??"AUCUN",
+  json['description'] as String,
   json['fileName'] as String,
     json['mimeType'] as String,
     json['createdAt'] as String,
     json['status'] as String,
-    json['uploadedBy']??"Mame Néné BA",
+    json['uploadedBy'] as String,
     json['eventId']?? "AUCUN",
-    json['categoryId'] as String,
+    json['category'] as String,
 );
 
 Map<String, dynamic> _$DocumentToJson(Document instance) => <String, dynamic>{
@@ -33,5 +33,5 @@ Map<String, dynamic> _$DocumentToJson(Document instance) => <String, dynamic>{
   'status': instance.status,
   'uploadedBy': instance.uploadedBy,
   'eventId' : instance.eventId,
-  'categoryId' : instance.categoryId,
+  'category' : instance.category,
 };

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 import '/src/presentation/widgets/app_page_shell.dart';
-import '/src/presentation/widgets/helper.dart';
 import '/src/presentation/widgets/utils_widget.dart';
 
 import '/src/data/remote/document_api.dart';
 import '/src/data/remote/events_api.dart';
 import '/src/domain/remote/Document.dart';
 import '/src/domain/remote/Event.dart';
+
 import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
-import '/src/utils/consts/routes/app_routes_name.dart';
+
 
 class DetailsEvenementScreen extends StatefulWidget {
+  final String? eventCode;
   final String? eventId;
-  const DetailsEvenementScreen({super.key, this.eventId});
+  const DetailsEvenementScreen({super.key, this.eventCode, this.eventId});
 
   @override
   State<DetailsEvenementScreen> createState() => _DetailsEvenementScreenState();
@@ -42,7 +42,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
   }
 
   getEventDetails() async {
-    if (widget.eventId == null) return;
+    if (widget.eventId== null) return;
     setState(() {
       _isEventLoading = true;
     });
@@ -62,7 +62,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     setState(() {
       _isDocumentsLoading = true;
     });
-    await DocumentApi().getDocumentsByCritera(ApiUrl().getDocumentsUrl, null, widget.eventId).then((value) {
+    await DocumentApi().getDocumentsByCritera(ApiUrl().getDocumentsUrl, null, widget.eventCode).then((value) {
       setState(() {
         documentsGetted = value ?? [];
         _isDocumentsLoading = false;
@@ -154,6 +154,9 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
               const SizedBox(height: AppDimensions.paddingLarge),
               // Liste des documents Section
               _buildDocumentsSection(),
+
+              const SizedBox(height: AppDimensions.paddingLarge),
+              _buildActivityTimeline(),
             ],
           ),
         ),
@@ -233,6 +236,42 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
                         ),
                       ],
                     ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivityTimeline() {
+    const activities = [
+      _TimelineActivity(
+          time: '08:32',
+          description: 'Document partagé avec l\'équipe Infinity'),
+      //_TimelineActivity(time: '09:12', description: 'Sano  a relu la section 4.2'),
+      _TimelineActivity(
+          time: '10:45',
+          description: 'Commentaire ajouté sur le document'),
+      _TimelineActivity(
+          time: '11:05', description: 'En attente de validation'),
+    ];
+    return Container(
+      padding: const EdgeInsets.all(AppDimensions.paddingLarge),
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Chronologie d\'activité',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.loginTitleColor,
+            ),
+          ),
+          const SizedBox(height: AppDimensions.paddingMedium),
+          ...activities.map(_TimelineTile.new),
         ],
       ),
     );
@@ -478,101 +517,6 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     );
   }
 
-  Widget _buildDocumentCard({
-        required Document document,
-    required String fileType,
-    required Color fileColor,
-    required String fileIcon,
-    required String fileSize,
-  }) {
-    final fileTypeText = Helper().getFileTypeText(fileType);
-
-    return InkWell(
-      onTap: () => Navigator.pushNamed(
-        context,
-        AppRoutesName.viewDocumentPage,
-        arguments: {"document": document},
-      ),
-     // borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-      child: Container(
-        padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-        decoration: BoxDecoration(
-          color: AppColors.cardSurface,
-          border: Border.all(color: AppColors.cardBorderColor),
-          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-
-        ),
-        child: Row(
-          children: [
-            SvgPicture.asset("asset/images/$fileIcon.svg"),
-            SizedBox(width: 10,),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                children: [
-                  Text(
-                    document.title,
-                    style:  TextStyle(
-                      fontFamily: "Roboto",
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff212529),
-                    ),
-                    //maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Row(
-                    spacing: 8,
-                    children: [
-                      Text(fileType,
-                        style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: Color(0xff979797),
-                        ),
-                      ),
-                      SvgPicture.asset("asset/images/dots.svg"),
-                      Text(fileSize,
-                        style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: Color(0xff979797),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                ],
-              ),
-            ),
-
-            Container(
-              width: 40,
-              padding: const EdgeInsets.all(4.5),
-             // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: fileColor.withOpacity(0.1),
-                border: Border.all(color: fileColor),
-                borderRadius: BorderRadius.circular(AppDimensions.borderRadiusSmall),
-              ),
-              child: Text(
-                fileTypeText,
-                textAlign: TextAlign.center,
-                style:  TextStyle(
-                  fontSize: 10,
-                  color: fileColor,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildPaginationControls() {
     final totalItems = _visibleDocs.length;
@@ -678,4 +622,70 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
       ),
     );
   }
+
 }
+
+class _TimelineTile extends StatelessWidget {
+  const _TimelineTile(this.activity);
+
+  final _TimelineActivity activity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppDimensions.paddingMedium),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: const BoxDecoration(
+                  color: AppColors.mainAppColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              Container(
+                width: 2,
+                height: 34,
+                color: AppColors.dividerLight,
+              ),
+            ],
+          ),
+          const SizedBox(width: AppDimensions.paddingMedium),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  activity.time,
+                  style: TextStyle(
+                    color: AppColors.textMainPageColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  activity.description,
+                  style: TextStyle(
+                    color: AppColors.loginTitleColor,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class _TimelineActivity {
+  const _TimelineActivity({required this.time, required this.description});
+
+  final String time;
+  final String description;
+}
+

@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 
 import '/src/presentation/widgets/search_and_filter.dart';
-import '/src/presentation/widgets/utils_widget.dart';
 
 import '/src/data/remote/document_api.dart';
 import '/src/domain/remote/Document.dart';
@@ -15,10 +14,10 @@ import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
 class DocumentListScreen extends StatefulWidget {
-  final String? categorie;
-  final String? event;
+  final String? category;
+  final String? eventCode;
   final String subtitle;
-  const DocumentListScreen({super.key, this.categorie, this.event, required this.subtitle});
+  const DocumentListScreen({super.key, this.category, this.eventCode, required this.subtitle});
 
   @override
   State<DocumentListScreen> createState() => _DocumentListScreenState();
@@ -43,7 +42,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   }
 
   getDocs() async {
-    await DocumentApi().getDocumentsByCritera( ApiUrl().getDocumentsUrl, widget.categorie,widget.event).then((value) {
+    await DocumentApi().getDocumentsByCritera( ApiUrl().getDocumentsUrl, widget.category,widget.eventCode).then((value) {
       setState(() {
         documentsGetted = value;
         documentsFiltered = documentsGetted;
@@ -147,6 +146,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
         ),
       );
   }
+
   Widget _buildDocumentsGrid() {
     final documents = _paginatedDocs.reversed;
 
@@ -175,26 +175,6 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
           fileIcon: fileIcon,
           fileSize: fileSize,
         );
-      },
-    );
-  }
-  Widget _buildDocumentsGrid2() {
-    final documents = _paginatedDocs;
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppDimensions.paddingMedium,
-        mainAxisSpacing: AppDimensions.paddingMedium,
-        childAspectRatio:4.3,
-      ),
-      itemCount: documents.length,
-      itemBuilder: (context, index) {
-        final document = documents[index];
-
-        return UtilsWidget().documentGrid(context, document,);
       },
     );
   }
@@ -299,82 +279,6 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSearchAndFilter() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color(0xffF9F9F9),
-              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-
-            ),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (_) => setState(() {
-                _currentPage = 1; // Reset to first page on search
-              }),
-              decoration: const InputDecoration(
-                hintText: 'Rechercher un fichier....',
-                prefixIcon: Icon(Icons.search_rounded, color: Colors.black54),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: AppDimensions.paddingMedium,
-                  horizontal: AppDimensions.paddingMedium,
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: AppDimensions.paddingMedium),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.cardSurface,
-            border: Border.all(color: Color(0xffD0D5DD)),
-            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-           /* boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 8),
-              ),
-            ],*/
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                // TODO: Show filter dialog
-              },
-              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingMedium,
-                  vertical: AppDimensions.paddingMedium,
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.filter_list, color: Colors.black54, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Filtrer',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 

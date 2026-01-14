@@ -14,7 +14,7 @@ UserInfo _$UserInfoFromJson(Map<String, dynamic> json) => UserInfo(
   json['email'] as String,
   json['dateCreation'] as String,
   json['role'] as String,
-    ( json['committeeIds'] as List).map((e) => e as String).toList()
+    ( json['userGroups'] as List).map((e) => e as String).toList()
 
 );
 
@@ -26,5 +26,5 @@ Map<String, dynamic> _$UserInfoToJson(UserInfo instance) => <String, dynamic>{
   'email': instance.email,
   'dateCreation': instance.dateCreation,
   'role': instance.role,
-  'committeeIds': instance.committeeIds
+  'userGroups': instance.userGroups
 };

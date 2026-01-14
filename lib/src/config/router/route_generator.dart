@@ -31,12 +31,12 @@ class RouteGenerator {
 
       case AppRoutesName.documentPage:
         final args = settings.arguments as Map<String, dynamic>? ?? {};
-        var event = args["event"];
+        var eventCode = args["eventCode"];
         var category = args["category"];
         var subtitle = args["subtitle"];
 
         return MaterialPageRoute(
-            builder: (context) => DocumentListScreen(event: event,categorie :category ,subtitle:subtitle));
+            builder: (context) => DocumentListScreen(eventCode: eventCode,category :category ,subtitle:subtitle));
 
 
         case AppRoutesName.recentDocumentPage :
@@ -49,8 +49,9 @@ class RouteGenerator {
 
           case AppRoutesName.detailsEventPage :
         final args = settings.arguments as Map<String, dynamic>? ?? {};
-        var eventId = args["event"] ?? args["eventId"];
-        return MaterialPageRoute(builder: (context) => DetailsEvenementScreen(eventId: eventId));
+        var eventCode = args["event"] ?? args["eventCode"];
+        var eventId =  args["eventId"];
+        return MaterialPageRoute(builder: (context) => DetailsEvenementScreen(eventCode: eventCode,eventId: eventId,));
 
         case AppRoutesName.eventCalendarPage:
           return MaterialPageRoute(builder: (context) => const EventCalendarScreen());

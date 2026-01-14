@@ -167,7 +167,7 @@ class UtilsWidget{
 
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": event.id,"subtitle":event.title}),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": event.code,"eventId": event.id,"subtitle":event.title}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingMedium),
             decoration: BoxDecoration(
@@ -316,7 +316,7 @@ class UtilsWidget{
 
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": dayEvents.first.id,"subtitle":dayEvents.first.title});
+        Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": dayEvents.first.code,"eventId": dayEvents.first.id,"subtitle":dayEvents.first.title});
       },
       child: Container(
         padding: const EdgeInsets.all(4),
@@ -381,7 +381,7 @@ class UtilsWidget{
 
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"category":index==0? null: category.id,"subtitle":index==0?"Tous les documents":category.name}),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.documentPage,arguments: {"category":index==0? null: category.name,"subtitle":index==0?"Tous les documents":category.name}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingLarge),
             decoration: BoxDecoration(

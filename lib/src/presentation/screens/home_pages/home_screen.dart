@@ -6,11 +6,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '/src/data/remote/dashboard.dart';
 import '/src/domain/remote/Dashboard.dart';
 
-import '/src/data/local/home_screen_data.dart';
 import '/src/data/remote/document_api.dart';
 import '/src/data/remote/events_api.dart';
 
-import '/src/domain/local/QuickStats.dart';
 import '/src/domain/remote/Categorie.dart';
 import '/src/domain/remote/Document.dart';
 import '/src/domain/remote/Event.dart';
@@ -38,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isDashboardLoading=false;
   bool _isDocumentsLoading=false;
 
-   List<QuickStat> quickStats = HomeScreenData().quickStats;
 
    eventsGetted() async {
      await EventsApi().getLastEvents(ApiUrl().getRecentsEventsUrl).then((value) {
@@ -281,68 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({required this.stat});
 
-  final QuickStat stat;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.paddingMedium),
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: stat.accent.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(stat.icon, color: stat.accent),
-          ),
-          const SizedBox(height: AppDimensions.paddingMedium),
-          Text(
-            stat.value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.loginTitleColor,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            stat.label,
-            style: TextStyle(
-              color: AppColors.textMainPageColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            stat.trend,
-            style: TextStyle(
-              color: stat.accent,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _BackgroundDecor extends StatelessWidget {
   const _BackgroundDecor({super.key});

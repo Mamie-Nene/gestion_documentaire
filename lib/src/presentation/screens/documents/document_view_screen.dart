@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gestion_documentaire/src/presentation/screens/documents/recents_document_list_screen.dart';
 import 'package:intl/intl.dart';
 
 import '/src/presentation/widgets/app_page_shell.dart';
@@ -36,11 +37,11 @@ class DocumentViewScreen extends StatelessWidget {
           bgColor: Color(0xffF97316).withOpacity(0.12),
           label: 'Dernière mise à jour',
           value: formatted),
-      /*_Metadata(
-          icon: "orange_hour",
-
+      Metadata(
+          icon: "Frame-7",
           label: 'Statut',
-          value: document.status),*/
+          value: document.status,
+          bgColor: Colors.red.withOpacity(0.12)),
     ];
     return AppPageShell(
       isForHomePage: false,
@@ -62,8 +63,11 @@ class DocumentViewScreen extends StatelessWidget {
                  */ _buildDescriptionSection(),
                   const SizedBox(height: AppDimensions.paddingLarge),
                   _buildMetadataSection(metadata),
-                  const SizedBox(height: AppDimensions.paddingLarge),
-                  _buildActivityTimeline(),
+
+                 /* TextButton(onPressed: (){
+                    Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context)=>RecentDocumentListScreen())
+                  );}, child: Text('test'))*/
                 ],
               ),
            // ),
@@ -72,32 +76,6 @@ class DocumentViewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimensions.paddingLarge,
-        vertical: AppDimensions.paddingMedium,
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: AppColors.mainAppColor),
-          ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.bookmark_border_rounded),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_horiz_rounded),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildPreviewCard(BuildContext context) {
     List<_ActionButtonData> actions = [
@@ -341,41 +319,6 @@ class DocumentViewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActivityTimeline() {
-    const activities = [
-      _TimelineActivity(
-          time: '08:32',
-          description: 'Document partagé avec l\'équipe Infinity'),
-      //_TimelineActivity(time: '09:12', description: 'Sano  a relu la section 4.2'),
-      _TimelineActivity(
-          time: '10:45',
-          description: 'Commentaire ajouté sur le document'),
-      _TimelineActivity(
-          time: '11:05', description: 'En attente de validation'),
-    ];
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Chronologie d\'activité',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.loginTitleColor,
-            ),
-          ),
-          const SizedBox(height: AppDimensions.paddingMedium),
-          ...activities.map(_TimelineTile.new),
-        ],
-      ),
-    );
-  }
 
   void archivageDocPopUp(BuildContext context, String idDocument) {
       showDialog(
@@ -385,9 +328,9 @@ class DocumentViewScreen extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: const Text('Déconnexion'),
+            title: const Text('Archivage'),
             content: const Text(
-              'Êtes-vous sûr de vouloir vous déconnecter ?',
+              'Êtes-vous sûr de vouloir archiver le document?',
             ),
             actions: [
               TextButton(
@@ -409,129 +352,6 @@ class DocumentViewScreen extends StatelessWidget {
         },
       );
     }
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimensions.paddingMedium,
-        vertical: AppDimensions.paddingSmall / 1.5,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 16),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 13),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SoftBackground extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Stack(
-        children: [
-          Positioned(
-            top: -80,
-            right: -40,
-            child: _blurCircle(200, AppColors.secondAppColor.withOpacity(0.12)),
-          ),
-          Positioned(
-            bottom: -50,
-            left: -30,
-            child: _blurCircle(240, AppColors.accentPurple.withOpacity(0.08)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _blurCircle(double size, Color color) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
-}
-
-class _TimelineTile extends StatelessWidget {
-  const _TimelineTile(this.activity);
-
-  final _TimelineActivity activity;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.paddingMedium),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            children: [
-              Container(
-                width: 12,
-                height: 12,
-                decoration: const BoxDecoration(
-                  color: AppColors.mainAppColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              Container(
-                width: 2,
-                height: 34,
-                color: AppColors.dividerLight,
-              ),
-            ],
-          ),
-          const SizedBox(width: AppDimensions.paddingMedium),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  activity.time,
-                  style: TextStyle(
-                    color: AppColors.textMainPageColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  activity.description,
-                  style: TextStyle(
-                    color: AppColors.loginTitleColor,
-                    fontSize: 15,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class Metadata {
@@ -558,9 +378,3 @@ class _ActionButtonData {
   final VoidCallback action;
 }
 
-class _TimelineActivity {
-  const _TimelineActivity({required this.time, required this.description});
-
-  final String time;
-  final String description;
-}

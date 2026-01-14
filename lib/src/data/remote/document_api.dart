@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:gestion_documentaire/src/methods/token_interceptor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
-
 import 'package:flutter/material.dart';
 
+import '/src/methods/token_interceptor.dart';
 import '/src/domain/remote/Document.dart';
+
 import '/src/utils/variable/global_variable.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
@@ -262,12 +261,12 @@ class DocumentApi{
 
           if (category != null && event != null) {
             filtered = gieDocs
-                .where((e) => e.categoryId == category && e.eventId == event)
+                .where((e) => e.category == category && e.eventId == event)
                 .toList();
 
           } else if (category != null) {
             filtered = gieDocs
-                .where((e) => e.categoryId == category)
+                .where((e) => e.category == category)
                 .toList();
 
           } else if (event != null) {

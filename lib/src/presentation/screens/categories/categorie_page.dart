@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/search_and_filter.dart';
+import '/src/presentation/widgets/search_and_filter.dart';
 
 import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/data/remote/category_api.dart';
@@ -17,6 +17,7 @@ class CategorieListScreen extends StatefulWidget {
 }
 
 class _CategorieListScreenState extends State<CategorieListScreen> {
+
   final TextEditingController _searchController = TextEditingController();
   bool _isCategoriesLoading = false;
   List<Categorie> categoriesGetted = [];
@@ -132,82 +133,13 @@ class _CategorieListScreenState extends State<CategorieListScreen> {
                           child: Text('Aucune catégorie trouvée'),
                         )
                       : _buildCategoryGrid(),
+
             const SizedBox(height: AppDimensions.paddingLarge),
 
             _buildPaginationControls(),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSearchAndFilter() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              //color: AppColors.cardSurface,
-              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-
-            ),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (_) => setState(() {
-                _currentPage = 1; // Reset to first page on search
-              }),
-              decoration: const InputDecoration(
-                hintText: 'Rechercher un fichier....',
-                prefixIcon: Icon(Icons.search_rounded, color: Colors.black54),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: AppDimensions.paddingMedium,
-                  horizontal: AppDimensions.paddingMedium,
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: AppDimensions.paddingMedium),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.cardSurface,
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                // TODO: Show filter dialog
-              },
-              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingMedium,
-                  vertical: AppDimensions.paddingMedium,
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.filter_list, color: Colors.black54, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Filtrer',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -233,7 +165,7 @@ class _CategorieListScreenState extends State<CategorieListScreen> {
             context,
             AppRoutesName.documentPage,
             arguments: {
-              "category": category.id,
+              "category": category.name,
               "subtitle": category.name
             },
           ),

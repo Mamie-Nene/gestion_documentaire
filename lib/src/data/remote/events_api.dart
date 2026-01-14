@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/domain/remote/Categorie.dart';
-import 'package:gestion_documentaire/src/domain/remote/Event.dart';
-import 'package:gestion_documentaire/src/methods/token_interceptor.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
 
+import '/src/domain/remote/Event.dart';
+import '/src/methods/token_interceptor.dart';
 import '/src/utils/variable/global_variable.dart';
-import '/src/utils/consts/routes/app_routes_name.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 
