@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/domain/remote/EventTimeline.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_interceptor/http/intercepted_http.dart';
@@ -59,7 +61,57 @@ class EventsApi{
 
       catch (e) {
         debugPrint("error throw: ${e.toString()}");
-        globalResponseMessage.errorMessage(AppText.CATCH_ERROR_TEXT);
+        globalResponseMessage.errorMessage("Listes Events ${AppText.CATCH_ERROR_TEXT}");
+      }
+    }
+  }
+
+  getEventTimelines( String URL,String eventCode) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
+    List<EventTimeline> eventTimelines=[];
+    if(token==null)
+    {
+      globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
+      return;
+    }
+    else {
+      var uri = "$URL/$eventCode";
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+      try {
+
+        print(uri);
+        var response = await http.get(
+            Uri.parse(uri),headers: headers
+        );
+        debugPrint("response.statusCode for get events ${response.statusCode}");
+        debugPrint("response.body for get events ${response.body}");
+
+        if (response.statusCode == 200) {
+
+          List data = json.decode(response.body);
+
+          if (data.isEmpty) {
+            return eventTimelines;
+          }
+           eventTimelines = data.map((e) => EventTimeline.fromJson(e)).toList();
+          return eventTimelines;
+        }
+
+        else  {
+          print(response.statusCode);
+          globalResponseMessage.errorMessage("Une Erreur est survenue!");
+
+        }
+      }
+
+      catch (e) {
+        debugPrint("error throw: ${e.toString()}");
+        globalResponseMessage.errorMessage("Chronologie ${AppText.CATCH_ERROR_TEXT}");
       }
     }
   }
@@ -113,7 +165,7 @@ class EventsApi{
 
       catch (e) {
         debugPrint("error throw: ${e.toString()}");
-        globalResponseMessage.errorMessage(AppText.CATCH_ERROR_TEXT);
+        globalResponseMessage.errorMessage("Last Events ${AppText.CATCH_ERROR_TEXT}");
       }
     }
   }
@@ -159,7 +211,7 @@ class EventsApi{
 
       catch (e) {
         debugPrint("error throw: ${e.toString()}");
-        globalResponseMessage.errorMessage(AppText.CATCH_ERROR_TEXT);
+        globalResponseMessage.errorMessage("${AppText.CATCH_ERROR_TEXT}");
       }
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
@@ -10,6 +11,7 @@ class AddCategoryScreen extends StatefulWidget {
 }
 
 class _AddCategoryScreenState extends State<AddCategoryScreen> {
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _codeController = TextEditingController();

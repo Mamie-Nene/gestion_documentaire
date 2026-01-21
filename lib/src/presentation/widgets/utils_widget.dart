@@ -1,11 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gestion_documentaire/src/domain/remote/Categorie.dart';
-import 'package:gestion_documentaire/src/domain/remote/Document.dart';
-import 'package:gestion_documentaire/src/domain/remote/Event.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/helper.dart';
-import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
+
+import '/src/domain/remote/Categorie.dart';
+import '/src/domain/remote/Document.dart';
+import '/src/domain/remote/Event.dart';
+import '/src/presentation/widgets/helper.dart';
+import '/src/utils/consts/routes/app_routes_name.dart';
 
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
@@ -261,7 +262,7 @@ class UtilsWidget{
                       spacing: 5,
                       children: [
                         SvgPicture.asset("asset/images/docs.svg"),
-                        Text("document(s) lié(s) ",
+                        Text("${event.documentCount} document(s) lié(s) ",
                           style: TextStyle(color: AppColors.textMainPageColor,fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w500),
                         ),
                       ],

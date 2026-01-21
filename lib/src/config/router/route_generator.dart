@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '/src/presentation/screens/categories/categorie_page.dart';
 import '/src/presentation/screens/categories/add_category_screen.dart';
 import '/src/presentation/screens/documents/recents_document_list_screen.dart';
@@ -13,7 +14,7 @@ import '/src/presentation/screens/documents/document_view_screen.dart';
 
 import '/src/presentation/screens/home_pages/home_screen.dart';
 import '/src/presentation/screens/auth/profile_screen.dart';
-import '/src/presentation/screens/login_screen.dart';
+import '../../presentation/screens/auth/login_screen.dart';
 import '/src/presentation/screens/home_pages/splash_first_page.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 

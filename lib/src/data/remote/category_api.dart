@@ -63,6 +63,7 @@ class CategoriesApi{
       }
     }
   }
+
   getLastCategories( String URL) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -117,4 +118,5 @@ class CategoriesApi{
       }
     }
   }
+
 }

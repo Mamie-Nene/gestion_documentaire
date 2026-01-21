@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '/src/presentation/widgets/search_and_filter.dart';
 
+import '/src/presentation/widgets/search_and_filter.dart';
 import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/data/remote/category_api.dart';
 import '/src/domain/remote/Categorie.dart';
@@ -112,11 +112,6 @@ class _CategorieListScreenState extends State<CategorieListScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-           /* Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingSmall, vertical: AppDimensions.paddingSmall,
-              ),
-              child: _buildSearchAndFilter(),
-            ),*/
             SearchAndFilter(
                 searchController: _searchController,
                 onChangeFunction: (_)=> setState(() {_currentPage = 1;}),

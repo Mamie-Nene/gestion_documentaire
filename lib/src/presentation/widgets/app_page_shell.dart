@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/widgets/utils_widget.dart';
-import 'package:gestion_documentaire/src/utils/consts/app_specifications/all_directories.dart';
-import '/src/utils/consts/app_specifications/app_colors.dart';
+import '/src/presentation/widgets/utils_widget.dart';
 
 class AppPageShell extends StatelessWidget {
   const AppPageShell({

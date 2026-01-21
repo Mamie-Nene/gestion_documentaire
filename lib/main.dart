@@ -1,11 +1,12 @@
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/config/router_observer.dart';
-import 'package:gestion_documentaire/src/utils/variable/global_variable.dart';
-import 'src/config/router/route_generator.dart';
-import 'src/utils/consts/routes/app_routes_name.dart';
 import 'dart:io';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/material.dart';
+
+import '/src/config/router_observer.dart';
+import '/src/utils/variable/global_variable.dart';
+import 'src/config/router/route_generator.dart';
+import 'src/utils/consts/routes/app_routes_name.dart';
+
 import '/src/utils/app_localization.dart';
 
 class MyHttpOverrides extends HttpOverrides{

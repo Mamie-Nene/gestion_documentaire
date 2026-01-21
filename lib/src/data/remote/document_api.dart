@@ -37,8 +37,8 @@ class DocumentApi{
         var response = await http.get(
             Uri.parse(uri),headers: headers
         );
-        debugPrint("response.statusCode for getDetailCandidat ${response.statusCode}");
-        debugPrint("response.body for getDetailCandidat ${response.body}");
+        debugPrint("response.statusCode for archivage doc ${response.statusCode}");
+        debugPrint("response.body for archivage doc ${response.body}");
 
         if (response.statusCode == 200) {
 
@@ -130,8 +130,8 @@ class DocumentApi{
         },
       );
 
-      debugPrint("response.statusCode for get gieDocs ${response.statusCode}");
-      debugPrint("response.body for get gieDocs ${response.body}");
+      debugPrint("response.statusCode for get list docs ${response.statusCode}");
+      debugPrint("response.body for get list docs ${response.body}");
 
 
       if (response.statusCode == 200) {
@@ -184,8 +184,8 @@ class DocumentApi{
         },
       );
 
-      debugPrint("response.statusCode for get gieDocs ${response.statusCode}");
-      debugPrint("response.body for get gieDocs ${response.body}");
+      debugPrint("response.statusCode for get recents docs ${response.statusCode}");
+      debugPrint("response.body for get recents docs ${response.body}");
 
 
       if (response.statusCode == 200) {
@@ -245,8 +245,8 @@ class DocumentApi{
         },
       );
 
-      debugPrint("response.statusCode for get gieDocs ${response.statusCode}");
-      debugPrint("response.body for get gieDocs ${response.body}");
+      debugPrint("response.statusCode for get docs by criteria ${response.statusCode}");
+      debugPrint("response.body for get docs by criteria ${response.body}");
 
 
       if (response.statusCode == 200) {

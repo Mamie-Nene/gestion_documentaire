@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import '/src/presentation/screens/login_screen.dart';
+import '/src/presentation/screens/auth/login_screen.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class SplashPage extends StatefulWidget {

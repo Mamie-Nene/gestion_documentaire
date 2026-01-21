@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gestion_documentaire/src/presentation/screens/documents/recents_document_list_screen.dart';
 import 'package:intl/intl.dart';
 
 import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/presentation/widgets/helper.dart';
 import '/src/data/remote/document_api.dart';
 import '/src/domain/remote/Document.dart';
+
 import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
@@ -14,7 +14,6 @@ import '/src/utils/consts/app_specifications/all_directories.dart';
 class DocumentViewScreen extends StatelessWidget {
   final Document document;
   const DocumentViewScreen({super.key, required this.document});
-
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +42,7 @@ class DocumentViewScreen extends StatelessWidget {
           value: document.status,
           bgColor: Colors.red.withOpacity(0.12)),
     ];
+
     return AppPageShell(
       isForHomePage: false,
       title: "Détails",
@@ -74,6 +74,7 @@ class DocumentViewScreen extends StatelessWidget {
           ),
 
     );
+
   }
 
 
@@ -285,6 +286,7 @@ class DocumentViewScreen extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildDescriptionSection() {
     return Container(
       width: double.infinity,
@@ -319,7 +321,6 @@ class DocumentViewScreen extends StatelessWidget {
     );
   }
 
-
   void archivageDocPopUp(BuildContext context, String idDocument) {
       showDialog(
         context: context,
@@ -352,6 +353,7 @@ class DocumentViewScreen extends StatelessWidget {
         },
       );
     }
+
 }
 
 class Metadata {

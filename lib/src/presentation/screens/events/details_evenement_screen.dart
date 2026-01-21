@@ -3,11 +3,11 @@ import 'package:intl/intl.dart';
 
 import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/presentation/widgets/utils_widget.dart';
-
 import '/src/data/remote/document_api.dart';
 import '/src/data/remote/events_api.dart';
 import '/src/domain/remote/Document.dart';
 import '/src/domain/remote/Event.dart';
+import '/src/domain/remote/EventTimeline.dart';
 
 import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
@@ -23,11 +23,14 @@ class DetailsEvenementScreen extends StatefulWidget {
 }
 
 class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
+
   final TextEditingController _searchController = TextEditingController();
   List<Document> documentsGetted = [];
+  List<EventTimeline> eventTimelines = [];
   Event? event;
   bool _isDocumentsLoading = false;
   bool _isEventLoading = false;
+  bool _isEventTimelineLoading = false;
 
   // Pagination state
   int _currentPage = 1;
@@ -38,6 +41,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
   void initState() {
     super.initState();
     getEventDetails();
+    getEventTimelines();
     getDocs();
   }
 
@@ -56,6 +60,24 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         _isEventLoading = false;
       });
     });
+  }
+
+  getEventTimelines() async {
+    if (widget.eventCode== null) return;
+    setState(() {
+      _isEventTimelineLoading = true;
+    });
+    await EventsApi().getEventTimelines(ApiUrl().getEventsTimelineUrl, widget.eventCode!).then((value) {
+      setState(() {
+        eventTimelines = value;
+        _isEventTimelineLoading = false;
+      });
+    }).catchError((error) {
+      setState(() {
+        _isEventTimelineLoading = false;
+      });
+    });
+
   }
 
   getDocs() async {
@@ -95,49 +117,6 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         : [];
   }
 
-  String _formatFileSize(String? fileName) {
-    // Mock file size for now
-    return '2.4MB';
-  }
-
-  String _getFileExtension(String? mimeType, String? fileName) {
-    if (mimeType?.contains('pdf') ?? false) return 'PDF';
-    if (mimeType?.contains('word') ?? false || mimeType!.contains('document') ?? false) return 'DOCX';
-    if (mimeType?.contains('excel') ?? false || mimeType!.contains('spreadsheet') ?? false) return 'XLSX';
-    if (mimeType?.contains('powerpoint') ?? false || mimeType!.contains('presentation') ?? false) return 'PPTX';
-    return 'DOCX';
-  }
-
-  Color _getFileTypeColor(String fileType) {
-    switch (fileType.toUpperCase()) {
-      case 'PDF':
-        return Colors.red;
-      case 'DOCX':
-        return Colors.blue;
-      case 'XLSX':
-        return Colors.green;
-      case 'PPTX':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getFileTypeIcon(String fileType) {
-    switch (fileType.toUpperCase()) {
-      case 'PDF':
-        return 'P';
-      case 'DOCX':
-        return 'W';
-      case 'XLSX':
-        return 'X';
-      case 'PPTX':
-        return 'P';
-      default:
-        return 'D';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppPageShell(
@@ -151,12 +130,13 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
             children: [
               // Information générales Section
               _buildGeneralInfoSection(),
+
               const SizedBox(height: AppDimensions.paddingLarge),
               // Liste des documents Section
               _buildDocumentsSection(),
-
               const SizedBox(height: AppDimensions.paddingLarge),
-              _buildActivityTimeline(),
+              // Chronologie d'activité Section
+              _buildActivityTimeline(eventTimelines,_isEventTimelineLoading),
             ],
           ),
         ),
@@ -196,11 +176,10 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
           _isEventLoading
               ? const Center(child: CircularProgressIndicator())
               : event == null
-                  ? const Text('Chargement...')
+                  ? Center(child: const Text('Veuillez réessayer plus tard!'))
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Libellé, Comité, Date Grid
                         Row(
                           children: [
                             Expanded(
@@ -213,7 +192,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
                             Expanded(
                               child: _buildInfoItem(
                                 label: 'Comité',
-                                value: 'Design', // TODO: Get from event data
+                                value: 'Design',
                               ),
                             ),
                             const SizedBox(width: AppDimensions.paddingMedium),
@@ -241,19 +220,10 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     );
   }
 
-  Widget _buildActivityTimeline() {
-    const activities = [
-      _TimelineActivity(
-          time: '08:32',
-          description: 'Document partagé avec l\'équipe Infinity'),
-      //_TimelineActivity(time: '09:12', description: 'Sano  a relu la section 4.2'),
-      _TimelineActivity(
-          time: '10:45',
-          description: 'Commentaire ajouté sur le document'),
-      _TimelineActivity(
-          time: '11:05', description: 'En attente de validation'),
-    ];
+  Widget _buildActivityTimeline(List<EventTimeline> eventTimelines,bool isEventTimelineLoading) {
+
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
@@ -263,15 +233,31 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Chronologie d\'activité',
+            'Chronologie d\'activités',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: AppColors.loginTitleColor,
             ),
           ),
+
           const SizedBox(height: AppDimensions.paddingMedium),
-          ...activities.map(_TimelineTile.new),
+          isEventTimelineLoading
+              ? const Center(child: CircularProgressIndicator())
+              :
+          eventTimelines.isEmpty?
+              Center(child: Text("Pas d'activités déclarées!"))
+              :
+             Column(
+                 children: List.generate(
+                     eventTimelines.length,
+                      (index) => _TimelineTile(
+                          _TimelineActivity(time: formatTime(DateTime.parse(eventTimelines[index].startTime)), description: eventTimelines[index].description)
+                      )
+              ),
+             )
+        //  eventTimelines.map(
+       // (event) =>_TimelineTile(_TimelineActivity(time: formatTime(event.startTime), description: event.description,))),
         ],
       ),
     );
@@ -307,7 +293,6 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
         ],
       );
     }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -342,6 +327,10 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     } catch (e) {
       return dateString;
     }
+  }
+
+  String formatTime(DateTime dateTime) {
+    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
   Widget _buildDocumentsSection() {
@@ -499,24 +488,11 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
       itemCount: documents.length,
       itemBuilder: (context, index) {
         final document = documents[index];
-        final fileType = _getFileExtension(document.mimeType, document.fileName);
-        final fileColor = _getFileTypeColor(fileType);
-        final fileIcon = _getFileTypeIcon(fileType);
-        final fileSize = _formatFileSize(document.fileName);
 
         return UtilsWidget().documentGrid(context, document,);
-
-       /* return _buildDocumentCard(
-          document: document,
-          fileType: fileType,
-          fileColor: fileColor,
-          fileIcon: fileIcon,
-          fileSize: fileSize,
-        );*/
       },
     );
   }
-
 
   Widget _buildPaginationControls() {
     final totalItems = _visibleDocs.length;
@@ -682,6 +658,7 @@ class _TimelineTile extends StatelessWidget {
     );
   }
 }
+
 class _TimelineActivity {
   const _TimelineActivity({required this.time, required this.description});
 
