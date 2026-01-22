@@ -168,7 +168,7 @@ class UtilsWidget{
 
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": event.code,"eventId": event.id,"subtitle":event.title}),
+          onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"eventCode": event.code,"eventId": event.id,"subtitle":event.title}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingMedium),
             decoration: BoxDecoration(
@@ -197,9 +197,9 @@ class UtilsWidget{
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             //event date
-                            Text(Helper().formatMonth(eventDate),//event date month
+                            Text(Helper().formatMonth(eventDate),
                                 style: TextStyle( color: AppColors.mainEventsBlueColor, fontSize: 14,fontWeight: FontWeight.bold)),
-                            Text(Helper().formatDay(eventDate),//event date day
+                            Text(Helper().formatDay(eventDate),
                                 style: TextStyle( color: AppColors.mainEventsBlueColor, fontSize: 16,fontWeight: FontWeight.bold)),
                           ],
                         ),
@@ -224,7 +224,7 @@ class UtilsWidget{
                             spacing: 8,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Row(
+                              /*Row(
                                 spacing: 5,
                                 children: [
                                   SvgPicture.asset("asset/images/hour.svg"),
@@ -232,7 +232,7 @@ class UtilsWidget{
                                     style: TextStyle(color:AppColors.textMainPageColor, fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w400),
                                   ),
                                 ],
-                              ),
+                              ),*/
                               Flexible(
                                 child: Row(
                                   spacing: 5,
@@ -317,7 +317,7 @@ class UtilsWidget{
 
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"event": dayEvents.first.code,"eventId": dayEvents.first.id,"subtitle":dayEvents.first.title});
+        Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"eventCode": dayEvents.first.code,"eventId": dayEvents.first.id,"subtitle":dayEvents.first.title});
       },
       child: Container(
         padding: const EdgeInsets.all(4),

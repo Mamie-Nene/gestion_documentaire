@@ -15,6 +15,7 @@ class ApiUrl {
   //              ---------------------- docs ----------------------
 
   String getDocumentsUrl = '$baseUrl/documents';
+  String getFilterDocumentsUrl = '$baseUrl/documents/filter';
   String getRecentsDocumentsUrl = '$baseUrl/documents/last-four';
   String voirDocumentUrl = '$baseUrl/documents/getDocument';
   String archiverDocumentUrl = '$baseUrl/documents';

@@ -42,7 +42,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   }
 
   getDocs() async {
-    await DocumentApi().getDocumentsByCritera( ApiUrl().getDocumentsUrl, widget.category,widget.eventCode).then((value) {
+    await DocumentApi().getDocumentsByCritera( ApiUrl().getFilterDocumentsUrl, widget.category,widget.eventCode).then((value) {
       setState(() {
         documentsGetted = value;
         documentsFiltered = documentsGetted;

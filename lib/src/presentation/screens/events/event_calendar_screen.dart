@@ -16,10 +16,13 @@ class EventCalendarScreen extends StatefulWidget {
 }
 
 class _EventCalendarScreenState extends State<EventCalendarScreen> {
+
   final TextEditingController _searchController = TextEditingController();
+
   bool _isEventsLoading = false;
   List<Event> events = [];
   DateTime _currentMonth = DateTime.now();
+
   int _viewMode = 1; // 0 = Liste, 1 = Calendrier
   final DateTime _today = DateTime.now();
 

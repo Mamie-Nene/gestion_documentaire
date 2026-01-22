@@ -84,7 +84,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     setState(() {
       _isDocumentsLoading = true;
     });
-    await DocumentApi().getDocumentsByCritera(ApiUrl().getDocumentsUrl, null, widget.eventCode).then((value) {
+    await DocumentApi().getDocumentsByCritera(ApiUrl().getFilterDocumentsUrl, null, widget.eventCode).then((value) {
       setState(() {
         documentsGetted = value ?? [];
         _isDocumentsLoading = false;

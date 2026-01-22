@@ -50,7 +50,7 @@ class RouteGenerator {
 
           case AppRoutesName.detailsEventPage :
         final args = settings.arguments as Map<String, dynamic>? ?? {};
-        var eventCode = args["event"] ?? args["eventCode"];
+        var eventCode = args["eventCode"];
         var eventId =  args["eventId"];
         return MaterialPageRoute(builder: (context) => DetailsEvenementScreen(eventCode: eventCode,eventId: eventId,));
 

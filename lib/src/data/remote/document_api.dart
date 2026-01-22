@@ -221,7 +221,92 @@ class DocumentApi{
     }
   }
 
+  String buildUri(  String URL, {
+    String? event,
+    String? category,
+  }) {
+    final queryParams = <String, String>{};
+
+    if (event != null) {
+      queryParams['event'] = event;
+    }
+
+    if (category != null) {
+      queryParams['category'] = category;
+    }
+
+    final uri = Uri.parse(URL).replace(queryParameters: queryParams);
+    return uri.toString();
+  }
   getDocumentsByCritera( String URL, String? category, String? event) async {
+    List<Document> gieDocs = [] ;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
+
+    if(token==null)
+    {
+      globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
+      return [];
+    }
+    else {
+      try{
+      //var uri = "$URL?event=$event&category=$category";
+        final uri = buildUri(URL,
+          event: event,
+          category: category,
+        );
+      var response = await http.get(
+        Uri.parse(uri),
+        headers: {
+          'Accept': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint("response.statusCode for get docs by criteria ${response.statusCode}");
+      debugPrint("response.body for get docs by criteria ${response.body}");
+
+
+      if (response.statusCode == 200) {
+
+        var data = json.decode(response.body);
+        List content = data['content'];
+
+        gieDocs = content.map((e) => Document.fromJson(e)).toList();
+
+        // ---- Filtering logic ----
+          List<Document> filtered = gieDocs;
+        /*  if (category != null && event != null) {
+            filtered = gieDocs
+                .where((e) => e.category == category && e.eventId == event)
+                .toList();
+          } else if (category != null) {
+            filtered = gieDocs
+                .where((e) => e.category == category)
+                .toList();
+          } else if (event != null) {
+            filtered = gieDocs
+                .where((e) => e.eventId == event)
+                .toList();
+          }*/
+          return filtered;
+
+      }
+       if (response.statusCode == 400||response.statusCode ==500) {
+        globalResponseMessage.errorMessage("Pas documents!!");
+        return [];
+      }
+    }
+    catch (e) {
+      debugPrint("error throw: ${e.toString()}");
+      globalResponseMessage.errorMessage("Connexion impossible. Veuillez réessayer plus tard !!");
+      return [];
+    }
+    }
+  }
+  getDocumentsByCritera1( String URL, String? category, String? event) async {
     List<Document> gieDocs = [] ;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();

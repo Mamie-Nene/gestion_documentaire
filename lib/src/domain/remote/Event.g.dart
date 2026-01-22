@@ -15,7 +15,7 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event(
   json['endDate']??"AUCUN" ,
   json['location'] as String,
   json['code'] as String,
-  json['documentCount']??0,
+  json['documentCount'] as int,
   json['status'] as String,
  // List<String>.from(userGroups.map((item) => item as String))
   (json['userGroups'] as List).map((e) => e.toString()).toList(),
