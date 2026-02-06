@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gestion_documentaire/src/presentation/screens/documents/secure_document_viewer.dart';
+import 'package:gestion_documentaire/src/presentation/screens/home_pages/choose_group_instance.dart';
 
 import '/src/presentation/screens/categories/categorie_page.dart';
 import '/src/presentation/screens/categories/add_category_screen.dart';
@@ -87,6 +88,9 @@ class RouteGenerator {
 
       case AppRoutesName.profilePage:
         return MaterialPageRoute(builder: (context) => const ProfileScreen());
+
+      case AppRoutesName.chooseGroupInstance:
+        return MaterialPageRoute(builder: (context) =>  ChooseGroupInstance());
 
       default:
         return _errorRoute();

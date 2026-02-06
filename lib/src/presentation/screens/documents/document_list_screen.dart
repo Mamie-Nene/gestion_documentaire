@@ -44,6 +44,9 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   }
 
   getDocs() async {
+    setState(() {
+      _isDocumentsLoading = true;
+    });
     await DocumentApi().getDocumentsByCritera( ApiUrl().getFilterDocumentsUrl, widget.category,widget.eventCode).then((value) {
       setState(() {
         documentsGetted = value;
@@ -136,8 +139,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               :
               _visibleDocs.isEmpty?
 
-             // Text('La liste est vide !')
-              CircularProgressIndicator()
+              Text('La liste est vide !')
                   :
               _buildDocumentsGrid(),
               //child:  _buildDocumentList(_visibleDocs),

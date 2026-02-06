@@ -31,6 +31,7 @@ class AppRoutesName {
      // ----------------------- Document Pages ------------------------
 
      static const String addDocumentPage = '/addDocumentPage';
+     static const String chooseGroupInstance = '/chooseGroupInstance';
 
 
 

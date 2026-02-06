@@ -47,7 +47,8 @@ class AuthApi{
         globalResponseMessage.successMessage("Connexion réussie !!");
 
         if(context.mounted) {
-          return Navigator.of(context).pushReplacementNamed(AppRoutesName.homePage);
+          return Navigator.of(context).pushReplacementNamed(AppRoutesName.chooseGroupInstance);
+         // return Navigator.of(context).pushReplacementNamed(AppRoutesName.homePage);
         }
 
       }

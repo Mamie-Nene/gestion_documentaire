@@ -32,12 +32,15 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Document> last3DocumentsGetted = [];
 
   Dashboard? dashboardGetted;
-  bool _isEventsLoading=false;
-  bool _isDashboardLoading=false;
-  bool _isDocumentsLoading=false;
+  bool _isEventsLoading=true;
+  bool _isDashboardLoading=true;
+  bool _isDocumentsLoading=true;
 
 
    eventsGetted() async {
+     setState(() {
+       _isEventsLoading = true;
+     });
      await EventsApi().getLastEvents(ApiUrl().getRecentsEventsUrl).then((value) {
        setState(() {
          last4Events = value;
@@ -51,6 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
    }
 
   getRecentsDocs() async {
+    setState(() {
+      _isDocumentsLoading = true;
+    });
     await DocumentApi().getRecentsDocuments( ApiUrl().getRecentsDocumentsUrl).then((value) {
       setState(() {
         last3DocumentsGetted = value;
@@ -64,6 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   getDashboard() async {
+    setState(() {
+      _isDashboardLoading = true;
+    });
     await DashboardApi().getDashboard(ApiUrl().getDashboardUrl).then((value) {
       setState(() {
         dashboardGetted = value;
@@ -112,6 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
                child: CircularProgressIndicator()
            )
               :
+           dashboardGetted == null
+               ? const Center(child: Text("Aucune donnée"))
+               :
            _buildStats(context,dashboardGetted),
 
             const SizedBox(height: AppDimensions.paddingSmall),
@@ -208,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStats(BuildContext context,Dashboard? dashboardGetted){
-    List<String> statTitles=["Documents enregistrés", "Évenements actifs","Catégories enregistrées","Stockage utilisé"];
+    List<String> statTitles=["Documents enregistrés", "Évenements actifs","Catégories enregistrées","Réunion à venir"];
     List<String> statNumbers=["0","0","0","0"];
     List<String> statIcons=["Frame-6","Frame-4","Frame-5","Frame-7"];
     List<Color> statColors=[Color(0xffF97316),Color(0xff16A6E3),Color(0xff00897B),Color(0xffE11D48)];
@@ -226,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
       itemCount: statTitles.length,
       itemBuilder: (context, index) {//recentDocuments[index];
         if(dashboardGetted!=null)
-          statNumbers = [dashboardGetted.totalDocuments.toString(),dashboardGetted.totalEvents.toString(),dashboardGetted.totalCategories.toString(),dashboardGetted.totalStorage.formatted];
+          statNumbers = [dashboardGetted.totalDocuments.toString(),dashboardGetted.totalEvents.toString(),dashboardGetted.totalCategories.toString(),0.toString()];
           return InkWell(
             onTap: statActions[index],
             child: Container(

@@ -40,6 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return AppPageShell(
       isForHomePage: false,
       title: "Mon compte",
