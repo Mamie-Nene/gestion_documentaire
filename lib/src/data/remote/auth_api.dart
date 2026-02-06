@@ -61,7 +61,7 @@ class AuthApi{
 
     catch (e) {
       debugPrint("error throw: ${e.toString()}");
-      globalResponseMessage.errorMessage(AppText.CATCH_ERROR_TEXT);
+      globalResponseMessage.errorMessage(AppText.NO_CONNECTION);
     }
 
   }

@@ -12,6 +12,7 @@ class AppRoutesName {
 
      static const String documentPage = '/documentPage';
      static const String viewDocumentPage = '/viewDocumentPage';
+     static const String openSecureDocPage = '/openSecureDocPage';
      static const String recentDocumentPage = '/recentDocumentPage';
 
      // ----------------------- Evenement Pages ------------------------

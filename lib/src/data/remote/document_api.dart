@@ -238,6 +238,7 @@ class DocumentApi{
     final uri = Uri.parse(URL).replace(queryParameters: queryParams);
     return uri.toString();
   }
+
   getDocumentsByCritera( String URL, String? category, String? event) async {
     List<Document> gieDocs = [] ;
 
@@ -306,6 +307,7 @@ class DocumentApi{
     }
     }
   }
+
   getDocumentsByCritera1( String URL, String? category, String? event) async {
     List<Document> gieDocs = [] ;
 

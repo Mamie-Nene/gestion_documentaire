@@ -16,6 +16,9 @@ class MyHttpOverrides extends HttpOverrides{
       ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
   }
 }
+/*authorise fingerprint on ios
+<key>NSFaceIDUsageDescription</key>
+<string>Authenticate to view secure documents</string>*/
 void main() {
    HttpOverrides.global = MyHttpOverrides();
   runApp(

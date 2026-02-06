@@ -35,6 +35,8 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   int _itemsPerPage = 10;
   final List<int> _itemsPerPageOptions = [10, 20, 30, 50];
 
+
+
   @override
   void initState() {
     getDocs();
@@ -128,12 +130,14 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
 
               const SizedBox(height: AppDimensions.paddingLarge),
 
+
               _isDocumentsLoading?
                   CircularProgressIndicator()
               :
               _visibleDocs.isEmpty?
 
-              Text('La liste est vide !')
+             // Text('La liste est vide !')
+              CircularProgressIndicator()
                   :
               _buildDocumentsGrid(),
               //child:  _buildDocumentList(_visibleDocs),

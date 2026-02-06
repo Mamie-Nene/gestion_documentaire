@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '/src/utils/consts/routes/app_routes_name.dart';
 import 'package:intl/intl.dart';
+import 'package:local_auth/local_auth.dart';
 
 import '/src/presentation/widgets/app_page_shell.dart';
 import '/src/presentation/widgets/helper.dart';
@@ -11,13 +13,46 @@ import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 
-class DocumentViewScreen extends StatelessWidget {
+class DocumentViewScreen extends StatefulWidget {
   final Document document;
   const DocumentViewScreen({super.key, required this.document});
 
   @override
+  State<DocumentViewScreen> createState() => _DocumentViewScreenState();
+}
+
+class _DocumentViewScreenState extends State<DocumentViewScreen> {
+  //faceId or fingerPRINT CHECK
+  final LocalAuthentication auth = LocalAuthentication();
+
+
+  Future<bool> authenticate() async {
+    try {
+      final canCheck = await auth.canCheckBiometrics;
+      final isSupported = await auth.isDeviceSupported();
+
+      debugPrint("canCheckBiometrics: $canCheck");
+      debugPrint("isDeviceSupported: $isSupported");
+
+      if (!canCheck || !isSupported) return false;
+      return await auth.authenticate(
+        localizedReason: 'Authentifiez-vous pour lire ce document!',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
+      );
+
+    } catch (e) {
+      debugPrint("Biometric error: $e");
+      return false;
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    DateTime dateCreation = DateTime.parse(document.createdAt);
+    DateTime dateCreation = DateTime.parse(widget.document.createdAt);
     String formatted = DateFormat("yyyy-MM-dd HH:mm:ss").format(dateCreation);
 
     final  metadata = [
@@ -25,7 +60,7 @@ class DocumentViewScreen extends StatelessWidget {
           icon: "blue_user",
           bgColor:Color(0xffEFF6FF),
           label: 'Propriétaire',
-          value: document.uploadedBy),
+          value: widget.document.uploadedBy),
       Metadata(
           icon: "green_calendar",
           bgColor:Color(0xff00897B).withOpacity(0.12),
@@ -39,7 +74,7 @@ class DocumentViewScreen extends StatelessWidget {
       Metadata(
           icon: "Frame-7",
           label: 'Statut',
-          value: document.status,
+          value: widget.document.status,
           bgColor: Colors.red.withOpacity(0.12)),
     ];
 
@@ -77,19 +112,18 @@ class DocumentViewScreen extends StatelessWidget {
 
   }
 
-
   Widget _buildPreviewCard(BuildContext context) {
     List<_ActionButtonData> actions = [
       _ActionButtonData(Icons.share_rounded, 'Partager',Colors.white,(){}),
-      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);}),
+      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,widget.document.fileName);}),
       _ActionButtonData(Icons.print_rounded, 'Imprimer',Color(0xff305A9D),(){}),
     ];
    // index == quickStats.length - 1 ? 0
 
-    final fileType = Helper().getFileExtension(document.mimeType, document.fileName);
+    final fileType = Helper().getFileExtension(widget.document.mimeType, widget.document.fileName);
     final fileColor = Helper().getFileTypeColor(fileType);
     final fileIcon = Helper().getFileTypeIcon(fileType);
-    final fileSize = Helper().formatFileSize(document.fileName);
+    final fileSize = Helper().formatFileSize(widget.document.fileName);
 
 
     return Container(
@@ -112,7 +146,7 @@ class DocumentViewScreen extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: 200,
-                    child: Text(document.title,
+                    child: Text(widget.document.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -149,25 +183,40 @@ class DocumentViewScreen extends StatelessWidget {
           ),
 
           Row(
-              spacing: 10,
-              children: [
+            spacing: 10,
+            children: [
                 ElevatedButton.icon(
-                      onPressed:(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);},
-                      icon: SvgPicture.asset("asset/images/eye.svg"),
-                      label: Text("Visualiser"),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12,horizontal: AppDimensions.paddingMedium),
-                        backgroundColor: AppColors.cardSurface,
-                        foregroundColor: AppColors.loginTitleColor,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
-                        ),
-                        side: BorderSide(color:Color(0xffD0D5DD))
+                  onPressed: () async {
+                        //DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,widget.document.fileName);
+
+                    final isAuth = await authenticate();
+                    if (!isAuth) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Authentification échouée")),
+                      );
+                      return;
+                    }
+                     // print("here on view doc in 2");
+                    Navigator.of(context).pushNamed(AppRoutesName.openSecureDocPage,
+                        arguments: {"fileName": widget.document.fileName}
+                    );
+                 // print("here on view doc 3");
+                  },
+                  icon: SvgPicture.asset("asset/images/eye.svg"),
+                  label: Text("Visualiser"),
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12,horizontal: AppDimensions.paddingMedium),
+                      backgroundColor: AppColors.cardSurface,
+                      foregroundColor: AppColors.loginTitleColor,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusMedium),
                       ),
-                    ),
+                      side: BorderSide(color:Color(0xffD0D5DD))
+                  ),
+                ),
                 ElevatedButton.icon(
-                      onPressed:(){archivageDocPopUp(context,document.id);},
+                      onPressed:(){archivageDocPopUp(context,widget.document.id);},
                       icon: SvgPicture.asset("asset/images/archive.svg"),
                       label: Text("Archiver",style: TextStyle(fontSize: 15,fontFamily: "Chivo",color: Colors.white),),
                       style: ElevatedButton.styleFrom(
@@ -183,7 +232,7 @@ class DocumentViewScreen extends StatelessWidget {
                       ),
                     ),
                 ElevatedButton.icon(
-                      onPressed:(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);},
+                      onPressed:(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,widget.document.fileName);},
                       icon: SvgPicture.asset("asset/images/download.svg"),
                       label: Text("Télécharger",style: TextStyle(fontSize: 15,fontFamily: "Chivo",color: Colors.white),),
                       style: ElevatedButton.styleFrom(
@@ -209,7 +258,7 @@ class DocumentViewScreen extends StatelessWidget {
   Widget _buildActionButtons() {
     List<_ActionButtonData> actions = [
       _ActionButtonData(Icons.share_rounded, 'Partager',Colors.white,(){}),
-      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,document.fileName);}),
+      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,widget.document.fileName);}),
       _ActionButtonData(Icons.print_rounded, 'Imprimer',Color(0xff305A9D),(){}),
     ];
     return Row(
@@ -309,7 +358,7 @@ class DocumentViewScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppDimensions.paddingMedium),
 
-          Text(document.description,
+          Text(widget.document.description,
             style: TextStyle(
               color: AppColors.textMainPageColor,
               fontWeight: FontWeight.w600,
@@ -353,7 +402,6 @@ class DocumentViewScreen extends StatelessWidget {
         },
       );
     }
-
 }
 
 class Metadata {

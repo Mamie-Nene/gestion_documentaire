@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/presentation/screens/documents/secure_document_viewer.dart';
 
 import '/src/presentation/screens/categories/categorie_page.dart';
 import '/src/presentation/screens/categories/add_category_screen.dart';
@@ -77,8 +78,12 @@ class RouteGenerator {
       case AppRoutesName.viewDocumentPage:
         final args = settings.arguments;
         var document = (args as Map)["document"];
-        return MaterialPageRoute(
-            builder: (context) => DocumentViewScreen(document: document));
+        return MaterialPageRoute(builder: (context) => DocumentViewScreen(document: document));
+
+      case AppRoutesName.openSecureDocPage:
+        final args = settings.arguments;
+        var fileName = (args as Map)["fileName"];
+       return MaterialPageRoute(builder: (context) => SecureDocumentViewer(fileName: fileName));
 
       case AppRoutesName.profilePage:
         return MaterialPageRoute(builder: (context) => const ProfileScreen());
