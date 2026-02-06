@@ -128,10 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppDimensions.paddingSmall),
 
-            _buildSectionTitle('Documents récents', 'Voir Tout ',(){Navigator.of(context).pushNamed(AppRoutesName.documentPage,arguments: {"subtitle":"Tous les documents"});}),
-
-            const SizedBox(height: AppDimensions.paddingSmall),
-
             _isDocumentsLoading
                 ?Center(
                   child: CircularProgressIndicator()
@@ -144,9 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: AppDimensions.paddingSmall),
 
-            _buildSectionTitle('Événements à venir', 'Voir Tout ',(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);}),
-
-            const SizedBox(height: AppDimensions.paddingSmall),
 
             _isEventsLoading
                 ? Center(
@@ -156,7 +149,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ?Center(
                   child: Text("Pas d'évenement pour le moment !")
                 )
-                :UtilsWidget().evenementGridForViewList(context,last4Events,true),
+                :Column(
+                  children: [
+                    _buildSectionTitle('Événements à venir', 'Voir Tout ',(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);}),
+
+                    const SizedBox(height: AppDimensions.paddingSmall),
+
+                    UtilsWidget().evenementGridForViewList(context,last4Events,true),
+                  ],
+                ),
          ],
         ),
       ),
@@ -201,21 +202,29 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRecentDocuments(BuildContext context, List<Document> recentDocsGetted,) {
-    return  GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2,
-      crossAxisSpacing: AppDimensions.paddingLarge,
-      mainAxisSpacing: AppDimensions.paddingLarge,
-      childAspectRatio: 3.9,
-      ),
-      itemCount: recentDocsGetted.length,
-      itemBuilder: (context, index) {
+    return  Column(
+      children: [
+        _buildSectionTitle('Documents récents', 'Voir Tout ',(){Navigator.of(context).pushNamed(AppRoutesName.documentPage,arguments: {"subtitle":"Tous les documents"});}),
 
-        final doc = recentDocsGetted[index];
-        return UtilsWidget().documentGrid(context, doc);
-        },
+        const SizedBox(height: AppDimensions.paddingSmall),
+
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: AppDimensions.paddingLarge,
+          mainAxisSpacing: AppDimensions.paddingLarge,
+          childAspectRatio: 3.9,
+          ),
+          itemCount: recentDocsGetted.length,
+          itemBuilder: (context, index) {
+
+            final doc = recentDocsGetted[index];
+            return UtilsWidget().documentGrid(context, doc);
+            },
+        ),
+      ],
     );
   }
 
@@ -237,8 +246,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       itemCount: statTitles.length,
       itemBuilder: (context, index) {//recentDocuments[index];
-        if(dashboardGetted!=null)
-          statNumbers = [dashboardGetted.totalDocuments.toString(),dashboardGetted.totalEvents.toString(),dashboardGetted.totalCategories.toString(),0.toString()];
+        if (dashboardGetted == null) {
+          return const Center(
+            child: Text("Pas de données pour le moment !"),
+          );
+        }
+        final  statNumbers = [dashboardGetted.totalDocuments.toString(),dashboardGetted.totalEvents.toString(),dashboardGetted.totalCategories.toString(),0.toString()];
           return InkWell(
             onTap: statActions[index],
             child: Container(
@@ -247,10 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: AppColors.cardSurface,
                   borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
                 ),
-                child: dashboardGetted==null ?
-                Center(child: Text("Pas de données pour le moment !"))
-                  :
-                Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Expanded(

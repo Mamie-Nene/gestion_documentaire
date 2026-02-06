@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 import 'package:intl/intl.dart';
@@ -26,6 +27,34 @@ class _DocumentViewScreenState extends State<DocumentViewScreen> {
   final LocalAuthentication auth = LocalAuthentication();
 
 
+  Future<bool> authenticateAvant() async {
+    try {
+      final canCheck = await auth.canCheckBiometrics;
+      final isSupported = await auth.isDeviceSupported();
+
+      debugPrint("canCheckBiometrics: $canCheck");
+      debugPrint("isDeviceSupported: $isSupported");
+
+
+      if (!canCheck || !isSupported) return false;
+      return await auth.authenticate(
+        localizedReason: 'Authentifiez-vous pour lire ce document!',
+        options: const AuthenticationOptions(
+          biometricOnly:false, //pour enlever les blocages sur tablettes
+         // biometricOnly: true,
+          stickyAuth: true,
+        ),
+      );
+
+    }on PlatformException catch (e) {
+      print(e.code); // très important
+      return false;
+    }//handshake exception
+    catch (e) {
+      debugPrint("Biometric error: $e");
+      return false;
+    }
+  }
   Future<bool> authenticate() async {
     try {
       final canCheck = await auth.canCheckBiometrics;
@@ -34,20 +63,63 @@ class _DocumentViewScreenState extends State<DocumentViewScreen> {
       debugPrint("canCheckBiometrics: $canCheck");
       debugPrint("isDeviceSupported: $isSupported");
 
-      if (!canCheck || !isSupported) return false;
-      return await auth.authenticate(
-        localizedReason: 'Authentifiez-vous pour lire ce document!',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          stickyAuth: true,
-        ),
-      );
+      // 🔹 Cas tablette / device sans biométrie
+      if (!isSupported) {
+        return await _authenticateWithDeviceCredential();
+      }
+
+      // 🔹 Biométrie dispo → on tente
+      if (canCheck) {
+        final authenticated = await auth.authenticate(
+          localizedReason: 'Authentifiez-vous pour lire ce document',
+          options: const AuthenticationOptions(
+            biometricOnly: false, // IMPORTANT pour tablettes
+            stickyAuth: true,
+          ),
+        );
+
+        if (authenticated) return true;
+      }
+
+      // 🔹 Biométrie échouée → fallback
+      return await _authenticateWithDeviceCredential();
+
+    } on PlatformException catch (e) {
+      debugPrint("Biometric error code: ${e.code}");
+
+      // 🔹 Tous ces cas doivent fallback
+      if ([
+        'NotAvailable',
+        'NotEnrolled',
+        'LockedOut',
+        'PermanentlyLockedOut',
+      ].contains(e.code)) {
+        return await _authenticateWithDeviceCredential();
+      }
+
+      return false;
 
     } catch (e) {
       debugPrint("Biometric error: $e");
       return false;
     }
   }
+
+  Future<bool> _authenticateWithDeviceCredential() async {
+    try {
+      return await auth.authenticate(
+        localizedReason: 'Entrez votre code pour continuer',
+        options: const AuthenticationOptions(
+          biometricOnly: false, // ⚠️ OBLIGATOIRE
+          stickyAuth: true,
+        ),
+      );
+    } catch (e) {
+      debugPrint("Device credential error: $e");
+      return false;
+    }
+  }
+
 
 
   @override
@@ -59,7 +131,7 @@ class _DocumentViewScreenState extends State<DocumentViewScreen> {
       Metadata(
           icon: "blue_user",
           bgColor:Color(0xffEFF6FF),
-          label: 'Propriétaire',
+          label: 'Uploader par',
           value: widget.document.uploadedBy),
       Metadata(
           icon: "green_calendar",

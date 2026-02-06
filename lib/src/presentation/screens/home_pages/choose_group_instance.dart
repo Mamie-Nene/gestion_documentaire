@@ -12,6 +12,7 @@ class ChooseGroupInstance extends StatefulWidget {
 
 class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
   int selectedCardIndex = 0;
+  bool isSelected = true;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,9 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
           const SizedBox(height: AppDimensions.paddingLarge + 4),
           _buildSubtitle(context),
           const SizedBox(height: AppDimensions.paddingMedium),
-          Expanded(child: _buildCardsList(context)),
+      SizedBox(
+        height: 400,child: _buildCardsList(context)),
+        //  Expanded(child: _buildCardsList(context)),
           _buildContinueButton(context),
           SizedBox(height: 20),
         ],
@@ -66,6 +69,7 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
       style: TextStyleHelper.instance.title18BoldPlusJakartaSans.copyWith(
         fontSize: 28,
         color: appTheme.gray_900,
+
         height: 1.2,
       ),
     );
@@ -106,13 +110,18 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
     return SingleChildScrollView(
           child: Column(
             children: [
-              ...List.generate(3, (index) {
+              ...List.generate(cardsList.length, (index) {
                 final card = cardsList[index];
                 return PaymentCardItemWidget(
                   cardItem: card,
                   isSelected: selectedCardIndex == index,
                   onTap: () {
-
+                   // selectedCardIndex == index;
+                    setState(() {
+                      selectedCardIndex = index;
+                      print(selectedCardIndex);
+                     // cardsList[index].isSelected = !cardsList[index].isSelected!;
+                    });
                   },
                 );
               }),
@@ -157,7 +166,7 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
     );
   }
 
-  Widget _buildContinueButton(BuildContext context) {
+  Widget _buildContinueButtonAvant(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(AppRoutesName.homePage);
@@ -166,7 +175,8 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
         width: double.maxFinite,
         height: 56,
         decoration: BoxDecoration(
-          color: appTheme.gray_900,
+          color: Color(0xff7DAA40),
+         // color: appTheme.gray_900,
           borderRadius: BorderRadius.circular(28.0),
         ),
         child: Row(
@@ -177,6 +187,37 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
         ),
       ),
     );
+  }
+  Widget _buildContinueButton(BuildContext context) {
+    return SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed:() {
+              Navigator.of(context).pushNamed(AppRoutesName.homePage);
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppDimensions.paddingMedium + 2,
+              ),
+              backgroundColor: Color(0xff7DAA40),
+              // backgroundColor: AppColors.mainAppColor,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              ),
+            ),
+            child: const Text(
+              'Se connecter',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+        );
   }
 }
 
@@ -194,17 +235,17 @@ class PaymentCardItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return /*GestureDetector(
+    return GestureDetector(
       onTap: onTap,
-      child: */Container(
+      child: Container(
         padding: EdgeInsets.all(16),
         margin: EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? appTheme.green_600.withAlpha(13)
+              ? appTheme.bleu_600.withAlpha(13)
               : appTheme.white_A700,
           border: Border.all(
-            color: isSelected ? appTheme.green_600 : appTheme.gray_300,
+            color: isSelected ? appTheme.bleu_600 : appTheme.gray_300,
             width: 2.0,
           ),
           borderRadius: BorderRadius.circular(12.0),
@@ -244,7 +285,7 @@ class PaymentCardItemWidget extends StatelessWidget {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: appTheme.green_600,
+                  color: appTheme.bleu_600,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -255,7 +296,7 @@ class PaymentCardItemWidget extends StatelessWidget {
               ),
           ],
         ),
-   //   ),
+      ),
     );
   }
 
@@ -280,8 +321,8 @@ class PaymentCardItemWidget extends StatelessWidget {
         logoText = 'CARD';
     }
 
-    return Text(
-      logoText,
+    return Text(cardItem.cardType!,
+      //logoText,
       style: TextStyleHelper.instance.body12MediumPlusJakartaSans.copyWith(
         color: logoColor,
         fontWeight: FontWeight.w700,
@@ -473,6 +514,7 @@ class LightCodeColors {
   Color get deep_orange_50 => Color(0xFFF5F0E5);
   Color get gray_200 => Color(0xFFE5E8EA);
   Color get green_600 => Color(0xFF30A05E);
+  Color get bleu_600 => Color(0xFF0056D6);
   Color get yellow_800 => Color(0xFFEF9920);
   Color get gray_900_01 => Color(0xFF0C1C11);
   Color get green_600_01 => Color(0xFF4C9368);
@@ -525,7 +567,7 @@ class PaymentCardModel {
   final String? cardName;
   final String? cardNumber;
   final String? cardType;
-  final bool? isSelected;
+   bool? isSelected;
 
   PaymentCardModel({
     this.cardName,
