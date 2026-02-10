@@ -261,18 +261,18 @@ class _DocumentViewScreenState extends State<DocumentViewScreen> {
                   onPressed: () async {
                         //DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,widget.document.fileName);
 
-                    final isAuth = await authenticate();
+                    /*final isAuth = await authenticate();
                     if (!isAuth) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Authentification échouée")),
                       );
                       return;
-                    }
-                     // print("here on view doc in 2");
+                    }*/
+
                     Navigator.of(context).pushNamed(AppRoutesName.openSecureDocPage,
                         arguments: {"fileName": widget.document.fileName}
                     );
-                 // print("here on view doc 3");
+
                   },
                   icon: SvgPicture.asset("asset/images/eye.svg"),
                   label: Text("Visualiser"),

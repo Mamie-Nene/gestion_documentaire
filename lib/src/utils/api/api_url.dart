@@ -21,9 +21,11 @@ class ApiUrl {
   String archiverDocumentUrl = '$baseUrl/documents';
 
 //              ---------------------- events ----------------------
+
   String getEventsUrl = '$baseUrl/events';
   String getRecentsEventsUrl = '$baseUrl/events/last-four';
   String getEventsTimelineUrl = '$baseUrl/event-timelines/event';
 
-
+  //              ---------------------- reunion ----------------------
+  String getReunionsUrl = '$baseUrl/reunions';
 }

@@ -126,7 +126,7 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
                 );
               }),
               SizedBox(height: 12),
-              _buildAddCardButton(context),
+            //  _buildAddCardButton(context),
             ],
           )
     );
@@ -209,7 +209,7 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
               ),
             ),
             child: const Text(
-              'Se connecter',
+              'Rejoindre mon espace',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

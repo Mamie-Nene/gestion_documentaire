@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
 
 import '/src/data/remote/auth_api.dart';
 import '/src/domain/remote/UserInfo.dart';
@@ -117,7 +118,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 const SizedBox(height: AppDimensions.paddingMedium),
                                 // Settings Grid
                                 _buildSettingsGrid(),
+                                const SizedBox(height: AppDimensions.paddingMedium),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).pushNamed( AppRoutesName.chooseGroupInstance);
+                                  },
+                                  borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.04),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(6),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Icon(Icons.settings_backup_restore,
+                                            color: Colors.blue,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        SizedBox(width: 15,),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+
+                                            const SizedBox(height: AppDimensions.paddingSmall),
+                                            Text("Changement de groupe",
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.loginTitleColor,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text("Veuillez cliquer ici pour accéder à tous vos groupes ",
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: AppColors.textMainPageColor,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+
+                                        const Spacer(),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 12,
+                                          color: AppColors.textMainPageColor.withOpacity(0.5),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(height: AppDimensions.paddingLarge * 2),
+
+
                                 // Logout Button
                                 _buildLogoutButton(),
                                 const SizedBox(height: AppDimensions.paddingLarge),
