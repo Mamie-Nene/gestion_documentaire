@@ -53,9 +53,8 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
           const SizedBox(height: AppDimensions.paddingLarge + 4),
           _buildSubtitle(context),
           const SizedBox(height: AppDimensions.paddingMedium),
-      SizedBox(
-        height: 400,child: _buildCardsList(context)),
-        //  Expanded(child: _buildCardsList(context)),
+          SizedBox(height: 400,child: _buildCardsList(context)),
+          //  Expanded(child: _buildCardsList(context)),
           _buildContinueButton(context),
           SizedBox(height: 20),
         ],
@@ -88,22 +87,22 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
   Widget _buildCardsList(BuildContext context) {
     List<PaymentCardModel> cardsList = [
       PaymentCardModel(
-        cardName: 'Comité Gestion',
-        cardNumber: 'Président de comité',
-        cardType: 'CG',
-        isSelected: selectedCardIndex == 'Comité Gestion',
+        cardName: "Conseil d'Administration",
+        cardNumber: 'Président',
+        cardType: 'CA',
+        isSelected: selectedCardIndex == 'CA',
       ),
       PaymentCardModel(
-        cardName: 'Comité Développement',
+        cardName: 'Assemblée Générale Ordinaire',
         cardNumber: 'Membre simple',
-        cardType: 'CD',
-        isSelected: selectedCardIndex == 'Comité Développement',
+        cardType: 'AGO',
+        isSelected: selectedCardIndex == 'AGO',
       ),
       PaymentCardModel(
-        cardName: 'Comité Stratégique',
-        cardNumber: 'Coordinateur',
-        cardType: 'CS',
-        isSelected: selectedCardIndex == 'Comité Stratégique',
+        cardName: 'Assemblée Générale Administrative',
+        cardNumber: 'Administrateur',
+        cardType: 'AGA',
+        isSelected: selectedCardIndex == 'AGA',
       ),
     ];
 

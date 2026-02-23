@@ -295,4 +295,207 @@ class _FeuillePresencePageState extends State<FeuillePresencePage> {
 
 enum ContactStatus { approved, rejected, none }
 
+class ListPresencePage extends StatefulWidget {
+  final String title;
+  const ListPresencePage({super.key, required this.title});
+
+  @override
+  State<ListPresencePage> createState() => _ListPresencePageState();
+}
+
+class _ListPresencePageState extends State<ListPresencePage> {
+  final SignatureController controller = SignatureController(penStrokeWidth: 3, penColor: Colors.black,);
+
+  marquerPresence(BuildContext context){
+    return showModalBottomSheet(
+        context:context ,
+        backgroundColor:Colors.white,
+        isScrollControlled :true,
+        useSafeArea:true,
+        constraints: BoxConstraints.expand(width:MediaQuery.of(context).size.width, height:MediaQuery.of(context).size.height/2.1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        builder: ( context){
+          return Container(
+            height: MediaQuery.of(context).size.height/2.1,
+            padding: EdgeInsets.all(12.0),
+            // width:MediaQuery.of(context).size.width ,
+            child: Center(
+              child: Column(
+                spacing: 12,
+                children: [
+                  Text("Veuillez signer ici pour matérialiser votre présence",style: TextStyle(fontSize: 14),),
+                  Expanded(
+                    child: Signature(
+                      controller: controller,
+                      backgroundColor: Colors.grey[200]!,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        onPressed: controller.clear,
+                        child: const Text("Effacer",style: TextStyle(color: Colors.grey),),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.greenMainAppColor,
+                        ),
+                        onPressed: () => Navigator.pushNamed(context, AppRoutesName.agendaPage,arguments: {"title": widget.title}),
+                        //onPressed: () => Navigator.pop(context, ),
+                        // onPressed: () => Navigator.pop(context, true),
+                        child: const Text("Valider",style: TextStyle(color: Colors.white),),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        }
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.newBackgroundColor,
+      //backgroundColor: Color(0xff305A9D),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                spacing: 12,
+                children: [
+                  BackButton(),
+                  Text(
+                    "Feuille de présence",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView(
+                  children: [
+                    Container(
+                      decoration:BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                     //   border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: ContactTile(context,
+                        name: "Mame Néné BA",
+                        role: "Président",
+                        status: ContactStatus.none,
+
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      decoration:BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                     //   border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: ContactTile(context,
+                        name: "Modou Diop",
+                        role: "Directeur Général",
+                        status: ContactStatus.approved,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      decoration:BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                     //   border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: ContactTile(context,
+                          name: "Cheikh Sow",
+                          role: "Secrétaire",
+                          status: ContactStatus.rejected,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      decoration:BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        //   border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: ContactTile(context,
+                          name: "Mouhamed Diouf",
+                          role: "Administrateur",
+                          status: ContactStatus.approved,
+                        ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  ContactTile( BuildContext context,{
+    required String name,
+    required String role,
+    required ContactStatus status
+  }) {
+    IconData? icon; Color? color;
+
+    switch (status) {
+      case ContactStatus.approved:
+        icon = Icons.check_circle;
+        color = Colors.green;
+        break;
+      case ContactStatus.rejected:
+        icon = Icons.cancel;
+        color = Colors.red;
+        break;
+      case ContactStatus.none:
+        icon = Icons.add_circle;
+        color = Colors.grey;
+        break;
+    }
+    String firstLetter = name.substring(0,1).toUpperCase();
+    print(firstLetter);
+    return ListTile(
+      /*leading: CircleAvatar(
+        backgroundColor: Color(0xFFEFEFEF),
+        child: Icon(Icons.person, color: Colors.grey),
+          ),*/
+      leading:  CircleAvatar(
+        backgroundColor:  Color(0xFF1565C0),
+        child:Text(
+          firstLetter,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize:MediaQuery.of(context).textScaleFactor*16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+      subtitle: Text(role),
+      trailing: IconButton(
+        icon: Icon(icon, color: color),
+        onPressed: status == ContactStatus.none ? () {marquerPresence(context);} : null,
+      ),
+    );
+  }
+}
 

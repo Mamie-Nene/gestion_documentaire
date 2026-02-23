@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/conseil_administration/pages/add_reunion.dart';
 import 'package:gestion_documentaire/conseil_administration/pages/agenda_page.dart';
 import 'package:gestion_documentaire/conseil_administration/pages/feuille_presence_page.dart';
 import 'package:gestion_documentaire/conseil_administration/pages/documents_page.dart';
@@ -100,8 +101,9 @@ class RouteGenerator {
 
         // new
       case AppRoutesName.meetingListPage :
-         return MaterialPageRoute(builder: (context) =>  TaskTimelinePage());
-         //return MaterialPageRoute(builder: (context) =>  MeetingListPage());
+         return MaterialPageRoute(builder: (context) => ListReunionPage());
+         //return MaterialPageRoute(builder: (context) =>  TaskTimelinePage());
+         //return MaterialPageRoute(builder: (context) =>  MeetingListPage()); AVANT AVANT
 
       case AppRoutesName.signaturePage :
          return MaterialPageRoute(builder: (context) =>  SignaturePage());
@@ -115,15 +117,19 @@ class RouteGenerator {
          return MaterialPageRoute(builder: (context) => DocumentsPage());
 
       case AppRoutesName.reportPage :
-         return MaterialPageRoute(builder: (context) =>  ReportPage());
+        return MaterialPageRoute(builder: (context) =>  ReportPage());
+
+      case AppRoutesName.addMeetingPage :
+         return MaterialPageRoute(builder: (context) =>  AddReunionScreen());
 
       case AppRoutesName.feuillePresencePage :
         final args = settings.arguments;
         var title = (args as Map)["title"];
-         return MaterialPageRoute(builder: (context) => FeuillePresencePage(title: title,));
+         return MaterialPageRoute(builder: (context) => ListPresencePage(title: title,));
+         //return MaterialPageRoute(builder: (context) => FeuillePresencePage(title: title,));
     // return MaterialPageRoute(builder: (context) =>  AttendancePage());
 
-        // case AppRoutesName.addMeetingPage :return MaterialPageRoute(builder: (context) =>  AddMeetingPage());
+
 
 
       default:

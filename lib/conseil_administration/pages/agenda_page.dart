@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+
+import '/src/presentation/widgets/utils_widget.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 import '/conseil_administration/models/agenda_item.dart';
@@ -14,9 +16,7 @@ class AgendaPage extends StatefulWidget {
 
 class _AgendaPageState extends State<AgendaPage> {
   bool isForAgenda=true;
-  static const _tabs = ['Récents', 'Partagés', 'Favoris'];
-  static const _filters = ["Aujourd'hui", 'Cette semaine', 'Ce mois'];
-  int _activeFilter = 0;
+
   static const _choice = ['Ordre du jour', 'Documents'];
 
   List<AgendaItem> agenda = [
@@ -36,58 +36,109 @@ class _AgendaPageState extends State<AgendaPage> {
     return DefaultTabController(
         length: _choice.length,
         child: Scaffold(
-          appBar: AppBar(title: Text(widget.title)),
-          body: Container(
-            child: Column(
+          backgroundColor: AppColors.newBackgroundColor,
+          body:  Column(
               children: [
-                 _buildTabBar(),
-               /* Row(
-                  children: [
-                    TextButton(
-                        onPressed: (){
-                          setState(() {isForAgenda=true;});
-                          },
-                        child: Text("Ordre du jour",style: TextStyle(color: AppColors.mainAppColor),)
-                    ),
-                    TextButton(onPressed: (){ setState(() {isForAgenda=false;});}, child: Text("Documents",style: TextStyle(color: AppColors.mainAppColor),)),
-                  ],
-                ),*/
-                //isForAgenda?
-                Expanded(
-                  child: TabBarView(
-                    children: List.generate(
-                      _tabs.length,
-                          (index) => _buildDocumentList(index),
+                Container(
+                  width: double.infinity,
+                  decoration:  const BoxDecoration(
+                    color: Color(0xff305A9D),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 24, right: 24, top: 50, bottom: 100),
+                    child: Row(
+                      children: [
+                        UtilsWidget().iconContainerCard(
+                          isItWithBorder: true,
+                          bgColor: null,
+                          widget:IconButton(
+                            icon:Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                            onPressed: (){Navigator.of(context).pushReplacementNamed(AppRoutesName.meetingListPage);},
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        Expanded(
+                          child: Text(
+                              widget.title,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontFamily: 'Roboto',
+                                fontWeight: FontWeight.w700,
+                                height: 1.40,
+                              )
+                            //theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w600,),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: const Color(0xffF5F6F9)),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.add, color: Colors.white, size: 20),
+                                SizedBox(width: 8),
+                                Text(
+                                  "Générer un PV",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-               /* Expanded(
-                  child: ListView.builder(
-                    itemCount:agenda.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(agenda[index].title),
-                        trailing: const Icon(Icons.edit),
-                      );
-                    },
-                  ),
-                )*/
-                /*Expanded(
-                  child: ListView.builder(
-                    itemCount: agenda.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(agenda[index].title),
-                        trailing: const Icon(Icons.edit),
-                      );
-                    },
-                  ),
-                )
-                    :*/
-                //recentDoc()
+                Flexible(
+                    fit: FlexFit.loose,
+                    child: Transform.translate(
+                        offset: const Offset(0, -70),
+                        child:Container(
+                          padding: const EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 5),
+                          margin: const EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 5),
+                          width: double.infinity,
+                          decoration:  BoxDecoration(
+                              color:Colors.white,
+                            borderRadius: BorderRadius.circular(12.0)
+                          ),
+                          child: Column(
+                              children: [
+                                _buildTabBar(),
+                                Expanded(
+                                child: TabBarView(
+                                  children:[
+                                    ListView.builder(
+                                      itemCount: agenda.length,
+                                      itemBuilder: (context, index) {
+                                        return ListTile(
+                                          title: Text(agenda[index].title),
+                                          trailing: const Icon(Icons.edit),
+                                        );
+                                      },
+                                    ),
+                                    _buildDocumentList(0),
+
+                                  ]
+                                ),
+                              ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    )
               ],
             ),
-          ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: AppColors.mainAppColor,
             child: const Icon(Icons.add,color: Colors.white,),
@@ -113,72 +164,10 @@ class _AgendaPageState extends State<AgendaPage> {
       tabs: _choice.map((text) => Tab(text: text)).toList(),
     );
   }
-  Widget _buildTopBar(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.mainAppColor),
-        ),
 
-        Text(
-          'Documents Récents',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: AppColors.loginTitleColor,
-          ),
-        ),
-
-        IconButton(
-          onPressed: () {},
-          icon:
-          Icon(Icons.more_horiz_rounded, color: AppColors.loginTitleColor),
-        ),
-      ],
-    );
-  }
-
-  Widget recentDoc(){
-    // _buildFloatingActionButton(),
-    return DefaultTabController(
-      length: _tabs.length,
-      child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingLarge,
-                  vertical: AppDimensions.paddingMedium,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTopBar(context),
-                    const SizedBox(height: AppDimensions.paddingMedium),
-                    _buildSearchField(),
-                    const SizedBox(height: AppDimensions.paddingMedium),
-                    // _buildFilterChips(),
-                  ],
-                ),
-              ),
-              // _buildTabBar(),
-              // const Divider(height: 1, color: AppColors.dividerLight),
-              Expanded(
-                child: TabBarView(
-                  children: List.generate(
-                    _tabs.length,
-                        (index) => _buildDocumentList(index),
-                  ),
-                ),
-              ),
-            ],
-        ),
-    );
-  }
   Widget _buildSearchField() {
     return Container(
+      padding: EdgeInsets.fromLTRB(0, 20, 0, 5),
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
@@ -222,23 +211,29 @@ class _AgendaPageState extends State<AgendaPage> {
       ),
     );
   }
+
   Widget _buildDocumentList(int tabIndex) {
     final documents = _generateDocuments(tabIndex);
-    return ListView.separated(
-      padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-      itemCount: documents.length,
-      separatorBuilder: (_, __) =>
-      const SizedBox(height: AppDimensions.paddingMedium),
-      itemBuilder: (context, index) {
-        final doc = documents[index];
-        return _DocumentTile(
-          document: doc,
-          onTap: () =>
-              Navigator.of(context).pushNamed(AppRoutesName.viewDocumentPage,
-                  arguments: {"titleDoc": doc.title}
-              ),
-        );
-      },
+    return Column(
+      children: [
+        _buildSearchField(),
+        Expanded(
+          child: ListView.separated(
+            itemCount: documents.length,
+            separatorBuilder: (_, __) => const SizedBox(height: AppDimensions.paddingMedium),
+            itemBuilder: (context, index) {
+              final doc = documents[index];
+              return _DocumentTile(
+                document: doc,
+                onTap: () =>
+                    Navigator.of(context).pushNamed(AppRoutesName.viewDocumentPage,
+                        arguments: {"titleDoc": doc.title}
+                    ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
