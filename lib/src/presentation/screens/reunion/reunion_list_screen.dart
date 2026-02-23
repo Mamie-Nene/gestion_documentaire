@@ -1,5 +1,5 @@
 
-import 'package:gestion_documentaire/src/data/remote/reunion_api.dart';
+import '/src/data/remote/reunion_api.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +27,7 @@ class _ReunionListScreenState extends State<ReunionListScreen> {
   final DateTime _today = DateTime.now();
 
   bool listView=true;
-  List<Reunion> events = [];
+  List<Reunion> reunions = [];
   bool _isReunionsLoading=false;
 
   // Pagination state
@@ -38,33 +38,33 @@ class _ReunionListScreenState extends State<ReunionListScreen> {
 
   @override
   void initState() {
-    eventsGetted();
+    reunionsGetted();
     listView =true;
     super.initState();
   }
 
-  eventsGetted() async {
+  reunionsGetted() async {
     setState(() {
       _isReunionsLoading = true;
     });
     await ReunionApi().getListReunions( ApiUrl().getReunionsUrl).then((value) {
       setState(() {
-        events = value ?? [];
-       // events = value;
+        reunions = value ?? [];
+       // reunions = value;
         _isReunionsLoading=false;
 
-        debugPrint('Loaded ${events.length} events from API');
+        debugPrint('Loaded ${reunions.length} reunions from API');
       });
     }).catchError((error) {
       setState(() {
         _isReunionsLoading=false;
       });
-      debugPrint('Error loading events: $error');
+      debugPrint('Error loading reunions: $error');
     });
   }
 
   List<Reunion> get _visibleReunions {
-    return events.where((event) {
+    return reunions.where((event) {
       final bool matchesSearch = event.title
           .toLowerCase()
           .contains(_searchController.text.toLowerCase());
@@ -77,10 +77,10 @@ class _ReunionListScreenState extends State<ReunionListScreen> {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  Map<String, List<Reunion>> get _eventsByDate {
+  Map<String, List<Reunion>> get _reunionsByDate {
     final Map<String, List<Reunion>> map = {};
-    debugPrint('=== Mapping events by date ===');
-    debugPrint('Total visible events: ${_visibleReunions.length}');
+    debugPrint('=== Mapping reunions by date ===');
+    debugPrint('Total visible reunions: ${_visibleReunions.length}');
 
     for (var event in _visibleReunions) {
       try {
@@ -126,7 +126,7 @@ class _ReunionListScreenState extends State<ReunionListScreen> {
         }
         map[key]!.add(event);
       } catch (e) {
-        debugPrint('Erreur de transformation de date events de "${event.title}": "${event.startDate}" - Erreur: $e');
+        debugPrint('Erreur de transformation de date reunions de "${event.title}": "${event.startDate}" - Erreur: $e');
         // Skip invalid dates
       }
     }
@@ -140,7 +140,7 @@ class _ReunionListScreenState extends State<ReunionListScreen> {
 
   List<Reunion> _getReunionsForDate(DateTime date) {
     final key = _formatDateKey(date);
-    return _eventsByDate[key] ?? [];
+    return _reunionsByDate[key] ?? [];
   }
 
   int get _totalPages {
@@ -552,7 +552,7 @@ class _ReunionListScreenState extends State<ReunionListScreen> {
                     // Debug for November 24 (any year)
                     if (day.month == 11 && day.day == 24) {
                       debugPrint('Date key: ${_formatDateKey(day)}');
-                      debugPrint('Looking for events in: ${_eventsByDate.keys.where((key) => key.contains('11-24')).toList()}');
+                      debugPrint('Looking for reunions in: ${_reunionsByDate.keys.where((key) => key.contains('11-24')).toList()}');
                       if (dayReunions.isNotEmpty) {
                         debugPrint('Reunions found: ${dayReunions.map((e) => e.title).toList()}');
                       }

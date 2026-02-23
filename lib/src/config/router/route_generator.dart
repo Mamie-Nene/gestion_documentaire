@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/conseil_administration/pages/agenda_page.dart';
+import 'package:gestion_documentaire/conseil_administration/pages/feuille_presence_page.dart';
+import 'package:gestion_documentaire/conseil_administration/pages/documents_page.dart';
+import 'package:gestion_documentaire/conseil_administration/pages/meeting_list_page.dart';
+import 'package:gestion_documentaire/conseil_administration/pages/report_page.dart';
+import 'package:gestion_documentaire/conseil_administration/pages/signature_page.dart';
 import 'package:gestion_documentaire/src/presentation/screens/documents/secure_document_viewer.dart';
 import 'package:gestion_documentaire/src/presentation/screens/home_pages/choose_group_instance.dart';
 
@@ -91,6 +97,34 @@ class RouteGenerator {
 
       case AppRoutesName.chooseGroupInstance:
         return MaterialPageRoute(builder: (context) =>  ChooseGroupInstance());
+
+        // new
+      case AppRoutesName.meetingListPage :
+         return MaterialPageRoute(builder: (context) =>  TaskTimelinePage());
+         //return MaterialPageRoute(builder: (context) =>  MeetingListPage());
+
+      case AppRoutesName.signaturePage :
+         return MaterialPageRoute(builder: (context) =>  SignaturePage());
+
+      case AppRoutesName.agendaPage :
+        final args = settings.arguments;
+        var title = (args as Map)["title"];
+         return MaterialPageRoute(builder: (context) =>  AgendaPage(title: title,));
+
+      case AppRoutesName.documentsPage :
+         return MaterialPageRoute(builder: (context) => DocumentsPage());
+
+      case AppRoutesName.reportPage :
+         return MaterialPageRoute(builder: (context) =>  ReportPage());
+
+      case AppRoutesName.feuillePresencePage :
+        final args = settings.arguments;
+        var title = (args as Map)["title"];
+         return MaterialPageRoute(builder: (context) => FeuillePresencePage(title: title,));
+    // return MaterialPageRoute(builder: (context) =>  AttendancePage());
+
+        // case AppRoutesName.addMeetingPage :return MaterialPageRoute(builder: (context) =>  AddMeetingPage());
+
 
       default:
         return _errorRoute();

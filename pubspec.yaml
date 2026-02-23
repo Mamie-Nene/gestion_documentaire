@@ -31,6 +31,7 @@ dependencies:
   local_auth: ^2.2.0
   #flutter_windowmanager: ^0.2.0
   syncfusion_flutter_pdfviewer: ^32.2.3
+  signature: ^6.3.0
 
 dev_dependencies:
   flutter_test:

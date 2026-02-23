@@ -34,6 +34,18 @@ class AppRoutesName {
      static const String chooseGroupInstance = '/chooseGroupInstance';
 
 
+     // ----------------------- Conseil Admin Pages ------------------------
+
+     static const String meetingListPage = '/meetingListPage';
+     static const String signaturePage = '/signaturePage';
+     static const String agendaPage = '/agendaPage';
+     static const String documentsPage = '/documentsPage';
+     static const String reportPage = '/reportPage';
+     static const String feuillePresencePage = '/attendancePage';
+     static const String addMeetingPage = '/addMeetingPage';
+
+
+
 
 
 }

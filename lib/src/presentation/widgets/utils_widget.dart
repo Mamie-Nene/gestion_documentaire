@@ -377,7 +377,7 @@ class UtilsWidget{
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index]; //categories[index];
-        List<List<Color>> gradient=[[AppColors.mainBlueFirst, AppColors.secondAppColor],[AppColors.accentTeal, Color(0xFF0BB6D9)],[Colors.orange, Color(0xFFFFD28C)],[Color(0xFF4E65FF), Color(0xFF92EFFD)],];
+        List<List<Color>> gradient=[[AppColors.mainAppColor, AppColors.secondAppColor],[AppColors.accentTeal, Color(0xFF0BB6D9)],[Colors.orange, Color(0xFFFFD28C)],[Color(0xFF4E65FF), Color(0xFF92EFFD)],];
         List<IconData> icon = [Icons.picture_as_pdf_rounded,Icons.article_outlined,Icons.video_camera_back_outlined,Icons.document_scanner,];
 
         return InkWell(

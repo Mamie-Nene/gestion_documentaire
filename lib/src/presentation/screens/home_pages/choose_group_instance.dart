@@ -175,7 +175,7 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
         width: double.maxFinite,
         height: 56,
         decoration: BoxDecoration(
-          color: Color(0xff7DAA40),
+          color:AppColors.greenMainAppColor,
          // color: appTheme.gray_900,
           borderRadius: BorderRadius.circular(28.0),
         ),
@@ -193,7 +193,8 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
           width: double.infinity,
           child: ElevatedButton(
             onPressed:() {
-              Navigator.of(context).pushNamed(AppRoutesName.homePage);
+              Navigator.of(context).pushNamed(AppRoutesName.meetingListPage);
+             // Navigator.of(context).pushNamed(AppRoutesName.homePage);
             },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(

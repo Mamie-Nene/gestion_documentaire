@@ -143,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.symmetric(
                   vertical: AppDimensions.paddingMedium + 2,
                 ),
-                backgroundColor: Color(0xff7DAA40),
+                backgroundColor: AppColors.greenMainAppColor,
                // backgroundColor: AppColors.mainAppColor,
                 foregroundColor: Colors.white,
                 elevation: 0,

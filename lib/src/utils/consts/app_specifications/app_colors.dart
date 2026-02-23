@@ -6,8 +6,8 @@ class AppColors {
   static const mainAppColor = Color(0xFF0056D6);
   //static const mainAppColor = Color(0xFF7DAA40);
   //static const mainAppColor = Color(0xFF7EAA41); chat
-  static const mainBlueFirst = Color(0xFF0056D6);
   static const secondAppColor = Color(0xFF3A88FE);
+  static const greenMainAppColor = Color(0xff7DAA40);
   static const iconBorderColor = Color(0xffF5F6F9);
   static const cardBorderColor = Color(0xffDEE8EE);
   static const searchBgColor = Color(0xffF9F9F9);
@@ -16,6 +16,8 @@ class AppColors {
   // -------------------- Background Color ----------------------
 
   static Color mainBackgroundColor = const Color(0xFFF4F7FA);
+  static Color newBackgroundColor = const Color(0xffEEF2F8);
+
   static Color mainBackgroundColorForCustomTextField = const Color(0xfff2f2f2);
   static Color secondBackgroundColor = const Color(0xffeeeeee);
 

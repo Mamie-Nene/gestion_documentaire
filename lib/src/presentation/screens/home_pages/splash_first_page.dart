@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import '/src/presentation/screens/auth/login_screen.dart';
+import '/src/utils/consts/routes/app_routes_name.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class SplashPage extends StatefulWidget {
@@ -11,8 +11,7 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage>
-    with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
@@ -35,11 +34,7 @@ class _SplashPageState extends State<SplashPage>
 
     Timer(
       const Duration(seconds: 3),
-      () => Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const LoginScreen(),
-        ),
-      ),
+      () => Navigator.of(context).pushReplacementNamed(AppRoutesName.chooseGroupInstance)//loginPage
     );
   }
 
@@ -75,8 +70,8 @@ class _SplashPageState extends State<SplashPage>
                 ),
                 const SizedBox(height: AppDimensions.paddingLarge + 8),
                 // App Name
-                Text(
-                  'Gestion Documentaire',
+                Text(AppText.SPLASH_TEXT,
+
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,

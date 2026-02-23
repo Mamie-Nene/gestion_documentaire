@@ -1,32 +1,151 @@
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
+import '/conseil_administration/models/agenda_item.dart';
 
-class RecentDocumentListScreen extends StatefulWidget {
-  const RecentDocumentListScreen({super.key});
+class AgendaPage extends StatefulWidget {
+  final String title;
+  const AgendaPage({super.key, required this.title});
 
   @override
-  State<RecentDocumentListScreen> createState() => _RecentDocumentListScreenState();
+  State<AgendaPage> createState() => _AgendaPageState();
 }
 
-class _RecentDocumentListScreenState extends State<RecentDocumentListScreen> {
+class _AgendaPageState extends State<AgendaPage> {
+  bool isForAgenda=true;
   static const _tabs = ['Récents', 'Partagés', 'Favoris'];
   static const _filters = ["Aujourd'hui", 'Cette semaine', 'Ce mois'];
   int _activeFilter = 0;
+  static const _choice = ['Ordre du jour', 'Documents'];
 
-
-
+  List<AgendaItem> agenda = [
+    AgendaItem("Présentation du projet"),
+    AgendaItem("Budget"),
+    AgendaItem("Réorganisation "),
+  ];
 
   @override
+  void initState() {
+    isForAgenda=true;
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
+
+    return DefaultTabController(
+        length: _choice.length,
+        child: Scaffold(
+          appBar: AppBar(title: Text(widget.title)),
+          body: Container(
+            child: Column(
+              children: [
+                 _buildTabBar(),
+               /* Row(
+                  children: [
+                    TextButton(
+                        onPressed: (){
+                          setState(() {isForAgenda=true;});
+                          },
+                        child: Text("Ordre du jour",style: TextStyle(color: AppColors.mainAppColor),)
+                    ),
+                    TextButton(onPressed: (){ setState(() {isForAgenda=false;});}, child: Text("Documents",style: TextStyle(color: AppColors.mainAppColor),)),
+                  ],
+                ),*/
+                //isForAgenda?
+                Expanded(
+                  child: TabBarView(
+                    children: List.generate(
+                      _tabs.length,
+                          (index) => _buildDocumentList(index),
+                    ),
+                  ),
+                ),
+               /* Expanded(
+                  child: ListView.builder(
+                    itemCount:agenda.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(agenda[index].title),
+                        trailing: const Icon(Icons.edit),
+                      );
+                    },
+                  ),
+                )*/
+                /*Expanded(
+                  child: ListView.builder(
+                    itemCount: agenda.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(agenda[index].title),
+                        trailing: const Icon(Icons.edit),
+                      );
+                    },
+                  ),
+                )
+                    :*/
+                //recentDoc()
+              ],
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: AppColors.mainAppColor,
+            child: const Icon(Icons.add,color: Colors.white,),
+            onPressed: () {
+              setState(() {
+                agenda.add(AgendaItem("Nouveau point"));
+              }
+            );
+          },
+        ),
+      )
+    );
+  }
+  Widget _buildTabBar() {
+    return TabBar(
+      labelColor: AppColors.mainAppColor,
+      unselectedLabelColor: AppColors.textMainPageColor.withOpacity(0.6),
+      indicator: UnderlineTabIndicator(
+        borderSide: const BorderSide(color: AppColors.mainAppColor, width: 3),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      labelStyle: const TextStyle(fontWeight: FontWeight.w700),
+      tabs: _choice.map((text) => Tab(text: text)).toList(),
+    );
+  }
+  Widget _buildTopBar(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: AppColors.mainAppColor),
+        ),
+
+        Text(
+          'Documents Récents',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: AppColors.loginTitleColor,
+          ),
+        ),
+
+        IconButton(
+          onPressed: () {},
+          icon:
+          Icon(Icons.more_horiz_rounded, color: AppColors.loginTitleColor),
+        ),
+      ],
+    );
+  }
+
+  Widget recentDoc(){
+    // _buildFloatingActionButton(),
     return DefaultTabController(
       length: _tabs.length,
-      child: Scaffold(
-        backgroundColor: AppColors.mainBackgroundColor,
-        floatingActionButton: _buildFloatingActionButton(),
-        body: SafeArea(
-          child: Column(
+      child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -40,55 +159,24 @@ class _RecentDocumentListScreenState extends State<RecentDocumentListScreen> {
                     const SizedBox(height: AppDimensions.paddingMedium),
                     _buildSearchField(),
                     const SizedBox(height: AppDimensions.paddingMedium),
-                   // _buildFilterChips(),
+                    // _buildFilterChips(),
                   ],
                 ),
               ),
-             // _buildTabBar(),
-             // const Divider(height: 1, color: AppColors.dividerLight),
+              // _buildTabBar(),
+              // const Divider(height: 1, color: AppColors.dividerLight),
               Expanded(
                 child: TabBarView(
                   children: List.generate(
                     _tabs.length,
-                    (index) => _buildDocumentList(index),
+                        (index) => _buildDocumentList(index),
                   ),
                 ),
               ),
             ],
-          ),
         ),
-      ),
     );
   }
-
-  Widget _buildTopBar(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.mainAppColor),
-        ),
-
-            Text(
-              'Documents Récents',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: AppColors.loginTitleColor,
-              ),
-            ),
-
-        IconButton(
-          onPressed: () {},
-          icon:
-              Icon(Icons.more_horiz_rounded, color: AppColors.loginTitleColor),
-        ),
-      ],
-    );
-  }
-
   Widget _buildSearchField() {
     return Container(
       decoration: BoxDecoration(
@@ -122,73 +210,25 @@ class _RecentDocumentListScreenState extends State<RecentDocumentListScreen> {
             decoration: BoxDecoration(
               color: AppColors.mainAppColor.withOpacity(0.12),
               borderRadius:
-                  BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              BorderRadius.circular(AppDimensions.borderRadiusLarge),
             ),
             child: IconButton(
               onPressed: () {},
               icon:
-                  const Icon(Icons.sort_rounded, color: AppColors.mainAppColor),
+              const Icon(Icons.sort_rounded, color: AppColors.mainAppColor),
             ),
           ),
         ],
       ),
     );
   }
-
-  Widget _buildFilterChips() {
-    return SizedBox(
-      height: 36,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _filters.length,
-        separatorBuilder: (_, __) =>
-            const SizedBox(width: AppDimensions.paddingSmall),
-        itemBuilder: (context, index) {
-          final selected = _activeFilter == index;
-          return ChoiceChip(
-            label: Text(_filters[index]),
-            selected: selected,
-            onSelected: (_) => setState(() => _activeFilter = index),
-            backgroundColor: AppColors.cardSurfaceMuted,
-            selectedColor: AppColors.mainAppColor.withOpacity(0.15),
-            labelStyle: TextStyle(
-              color: selected
-                  ? AppColors.mainAppColor
-                  : AppColors.textMainPageColor,
-              fontWeight: FontWeight.w600,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(999),
-              side: BorderSide(
-                color: selected ? AppColors.mainAppColor : Colors.transparent,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return TabBar(
-      labelColor: AppColors.mainAppColor,
-      unselectedLabelColor: AppColors.textMainPageColor.withOpacity(0.6),
-      indicator: UnderlineTabIndicator(
-        borderSide: const BorderSide(color: AppColors.mainAppColor, width: 3),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      labelStyle: const TextStyle(fontWeight: FontWeight.w700),
-      tabs: _tabs.map((text) => Tab(text: text)).toList(),
-    );
-  }
-
   Widget _buildDocumentList(int tabIndex) {
     final documents = _generateDocuments(tabIndex);
     return ListView.separated(
       padding: const EdgeInsets.all(AppDimensions.paddingLarge),
       itemCount: documents.length,
       separatorBuilder: (_, __) =>
-          const SizedBox(height: AppDimensions.paddingMedium),
+      const SizedBox(height: AppDimensions.paddingMedium),
       itemBuilder: (context, index) {
         final doc = documents[index];
         return _DocumentTile(
@@ -221,16 +261,16 @@ class _RecentDocumentListScreenState extends State<RecentDocumentListScreen> {
 
     return List.generate(
       6 - tabIndex,
-      (index) {
+          (index) {
         final color = accentPalette[(index + tabIndex) % accentPalette.length];
         final title =
             '${baseTitles[index % baseTitles.length]} ${2025 - tabIndex}';
         final sizeValue =
-            ((index + 2) * 1.2).toStringAsFixed(1).replaceFirst('.', ',');
+        ((index + 2) * 1.2).toStringAsFixed(1).replaceFirst('.', ',');
         return _DocumentListItem(
           title: title,
           owner:
-              tabIndex == 1 ? 'Partagé par Clara' : 'Vous en êtes propriétaire',
+          tabIndex == 1 ? 'Partagé par Clara' : 'Vous en êtes propriétaire',
           size: '$sizeValue Mo',
           updatedAt: 'il y a ${index + 1} h',
           accent: color,
@@ -252,7 +292,6 @@ class _RecentDocumentListScreenState extends State<RecentDocumentListScreen> {
     );
   }
 }
-
 class _DocumentTile extends StatelessWidget {
   const _DocumentTile({
     required this.document,
@@ -319,7 +358,7 @@ class _DocumentTile extends StatelessWidget {
                         document.updatedAt,
                         style: TextStyle(
                             color:
-                                AppColors.textMainPageColor.withOpacity(0.8)),
+                            AppColors.textMainPageColor.withOpacity(0.8)),
                       ),
                       const SizedBox(width: 12),
                       Container(
@@ -335,7 +374,7 @@ class _DocumentTile extends StatelessWidget {
                         document.size,
                         style: TextStyle(
                             color:
-                                AppColors.textMainPageColor.withOpacity(0.8)),
+                            AppColors.textMainPageColor.withOpacity(0.8)),
                       ),
                     ],
                   ),
