@@ -1,16 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'EventTimeline.dart';
+part of 'AgendaMeeting.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-EventTimeline _$EventTimelineFromJson(Map<String, dynamic> json) =>
-    EventTimeline(
+AgendaMeeting _$AgendaMeetingFromJson(Map<String, dynamic> json) =>
+    AgendaMeeting(
       json['id'] as String,
-      json['event'] as String,
-      json['eventTitle'] as String,
+      json['meetingCode'] as String,
+      json['meetingTitle'] as String,
       json['description'] as String,
       json['startTime'] as String,
       json['endTime'] as String,
@@ -18,14 +18,14 @@ EventTimeline _$EventTimelineFromJson(Map<String, dynamic> json) =>
       json['updatedAt'] as String,
     );
 
-Map<String, dynamic> _$EventTimelineToJson(EventTimeline instance) =>
+Map<String, dynamic> _$AgendaMeetingToJson(AgendaMeeting instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'event': instance.event,
-      'eventTitle': instance.eventTitle,
+      'meetingCode': instance.meetingCode,
+      'meetingTitle': instance.meetingTitle,
       'description': instance.description,
+      'startTime': instance.startTime,
       'endTime': instance.endTime,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
-      'startTime': instance.startTime,
     };

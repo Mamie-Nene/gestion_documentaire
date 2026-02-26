@@ -7,7 +7,7 @@ part 'Event.g.dart';
 class Event {
   final String id,title,description,startDate,endDate,location,code;
   final int documentCount;
-    final String status;
+  final String status;
   final List<String> userGroups;
 
 

@@ -6,16 +6,17 @@ import '/src/utils/consts/app_specifications/all_directories.dart';
 class SearchAndFilter extends StatelessWidget {
   final TextEditingController searchController;
   final ValueChanged<String>? onChangeFunction;
+  final Color searchBgColor;
   final String text;
   final bool isExpanded ;
-   SearchAndFilter({super.key, required this.searchController, required this.onChangeFunction, required this.text, required this.isExpanded });
+   SearchAndFilter({super.key, required this.searchController, required this.onChangeFunction, required this.text, required this.isExpanded, required this.searchBgColor });
 
   @override
   Widget build(BuildContext context) {
     final searchBox = Container(
       width: isExpanded ? null : 300,
       decoration: BoxDecoration(
-        color: AppColors.searchBgColor,
+        color: searchBgColor,
         borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
       ),
       child: TextField(

@@ -4,6 +4,8 @@ class AppColors {
   // ---------------------- APP MAIN COLOR ----------------------
 
   static const mainAppColor = Color(0xFF0056D6);
+  static const mainWebAppColor =  Color(0xFF2F5DA1);
+  static const secondWebAppColor =  Color(0xFF6FA63F);
   //static const mainAppColor = Color(0xFF7DAA40);
   //static const mainAppColor = Color(0xFF7EAA41); chat
   static const secondAppColor = Color(0xFF3A88FE);
@@ -17,6 +19,7 @@ class AppColors {
 
   static Color mainBackgroundColor = const Color(0xFFF4F7FA);
   static Color newBackgroundColor = const Color(0xffEEF2F8);
+  static Color mainWebBackgroundColor = const Color(0xFFF2F5F9);
 
   static Color mainBackgroundColorForCustomTextField = const Color(0xfff2f2f2);
   static Color secondBackgroundColor = const Color(0xffeeeeee);

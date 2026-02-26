@@ -7,18 +7,15 @@ part of 'Dashboard.dart';
 // **************************************************************************
 
 Dashboard _$DashboardFromJson(Map<String, dynamic> json) => Dashboard(
-
-
-    json['totalDocuments'] as int,
-  json['totalCategories'] as int,
-  json['totalEvents'] as int,
-  TotalStorage.fromJson(json['totalStorage'] as Map<String, dynamic>),
-);
+      (json['totalDocuments'] as num).toInt(),
+      (json['totalCategories'] as num).toInt(),
+      (json['totalEvents'] as num).toInt(),
+      TotalStorage.fromJson(json['totalStorage'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$DashboardToJson(Dashboard instance) => <String, dynamic>{
-
-  'totalDocument': instance.totalDocuments,
-  'totalCategories': instance.totalCategories,
-  'totalEvents': instance.totalEvents,
-  'totalStorage': instance.totalStorage,
-};
+      'totalDocuments': instance.totalDocuments,
+      'totalCategories': instance.totalCategories,
+      'totalEvents': instance.totalEvents,
+      'totalStorage': instance.totalStorage,
+    };

@@ -1,33 +1,39 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'Reunion.dart';
+part of 'IboardMeetingData.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Reunion _$ReunionFromJson(Map<String, dynamic> json) => Reunion(
+IboardMeetingData _$IboardMeetingDataFromJson(Map<String, dynamic> json) =>
+    IboardMeetingData(
       json['id'] as String,
       json['title'] as String,
       json['description'] as String,
-      json['startDate'] as String,
-      json['endDate'] as String,
+      json['meetingDate'] as String,
+      (json['durationMinutes'] as num?)?.toInt(),
       json['location'] as String,
+      json['meetingLink'] as String?,
       json['code'] as String,
       (json['documentCount'] as num).toInt(),
-      json['status'] as String,
       (json['userGroups'] as List<dynamic>).map((e) => e as String).toList(),
+      json['status'] as String,
+      json['isPublic'] as bool,
     );
 
-Map<String, dynamic> _$ReunionToJson(Reunion instance) => <String, dynamic>{
+Map<String, dynamic> _$IboardMeetingDataToJson(IboardMeetingData instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
       'description': instance.description,
-      'startDate': instance.startDate,
-      'endDate': instance.endDate,
+      'meetingDate': instance.meetingDate,
+      'durationMinutes': instance.durationMinutes,
       'location': instance.location,
+      'meetingLink': instance.meetingLink,
       'code': instance.code,
       'documentCount': instance.documentCount,
-      'status': instance.status,
       'userGroups': instance.userGroups,
+      'status': instance.status,
+      'isPublic': instance.isPublic,
     };

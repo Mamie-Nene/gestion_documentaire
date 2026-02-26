@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:gestion_documentaire/src/domain/remote/IboardMeetingData.dart';
 
 import '/src/domain/remote/Categorie.dart';
 import '/src/domain/remote/Document.dart';
@@ -285,6 +286,143 @@ class UtilsWidget{
           ),
         );
       },
+    );
+  }
+
+  Widget meetingGridForViewList(BuildContext context, Iterable<IboardMeetingData> meetings) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: meetings.length,
+      itemBuilder: (context, index) {
+
+        final meeting = meetings.elementAt(index);
+        final DateTime eventDate = Helper().parseEventDate(meeting.meetingDate);
+
+        return InkWell(
+          borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+          onTap: (){Navigator.of(context).pushNamed(AppRoutesName.detailMeetingPage,); },//arguments: {"title": meeting.title});
+
+        // onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"eventCode": meeting.code,"eventId": meeting.id,"subtitle":meeting.title}),
+          child: Container(
+            padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+            decoration: BoxDecoration(
+              color: Colors.white,
+                border: Border.all(color: Colors.grey.shade300),
+             // border: Border.all(color: AppColors.cardBorderColor),
+              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      flex: 0,
+                      child: Container(
+                        height: 55,
+                        width:65,
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.mainEventsBlueColor.withOpacity(0.1),
+                          border: Border.all(color: AppColors.mainEventsBlueColor.withOpacity(0.1)),
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+
+                            Text(Helper().formatMonth(eventDate),
+                                style: TextStyle( color: AppColors.mainEventsBlueColor, fontSize: 14,fontWeight: FontWeight.bold)),
+                            Text(Helper().formatDay(eventDate),
+                                style: TextStyle( color: AppColors.mainEventsBlueColor, fontSize: 16,fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            meeting.title,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: AppColors.textMainPageColor,
+                              fontFamily: "Roboto",
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Row(
+                            spacing: 8,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                spacing: 5,
+                                children: [
+                                  SvgPicture.asset("asset/images/hour.svg"),
+                                  Text(Helper().formatHour(eventDate),//houre here
+                                    style: TextStyle(color:AppColors.textMainPageColor, fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w400),
+                                  ),
+                                ],
+                              ),
+                              Flexible(
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    SvgPicture.asset("asset/images/location.svg"),
+                                    Flexible(
+                                      child: Text(meeting.location,
+                                        style: TextStyle(color: AppColors.textMainPageColor,fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w400),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(color: Color(0xffDEE8EE),),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      spacing: 5,
+                      children: [
+                        SvgPicture.asset("asset/images/docs.svg",color: AppColors.secondWebAppColor,),
+                        Text("${meeting.documentCount} document(s) lié(s) ",
+                          style: TextStyle(color: AppColors.textMainPageColor,fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Text("Accéder à la réunion",
+                          style: TextStyle(color: AppColors.mainWebAppColor,fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w500),
+                        ),
+                        const Icon(Icons.chevron_right,color:AppColors.mainWebAppColor),
+                        //SvgPicture.asset("asset/images/arrow_back.svg",color:AppColors.mainWebAppColor ,),
+
+                      ],
+                    ),
+                  ],
+                )
+
+              ],
+            ),
+          ),
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(height: AppDimensions.paddingMedium),
     );
   }
 
