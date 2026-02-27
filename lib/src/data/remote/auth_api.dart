@@ -16,9 +16,6 @@ class AuthApi{
   loginRequest(BuildContext context,String email, String password, String URL) async {
 
     try {
-      String token="";
-
-      print(URL);
 
       var response = await http.post(
           Uri.parse(URL),
@@ -38,7 +35,7 @@ class AuthApi{
         print(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         var data = json.decode(response.body);
-        token = data['token'];
+        String token = data['token'];
 
         prefs.setString("token", token);
         prefs.setString("email", email);
@@ -98,6 +95,54 @@ class AuthApi{
 
           UserInfo userInfo = UserInfo.fromJson(data);
           return userInfo;
+        }
+
+        else  {
+          print(response.statusCode);
+          globalResponseMessage.errorMessage("Une Erreur est survenue!");
+
+        }
+      }
+
+      catch (e) {
+        debugPrint("error throw: ${e.toString()}");
+        globalResponseMessage.errorMessage(AppText.CATCH_ERROR_TEXT);
+      }
+    }
+
+  }
+
+  getGroupBelongingToUserInfo( String URL) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    String? emailUser = prefs.getString("email");
+    final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
+
+    if(token==null)
+    {
+      globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
+      return;
+    }
+    else {
+      var uri = "$URL/$emailUser";
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+      try {
+        print(uri);
+        var response = await http.get(
+            Uri.parse(uri),headers: headers
+        );
+        debugPrint("response.statusCode for list groups from user ${response.statusCode}");
+        debugPrint("response.body for list groups from user ${response.body}");
+
+        if (response.statusCode == 200) {
+
+         // var data = json.decode(response.body);
+
+          List<String> groups = response.body.split(',');
+          return groups;
         }
 
         else  {

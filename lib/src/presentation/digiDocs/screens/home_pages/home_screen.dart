@@ -3,11 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '/src/data/remote/dashboard.dart';
+import '../../../../data/remote/digidocs/dashboard.dart';
 import '/src/domain/remote/Dashboard.dart';
 
-import '/src/data/remote/document_api.dart';
-import '/src/data/remote/events_api.dart';
+import '../../../../data/remote/digidocs/document_api.dart';
+import '../../../../data/remote/digidocs/events_api.dart';
 
 import '/src/domain/remote/Categorie.dart';
 import '/src/domain/remote/Document.dart';

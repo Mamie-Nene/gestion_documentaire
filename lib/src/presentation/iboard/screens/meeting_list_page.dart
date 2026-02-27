@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gestion_documentaire/src/data/remote/iboard/meeting_api.dart';
 import '/src/domain/remote/IboardMeetingData.dart';
 import '/src/presentation/widgets/utils_widget.dart';
 import 'package:intl/intl.dart';
 
-import '/src/data/remote/reunion_api.dart';
+import '../../../data/remote/digidocs/reunion_api.dart';
 import '/src/utils/api/api_url.dart';
 import '/src/presentation/widgets/search_and_filter.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
@@ -29,20 +29,20 @@ class _ListReunionPageState extends State<ListReunionPage> {
   final DateTime _today = DateTime.now();
 
   bool listView=true;
-  List<IboardMeetingData> reunions = [];
+  List<IboardMeetingData> meetingIboard = [];
   bool _isMeetingsLoading=false;
 
-  reunionsGetted() async {
+  meetingsGetted() async {
     setState(() {
       _isMeetingsLoading = true;
     });
-    await ReunionApi().getListMeetings( ApiUrl().getMeetingsUrl).then((value) {
+    await MeetingIboardApi().getListMeetings( ApiUrl().getMeetingsUrl).then((value) {
       setState(() {
-        reunions = value ?? [];
+        meetingIboard = value ?? [];
         // reunions = value;
         _isMeetingsLoading=false;
 
-        debugPrint('Loaded ${reunions.length} meetings from API');
+        debugPrint('Loaded ${meetingIboard.length} meetings from API');
       });
     }).catchError((error) {
       setState(() {
@@ -54,13 +54,13 @@ class _ListReunionPageState extends State<ListReunionPage> {
 
   @override
   void initState() {
-    reunionsGetted();
+    meetingsGetted();
     listView =true;
     super.initState();
   }
 
   List<IboardMeetingData> get _visibleReunions {
-    return reunions.where((meeting) {
+    return meetingIboard.where((meeting) {
       final bool matchesSearch = meeting.title
           .toLowerCase()
           .contains(_searchController.text.toLowerCase());
@@ -154,9 +154,23 @@ class _ListReunionPageState extends State<ListReunionPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(icon:Icon(Icons.arrow_back),onPressed: (){Navigator.of(context).pop();},),
-                  dashboardHeader(),
+                  Row(
+                    children: [
+                      IconButton(icon:Icon(Icons.arrow_back),onPressed: (){Navigator.of(context).pop();},),
+                      dashboardHeader(),
+                    ],
+                  ),
+
+                  UtilsWidget().iconContainerCard(
+                    isItWithBorder: true,
+                    bgColor: null,
+                    widget: IconButton(
+                      icon:Icon(Icons.person, color: AppColors.mainWebAppColor, size: 20),
+                      onPressed:() => Navigator.pushNamed(context, AppRoutesName.profilePage),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 32),
@@ -192,8 +206,6 @@ class _ListReunionPageState extends State<ListReunionPage> {
                 child: Column(
 
                   children: [
-                     UtilsWidget().meetingGridForViewList(context,_visibleReunions.reversed),
-                     SizedBox(height: 12,),
                      UtilsWidget().meetingGridForViewList(context,_visibleReunions.reversed),
                     _buildPaginationControls()
                   ],

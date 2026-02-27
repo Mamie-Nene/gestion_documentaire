@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../../widgets/app_page_shell.dart';
-import '/src/data/remote/category_api.dart';
-import '/src/data/remote/events_api.dart';
+import '../../../../data/remote/digidocs/category_api.dart';
+import '../../../../data/remote/digidocs/events_api.dart';
 import '/src/domain/remote/Categorie.dart';
 import '/src/domain/remote/Event.dart';
 import '/src/utils/api/api_url.dart';

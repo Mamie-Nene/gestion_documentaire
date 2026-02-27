@@ -26,7 +26,8 @@ class AppColors {
 
   // -------------------- Utils ----------------------
 
-  static Color mainRedColor = const Color(0xffc64243);
+  static Color secondRedColor = const Color(0xffc64243);
+  static Color mainRedColor = const Color(0xFFDC2626);
   static Color yellowColor = const Color(0xfffbd11f);
   static Color mainblueColor = const Color(0xff004996);
   static Color mainGreenColor = const Color(0xff007368);

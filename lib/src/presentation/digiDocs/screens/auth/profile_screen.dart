@@ -19,7 +19,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   UserInfo? userInfo;
   bool _infoLoader = true;
-
+//change pwd
   getInfoUser() async {
     await AuthApi().getUserInfo(ApiUrl().getUserInfoUrl).then((value) {
       setState(() {
@@ -412,12 +412,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                   Text(
                     'Déconnexion',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFDC2626),
+                      color: AppColors.mainRedColor,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -425,7 +425,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'Se déconnecter de votre compte en toute sécurité',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFFDC2626).withOpacity(0.6),
+                      color: AppColors.mainRedColor.withOpacity(0.6),
                     ),
                   ),
                 ],

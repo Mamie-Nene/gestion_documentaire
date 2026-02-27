@@ -1,8 +1,7 @@
 class ApiUrl {
   //              ---------------------- Const Var ----------------------
- // static const String baseUrl = 'https://gupe-partenaire.gainde2000.sn/backendGestionDocument/api'; //preprod
-  static const String baseUrl = 'http://10.0.2.2:8082/api'; // local
- // static const String baseUrl = 'http://localhost:8082/api'; // local
+  static const String baseUrl = 'https://gupe-partenaire.gainde2000.sn/backendGestionDocument/api'; //preprod
+ // static const String baseUrl = 'http://10.0.2.2:8082/api'; // local
 
   //              ---------------------- auth ----------------------
   String getLoginUrl = '$baseUrl/auth/login';
@@ -35,5 +34,9 @@ class ApiUrl {
 //              ---------------------- iboard ----------------------
 
 
-  String getMeetingsUrl = '$baseUrl/meetings';
+  String getMeetingsUrl = '$baseUrl/iboard/meetings';
+  String getFeuillePresenceByMeetingCodeUrl = '$baseUrl/iboard/feuille-presence/get-one-by';
+  String getAgendaByMeetingCodeUrl = '$baseUrl/iboard/meeting-agenda/all-agenda-by';
+  String getListUserGroupsFromUser = '$baseUrl/users/usergroups';
+
 }

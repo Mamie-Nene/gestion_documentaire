@@ -23,6 +23,10 @@ class AppResponseMessage  {
     createToastMessage(Colors.white,errorMessage,AppColors.mainRedColor);
   }
 
+  void noDataGettedMessage( String errorMessage){
+    createToastMessage(Colors.white,errorMessage,AppColors.greyColorForIcon);
+  }
+
   void successMessage(String? successMessage){
     createToastMessage(Colors.white,successMessage!,AppColors.mainGreenColor);
   }

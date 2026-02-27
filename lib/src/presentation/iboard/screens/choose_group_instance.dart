@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/data/remote/auth_api.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url.dart';
 
 import '/src/utils/consts/routes/app_routes_name.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
@@ -13,7 +15,28 @@ class ChooseGroupInstance extends StatefulWidget {
 class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
   int selectedCardIndex = 0;
   bool isSelected = true;
+  bool _isGroupLoader = true;
+  List<String> groups = [];
 
+  getListGroups() async {
+    await AuthApi().getGroupBelongingToUserInfo(ApiUrl().getListUserGroupsFromUser).then((value) {
+      setState(() {
+        groups = value;
+        _isGroupLoader = false;
+      });
+    }).catchError((error) {
+      setState(() {
+        _isGroupLoader = false;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    getListGroups();
+    super.initState();
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,14 +45,22 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-              child:_buildChooseInstanceCard(context),
+              child:_isGroupLoader?
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+                  :
+                  groups.isEmpty?
+                  _buildContinueButton(context)
+                  :
+              _buildChooseInstanceCard(context,groups),
             )
       ),
         )
     );
   }
 
-  Widget _buildChooseInstanceCard(BuildContext context) {
+  Widget _buildChooseInstanceCard(BuildContext context, List<String> groups) {
     return Container(
       constraints: const BoxConstraints(maxWidth: 500),
       padding: const EdgeInsets.all(AppDimensions.paddingLarge + 8),
@@ -49,11 +80,14 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
+          TextButton(onPressed: (){getListGroups();}, child: Text('test')),
           _buildTitle(context),
           const SizedBox(height: AppDimensions.paddingLarge + 4),
           _buildSubtitle(context),
           const SizedBox(height: AppDimensions.paddingMedium),
-          SizedBox(height: 400,child: _buildCardsList(context)),
+          SizedBox(height: 400,
+              child: _buildCardsList(context,groups)
+          ),
           //  Expanded(child: _buildCardsList(context)),
           _buildContinueButton(context),
           SizedBox(height: 20),
@@ -84,8 +118,8 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
     );
   }
 
-  Widget _buildCardsList(BuildContext context) {
-    List<PaymentCardModel> cardsList = [
+  Widget _buildCardsList(BuildContext context, List<String> groups) {
+    List<PaymentCardModel> cardsList= [
       PaymentCardModel(
         cardName: "Conseil d'Administration",
         cardNumber: 'Président',
@@ -109,9 +143,34 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
     return SingleChildScrollView(
           child: Column(
             children: [
-              ...List.generate(cardsList.length, (index) {
+              ...List.generate(groups.length, (index) {
+                List<String> roles= ['Président','Membre simple','Administrateur',];
+
+
+                List<PaymentCardModel> cardsList1 = [
+                  PaymentCardModel(
+                    cardName: groups[index],
+                    cardNumber: 'Président',
+                    cardType: 'CA',
+                    isSelected: selectedCardIndex == 'CA',
+                  ),
+                  PaymentCardModel(
+                    cardName: 'Assemblée Générale Ordinaire',
+                    cardNumber: 'Membre simple',
+                    cardType: 'AGO',
+                    isSelected: selectedCardIndex == 'AGO',
+                  ),
+                  PaymentCardModel(
+                    cardName: 'Assemblée Générale Administrative',
+                    cardNumber: 'Administrateur',
+                    cardType: 'AGA',
+                    isSelected: selectedCardIndex == 'AGA',
+                  ),
+                ];
+
                 final card = cardsList[index];
                 return PaymentCardItemWidget(
+                  cardName: groups[index],
                   cardItem: card,
                   isSelected: selectedCardIndex == index,
                   onTap: () {
@@ -219,117 +278,88 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
           ),
         );
   }
-}
 
-class PaymentCardItemWidget extends StatelessWidget {
-  final PaymentCardModel cardItem;
-  final bool isSelected;
-  final VoidCallback? onTap;
+  PaymentCardItemWidget ( {
+    required String cardName,
+    required PaymentCardModel cardItem,
 
-  const PaymentCardItemWidget({
-    Key? key,
-    required this.cardItem,
-    required this.isSelected,
-    this.onTap,
-  }) : super(key: key);
+    required bool isSelected,
+    required VoidCallback? onTap,
+  }) {
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(16),
-        margin: EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? appTheme.bleu_600.withAlpha(13)
-              : appTheme.white_A700,
-          border: Border.all(
-            color: isSelected ? appTheme.bleu_600 : appTheme.gray_300,
-            width: 2.0,
-          ),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: appTheme.gray_200,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Center(child: _buildCardLogo()),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    cardItem.cardName ?? '',
-                    style:
-                    TextStyleHelper.instance.title16MediumPlusJakartaSans,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    cardItem.cardNumber ?? '',
-                    style: TextStyleHelper.instance.body14RegularPlusJakartaSans
-                        .copyWith(color: appTheme.gray_600),
-                  ),
-                ],
-              ),
-            ),
-            if (isSelected)
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: appTheme.bleu_600,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check,
-                  color: appTheme.white_A700,
-                  size: 16,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCardLogo() {
-    String logoText = '';
     Color logoColor = appTheme.gray_600;
 
-    switch (cardItem.cardType?.toLowerCase()) {
-      case 'elo':
-        logoText = 'ELO';
-        logoColor = appTheme.gray_900;
-        break;
-      case 'mastercard':
-        logoText = 'MC';
-        logoColor = Colors.red;
-        break;
-      case 'visa':
-        logoText = 'VISA';
-        logoColor = Colors.blue;
-        break;
-      default:
-        logoText = 'CARD';
-    }
-
-    return Text(cardItem.cardType!,
-      //logoText,
-      style: TextStyleHelper.instance.body12MediumPlusJakartaSans.copyWith(
-        color: logoColor,
-        fontWeight: FontWeight.w700,
+    return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? appTheme.bleu_600.withAlpha(13)
+            : appTheme.white_A700,
+        border: Border.all(
+          color: isSelected ? appTheme.bleu_600 : appTheme.gray_300,
+          width: 2.0,
+        ),
+        borderRadius: BorderRadius.circular(12.0),
       ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: appTheme.gray_200,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Center(
+                child: Text(cardItem.cardType!, //logoText,
+                    style: TextStyleHelper.instance.body12MediumPlusJakartaSans.copyWith(
+                    color: logoColor,
+                   fontWeight: FontWeight.w700,
+                  ),
+                )
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  cardItem.cardName ?? '',
+                  style: TextStyleHelper.instance.title16MediumPlusJakartaSans,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  cardItem.cardNumber ?? '',
+                  style: TextStyleHelper.instance.body14RegularPlusJakartaSans
+                    .copyWith(color: appTheme.gray_600),
+                ),
+              ],
+            ),
+          ),
+          if (isSelected)
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: appTheme.bleu_600,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.check, color: appTheme.white_A700, size: 16,
+              ),
+            ),
+        ],
+      ),
+    ),
     );
   }
+
+
 }
+
 
 class TextStyleHelper {
   static TextStyleHelper? _instance;

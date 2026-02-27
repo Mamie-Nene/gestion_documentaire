@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../widgets/app_page_shell.dart';
-import '/src/data/remote/events_api.dart';
+import '../../../../data/remote/digidocs/events_api.dart';
 import '/src/domain/remote/Event.dart';
 import '/src/utils/api/api_url.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';

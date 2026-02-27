@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../widgets/app_page_shell.dart';
 import '/src/presentation/widgets/utils_widget.dart';
 import '/src/presentation/widgets/search_and_filter.dart';
-import '/src/data/remote/events_api.dart';
+import '../../../../data/remote/digidocs/events_api.dart';
 import '/src/domain/remote/Event.dart';
 
 import '/src/utils/api/api_url.dart';

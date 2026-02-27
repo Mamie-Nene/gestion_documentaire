@@ -7,7 +7,7 @@ import 'package:local_auth/local_auth.dart';
 
 import '../../../widgets/app_page_shell.dart';
 import '/src/presentation/widgets/helper.dart';
-import '/src/data/remote/document_api.dart';
+import '../../../../data/remote/digidocs/document_api.dart';
 import '/src/domain/remote/Document.dart';
 
 import '/src/utils/api/api_url.dart';

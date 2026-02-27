@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/presentation/iboard/screens/detailMeeting.dart';
+import 'package:gestion_documentaire/src/presentation/iboard/screens/profil_user.dart';
 
+import '/src/presentation/iboard/screens/detailMeeting.dart';
 import '/src/presentation/iboard/screens/add_reunion.dart';
 import '/src/presentation/iboard/screens/agenda_page.dart';
 import '/src/presentation/iboard/screens/feuille_presence_page.dart';
@@ -11,7 +12,7 @@ import '/src/presentation/iboard/screens/report_page.dart';
 import '/src/presentation/iboard/screens/signature_page.dart';
 
 import '/src/presentation/digiDocs/screens/documents/secure_document_viewer.dart';
-import '/src/presentation/digiDocs/screens/home_pages/choose_group_instance.dart';
+import '../../presentation/iboard/screens/choose_group_instance.dart';
 
 import '/src/presentation/digiDocs/screens/documents/document_view_screen.dart';
 
@@ -40,7 +41,8 @@ class IboardRouteGenerator {
        return MaterialPageRoute(builder: (context) => SecureDocumentViewer(fileName: fileName));
 
       case AppRoutesName.profilePage:
-        return MaterialPageRoute(builder: (context) => const ProfileScreen());
+      // return MaterialPageRoute(builder: (context) => UserProfilePage());
+       return MaterialPageRoute(builder: (context) => const ProfileScreen());
 
       case AppRoutesName.chooseGroupInstance:
         return MaterialPageRoute(builder: (context) =>  ChooseGroupInstance());
@@ -52,7 +54,9 @@ class IboardRouteGenerator {
          //return MaterialPageRoute(builder: (context) =>  MeetingListPage()); AVANT AVANT
 
       case AppRoutesName.detailMeetingPage :
-        return MaterialPageRoute(builder: (context) =>  MeetingDetailsPage());
+        final args = settings.arguments;
+        var meeting = (args as Map)["meeting"];
+        return MaterialPageRoute(builder: (context) =>  MeetingDetailsPage(meeting:meeting));
 
       case AppRoutesName.signaturePage :
          return MaterialPageRoute(builder: (context) =>  SignaturePage());

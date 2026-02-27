@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/src/presentation/widgets/search_and_filter.dart';
 import '../../../widgets/app_page_shell.dart';
-import '/src/data/remote/category_api.dart';
+import '../../../../data/remote/digidocs/category_api.dart';
 import '/src/domain/remote/Categorie.dart';
 
 import '/src/utils/api/api_url.dart';

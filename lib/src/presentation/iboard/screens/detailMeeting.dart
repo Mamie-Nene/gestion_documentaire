@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/core/utils/date_helper.dart';
+import '/src/data/remote/iboard/meeting_api.dart';
+import '/src/domain/remote/AgendaMeeting.dart';
+import '/src/domain/remote/FeuillePresence.dart';
+import '/src/utils/api/api_url.dart';
+import '/src/utils/consts/app_specifications/app_dimensions.dart';
+import '/src/domain/remote/IboardMeetingData.dart';
 
 import '/src/data/local/feuille_presence_local_data.dart';
 import '/core/theme/app_colors.dart';
 
 
 class MeetingDetailsPage extends StatefulWidget {
-  const MeetingDetailsPage({super.key});
+  final IboardMeetingData meeting;
+  MeetingDetailsPage({super.key, required this.meeting});
 
   @override
   State<MeetingDetailsPage> createState() => _MeetingDetailsPageState();
@@ -14,8 +22,51 @@ class MeetingDetailsPage extends StatefulWidget {
 class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late List<Participant> participants;
+
+  bool _isfeuillePresenceLoading=false;
+  bool _isAgendaLoading=false;
+  bool _isResolutionLoading=false;
+
+  FeuillePresence? feuillePresence;
+  List<AgendaMeeting> agendaMeetings = [];
+
+  feuillePresenceGetted() async {
+    await MeetingIboardApi().getFeuillePresence( ApiUrl().getFeuillePresenceByMeetingCodeUrl,meetingCode: widget.meeting.code).then((value) {
+      setState(() {
+        feuillePresence = value;
+        _isfeuillePresenceLoading = false;
+      });
+    }).catchError((error) {
+      setState(() {
+        _isfeuillePresenceLoading = false;
+      });
+    });
+  }
+
+  agendaGetted() async {
+    setState(() {
+     _isfeuillePresenceLoading = true;
+    });
+    await MeetingIboardApi().getListOrdreDuJour( ApiUrl().getAgendaByMeetingCodeUrl,meetingCode:widget.meeting.code).then((value) {
+      setState(() {
+        agendaMeetings = value ?? [];
+       _isAgendaLoading=false;
+
+        debugPrint('Loaded ${agendaMeetings.length} agendas from API');
+      });
+    }).catchError((error) {
+      setState(() {
+       _isAgendaLoading = false;
+      });
+      debugPrint('Error loading agenda: $error');
+    });
+  }
+
+
   @override
   void initState() {
+    feuillePresenceGetted();
+    agendaGetted();
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
     participants = FeuillePresenceLocalData().participants;
@@ -26,7 +77,7 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -109,7 +160,8 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
         ),
         const SizedBox(height: 12),
         Text(
-          "CA - Approbation des comptes Q4 2025",
+          "CA - ${widget.meeting.title}",
+         // "CA - Approbation des comptes Q4 2025",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w600,
@@ -117,8 +169,8 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          "Réunion du conseil d'administration pour l'approbation des comptes du 4eme trimestre.",
+        Text(widget.meeting.description,
+          //"Réunion du conseil d'administration pour l'approbation des comptes du 4eme trimestre.",
           style: TextStyle(
             fontSize: 14,
             color: AppColors.mutedForeground,
@@ -225,9 +277,28 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
   Widget _buildDetailReunion() {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildAgendaSection(),
-          const SizedBox(height: 24),
+          Text(
+                "Ordre du jour",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.foreground,
+                ),
+              ),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: agendaMeetings.length,
+            itemBuilder: (context, index) {
+
+              final agenda = agendaMeetings.elementAt(index);
+              final duration = DateHelper.getFormattedDuration(agenda.startTime, agenda.endTime,);
+
+              return _agendaItem(index,agenda.description , duration.toString());
+              },
+            separatorBuilder: (context, index) => const SizedBox(height: AppDimensions.paddingMedium),
+          ),
 
           _buildAttachmentsSection(),
 
@@ -288,24 +359,6 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
 
   // ================= AGENDA =================
 
-  Widget _buildAgendaSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Ordre du jour",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: AppColors.foreground,
-          ),
-        ),
-        const SizedBox(height: 16),
-        _agendaItem(1, "Ouverture et verification du quorum", "10 min"),
-        _agendaItem(2, "Approbation du PV", "15 min"),
-        _agendaItem(3, "Presentation des comptes Q4", "45 min"),
-      ],
-    );
-  }
 
   Widget _agendaItem(int number, String title, String duration) {
     return Container(
@@ -549,16 +602,28 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
         children: [
           OutlinedButton(
             onPressed: () {},
+            style:ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingMedium,horizontal:AppDimensions.paddingMedium ),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              ),
+            ) ,
             child: const Text("Démarrer la réunion"),
           ),
           const SizedBox(width: 16),
           ElevatedButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.expand_circle_down_outlined),
             label: const Text("Clôre la réunion"),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.primaryForeground,
+              padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingMedium ,horizontal:AppDimensions.paddingMedium),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
+              ),
+              backgroundColor: AppColors.secondary,
             ),
           ),
         ],

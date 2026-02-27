@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/src/presentation/digiDocs/screens/documents/secure_document_viewer.dart';
-import '/src/presentation/digiDocs/screens/home_pages/choose_group_instance.dart';
+import '../../presentation/iboard/screens/choose_group_instance.dart';
 
 import '/src/presentation/digiDocs/screens/categories/categorie_page.dart';
 import '/src/presentation/digiDocs/screens/categories/add_category_screen.dart';

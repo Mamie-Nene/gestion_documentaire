@@ -2,7 +2,7 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 
-import '/src/data/remote/document_api.dart';
+import '../../../../data/remote/digidocs/document_api.dart';
 import '/src/domain/remote/Document.dart';
 import '../../../widgets/app_page_shell.dart';
 import '/src/presentation/widgets/helper.dart';

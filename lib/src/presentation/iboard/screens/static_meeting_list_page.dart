@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
-import '/src/data/remote/reunion_api.dart';
+import '../../../data/remote/digidocs/reunion_api.dart';
 import '/src/utils/api/api_url.dart';
 import '/src/domain/remote/Reunion.dart';
 import '../../widgets/app_page_shell.dart';

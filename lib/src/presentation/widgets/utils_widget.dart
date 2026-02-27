@@ -301,7 +301,7 @@ class UtilsWidget{
 
         return InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
-          onTap: (){Navigator.of(context).pushNamed(AppRoutesName.detailMeetingPage,); },//arguments: {"title": meeting.title});
+          onTap: (){Navigator.of(context).pushNamed(AppRoutesName.detailMeetingPage,arguments: {"meeting": meeting});},
 
         // onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"eventCode": meeting.code,"eventId": meeting.id,"subtitle":meeting.title}),
           child: Container(
@@ -325,8 +325,8 @@ class UtilsWidget{
                         width:65,
                         padding: EdgeInsets.symmetric(vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppColors.mainEventsBlueColor.withOpacity(0.1),
-                          border: Border.all(color: AppColors.mainEventsBlueColor.withOpacity(0.1)),
+                          color: AppColors.mainWebAppColor.withOpacity(0.1),
+                          border: Border.all(color: AppColors.mainWebAppColor.withOpacity(0.1)),
                           borderRadius: BorderRadius.circular(11),
                         ),
                         child: Column(
@@ -334,9 +334,9 @@ class UtilsWidget{
                           children: [
 
                             Text(Helper().formatMonth(eventDate),
-                                style: TextStyle( color: AppColors.mainEventsBlueColor, fontSize: 14,fontWeight: FontWeight.bold)),
+                                style: TextStyle( color: AppColors.mainWebAppColor, fontSize: 14,fontWeight: FontWeight.bold)),
                             Text(Helper().formatDay(eventDate),
-                                style: TextStyle( color: AppColors.mainEventsBlueColor, fontSize: 16,fontWeight: FontWeight.bold)),
+                                style: TextStyle( color: AppColors.mainWebAppColor, fontSize: 16,fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -363,8 +363,8 @@ class UtilsWidget{
                               Row(
                                 spacing: 5,
                                 children: [
-                                  SvgPicture.asset("asset/images/hour.svg"),
-                                  Text(Helper().formatHour(eventDate),//houre here
+                                  SvgPicture.asset("asset/images/hour.svg",color: AppColors.mainWebAppColor,),
+                                  Text(Helper().formatHour(eventDate),
                                     style: TextStyle(color:AppColors.textMainPageColor, fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w400),
                                   ),
                                 ],
@@ -373,7 +373,7 @@ class UtilsWidget{
                                 child: Row(
                                   spacing: 5,
                                   children: [
-                                    SvgPicture.asset("asset/images/location.svg"),
+                                    SvgPicture.asset("asset/images/location.svg",color: AppColors.mainWebAppColor,),
                                     Flexible(
                                       child: Text(meeting.location,
                                         style: TextStyle(color: AppColors.textMainPageColor,fontSize: 12,fontFamily: "Roboto",fontWeight: FontWeight.w400),

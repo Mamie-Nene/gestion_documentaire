@@ -1,5 +1,5 @@
 
-import '/src/data/remote/reunion_api.dart';
+import '../../../../data/remote/digidocs/reunion_api.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
