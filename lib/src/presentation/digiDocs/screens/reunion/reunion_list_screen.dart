@@ -7,9 +7,9 @@ import '../../../widgets/app_page_shell.dart';
 import '/src/presentation/widgets/utils_widget.dart';
 import '/src/presentation/widgets/search_and_filter.dart';
 
-import '/src/domain/remote/Reunion.dart';
+import '../../../../domain/remote/digidocs/Reunion.dart';
 
-import '/src/utils/api/api_url.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 
@@ -47,7 +47,7 @@ class _ReunionListScreenState extends State<ReunionListScreen> {
     setState(() {
       _isReunionsLoading = true;
     });
-    await ReunionApi().getListReunions( ApiUrl().getReunionsUrl).then((value) {
+    await ReunionApi().getListReunions( ApiUrlDigidocs().getReunionsUrl).then((value) {
       setState(() {
         reunions = value ?? [];
        // reunions = value;

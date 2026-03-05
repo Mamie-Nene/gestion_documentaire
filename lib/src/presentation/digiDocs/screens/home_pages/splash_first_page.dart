@@ -5,7 +5,8 @@ import '/src/utils/consts/routes/app_routes_name.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({super.key});
+  final bool isForIboard;
+  const SplashPage({super.key, required this.isForIboard});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -70,8 +71,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: AppDimensions.paddingLarge + 8),
                 // App Name
-                Text(AppText.SPLASH_TEXT,
-
+                Text(widget.isForIboard? AppText.IBOARD_SPLASH_TEXT:AppText.DIGIDOCS_SPLASH_TEXT,
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
@@ -82,8 +82,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: AppDimensions.paddingSmall),
                 // Subtitle
-                Text(
-                  'Votre solution documentaire numérique',
+                Text(widget.isForIboard? AppText.IBOARD_SPLASH_TEXT_SUBTITLE:AppText.DIGIDOCS_SPLASH_TEXT_SUBTITLE,
                   style: TextStyle(
                     fontSize: 15,
                     color: AppColors.textMainPageColor,

@@ -7,7 +7,6 @@ import '/src/presentation/iboard/screens/agenda_page.dart';
 import '/src/presentation/iboard/screens/feuille_presence_page.dart';
 import '/src/presentation/iboard/screens/documents_page.dart';
 import '/src/presentation/iboard/screens/meeting_list_page.dart';
-import '/src/presentation/iboard/screens/static_meeting_list_page.dart';
 import '/src/presentation/iboard/screens/report_page.dart';
 import '/src/presentation/iboard/screens/signature_page.dart';
 
@@ -16,19 +15,19 @@ import '../../presentation/iboard/screens/choose_group_instance.dart';
 
 import '/src/presentation/digiDocs/screens/documents/document_view_screen.dart';
 
-import '/src/presentation/digiDocs/screens/auth/profile_screen.dart';
-import '../../presentation/digiDocs/screens/auth/login_screen.dart';
+import '/src/presentation/auth/profile_screen.dart';
+import '../../presentation/auth/login_screen.dart';
 import '/src/presentation/digiDocs/screens/home_pages/splash_first_page.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
 class IboardRouteGenerator {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+  static Route<dynamic> generateRoute(RouteSettings settings,bool isForIboard) {
     switch (settings.name) {
       case AppRoutesName.splashFirstPage:
-        return MaterialPageRoute(builder: (context) => const SplashPage());
+        return MaterialPageRoute(builder: (context) =>  SplashPage(isForIboard: isForIboard,));
 
       case AppRoutesName.loginPage:
-        return MaterialPageRoute(builder: (context) => const LoginScreen());
+        return MaterialPageRoute(builder: (context) =>  LoginScreen(isForIboard: isForIboard,));
 
       case AppRoutesName.viewDocumentPage:
         final args = settings.arguments;
@@ -49,9 +48,12 @@ class IboardRouteGenerator {
 
         // new
       case AppRoutesName.meetingListPage :
-      return MaterialPageRoute(builder: (context) =>  ListReunionPage());
-       // return MaterialPageRoute(builder: (context) =>  TaskTimelinePage());
-         //return MaterialPageRoute(builder: (context) =>  MeetingListPage()); AVANT AVANT
+        final args = settings.arguments;
+        var codeInstance = (args as Map)["codeInstance"];
+        var instanceName = (args as Map)["instanceName"];
+      return MaterialPageRoute(builder: (context) =>  MeetingListIboardPage(codeInstance:codeInstance,instanceName:instanceName));
+
+      // return MaterialPageRoute(builder: (context) =>  TaskTimelinePage()); //return MaterialPageRoute(builder: (context) =>  MeetingListPage()); AVANT AVANT
 
       case AppRoutesName.detailMeetingPage :
         final args = settings.arguments;
@@ -66,10 +68,10 @@ class IboardRouteGenerator {
         var title = (args as Map)["title"];
          return MaterialPageRoute(builder: (context) =>  AgendaPage(title: title,));
 
-      case AppRoutesName.documentsPage :
+      case AppRoutesName.allDocumentIboardPage :
          return MaterialPageRoute(builder: (context) => DocumentsPage());
 
-      case AppRoutesName.reportPage :
+      case AppRoutesName.allResolutionPage :
         return MaterialPageRoute(builder: (context) =>  ReportPage());
 
       case AppRoutesName.addMeetingPage :
@@ -92,7 +94,7 @@ class IboardRouteGenerator {
     return MaterialPageRoute(
         builder: (context) => Scaffold(
             body: ElevatedButton(
-                onPressed: () => Navigator.of(context).pushNamed(AppRoutesName.meetingListPage),
+                onPressed: () => Navigator.of(context).pushNamed(AppRoutesName.chooseGroupInstance),
                 child: const Text(" Cette page n'existe pas")
             )
         )

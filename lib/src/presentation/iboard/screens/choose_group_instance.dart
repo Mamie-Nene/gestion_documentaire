@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/data/remote/auth_api.dart';
-import 'package:gestion_documentaire/src/utils/api/api_url.dart';
+import '/core/theme/text_style.dart';
+import '/src/presentation/widgets/helper.dart';
+
+import '/src/domain/remote/iboard/UserAssignmentGroup.dart';
+import '/src/utils/api/api_url_iboard.dart';
+import '/src/data/remote/auth_api.dart';
+
 
 import '/src/utils/consts/routes/app_routes_name.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
@@ -14,12 +19,15 @@ class ChooseGroupInstance extends StatefulWidget {
 
 class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
   int selectedCardIndex = 0;
+  String? codeInstance;
+  String? instanceName;
+  bool isCodeInstanceGetted = false;
   bool isSelected = true;
   bool _isGroupLoader = true;
-  List<String> groups = [];
+  List<UserAssignmentGroup> groups = [];
 
   getListGroups() async {
-    await AuthApi().getGroupBelongingToUserInfo(ApiUrl().getListUserGroupsFromUser).then((value) {
+    await AuthApi().getGroupBelongingToUser(ApiUrlIboard().getListUserGroupsFromUser).then((value) {
       setState(() {
         groups = value;
         _isGroupLoader = false;
@@ -51,23 +59,24 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
               )
                   :
                   groups.isEmpty?
-                  _buildContinueButton(context)
+                  //  TextButton(onPressed: (){getListGroups();}, child: Text('test'))
+                  Text('Aucune instance trouvée pour votre profil!')
                   :
               _buildChooseInstanceCard(context,groups),
+
             )
       ),
         )
     );
   }
 
-  Widget _buildChooseInstanceCard(BuildContext context, List<String> groups) {
+  Widget _buildChooseInstanceCard(BuildContext context, List<UserAssignmentGroup> groups) {
     return Container(
       constraints: const BoxConstraints(maxWidth: 500),
       padding: const EdgeInsets.all(AppDimensions.paddingLarge + 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-        BorderRadius.circular(AppDimensions.borderRadiusLarge + 8),
+        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge + 8),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.06),
@@ -80,115 +89,74 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextButton(onPressed: (){getListGroups();}, child: Text('test')),
-          _buildTitle(context),
+
+        Text(
+        'Veuillez sélectionner une instance de groupe',
+        style: TextStyleHelper.instance.title18BoldPlusJakartaSans.copyWith(
+          fontSize: 28,
+          color: appTheme.gray_900,
+
+          height: 1.2,
+        ),
+      ),
+
           const SizedBox(height: AppDimensions.paddingLarge + 4),
-          _buildSubtitle(context),
+          Text(
+            'Ci-dessous, la liste des instances de groupe dans lesquels vous êtes assignés.',
+            style: TextStyleHelper.instance.body14RegularPlusJakartaSans.copyWith(
+              color: appTheme.gray_600,
+              height: 1.4,
+            ),
+          ),
           const SizedBox(height: AppDimensions.paddingMedium),
-          SizedBox(height: 400,
+          SizedBox(
+              height: 400,
               child: _buildCardsList(context,groups)
           ),
-          //  Expanded(child: _buildCardsList(context)),
-          _buildContinueButton(context),
-          SizedBox(height: 20),
+
         ],
       ),
     );
   }
 
-  Widget _buildTitle(BuildContext context) {
-    return Text(
-      'Veuillez sélectionner une instance de groupe',
-      style: TextStyleHelper.instance.title18BoldPlusJakartaSans.copyWith(
-        fontSize: 28,
-        color: appTheme.gray_900,
-
-        height: 1.2,
-      ),
-    );
-  }
-
-  Widget _buildSubtitle(BuildContext context) {
-    return Text(
-      'Ci-dessous, la liste des instances de groupe dans lesquels vous êtes assignés.',
-      style: TextStyleHelper.instance.body14RegularPlusJakartaSans.copyWith(
-        color: appTheme.gray_600,
-        height: 1.4,
-      ),
-    );
-  }
-
-  Widget _buildCardsList(BuildContext context, List<String> groups) {
-    List<PaymentCardModel> cardsList= [
-      PaymentCardModel(
-        cardName: "Conseil d'Administration",
-        cardNumber: 'Président',
-        cardType: 'CA',
-        isSelected: selectedCardIndex == 'CA',
-      ),
-      PaymentCardModel(
-        cardName: 'Assemblée Générale Ordinaire',
-        cardNumber: 'Membre simple',
-        cardType: 'AGO',
-        isSelected: selectedCardIndex == 'AGO',
-      ),
-      PaymentCardModel(
-        cardName: 'Assemblée Générale Administrative',
-        cardNumber: 'Administrateur',
-        cardType: 'AGA',
-        isSelected: selectedCardIndex == 'AGA',
-      ),
-    ];
+  Widget _buildCardsList(BuildContext context, List<UserAssignmentGroup> groups) {
 
     return SingleChildScrollView(
           child: Column(
             children: [
               ...List.generate(groups.length, (index) {
-                List<String> roles= ['Président','Membre simple','Administrateur',];
 
-
-                List<PaymentCardModel> cardsList1 = [
-                  PaymentCardModel(
-                    cardName: groups[index],
-                    cardNumber: 'Président',
-                    cardType: 'CA',
-                    isSelected: selectedCardIndex == 'CA',
-                  ),
-                  PaymentCardModel(
-                    cardName: 'Assemblée Générale Ordinaire',
-                    cardNumber: 'Membre simple',
-                    cardType: 'AGO',
-                    isSelected: selectedCardIndex == 'AGO',
-                  ),
-                  PaymentCardModel(
-                    cardName: 'Assemblée Générale Administrative',
-                    cardNumber: 'Administrateur',
-                    cardType: 'AGA',
-                    isSelected: selectedCardIndex == 'AGA',
-                  ),
-                ];
-
-                final card = cardsList[index];
-                return PaymentCardItemWidget(
-                  cardName: groups[index],
-                  cardItem: card,
+                final group = groups[index];
+                String logoText = Helper().getUserAssignmentGroupCodeText(group.groupName);
+                return GroupUserCardWidget(
+                  userAssignmentGroup: group,
+                     logoText :logoText,
                   isSelected: selectedCardIndex == index,
                   onTap: () {
-                   // selectedCardIndex == index;
                     setState(() {
                       selectedCardIndex = index;
-                      print(selectedCardIndex);
-                     // cardsList[index].isSelected = !cardsList[index].isSelected!;
+                      isCodeInstanceGetted=true;
+                      codeInstance = logoText;
+                      instanceName = group.groupName;
                     });
+                    print(selectedCardIndex);
                   },
                 );
               }),
               SizedBox(height: 12),
             //  _buildAddCardButton(context),
+
+              codeInstance==null||instanceName==null?
+                  const SizedBox()
+                  :
+              _buildContinueButton(context, isCodeInstanceGetted,codeInstance!,instanceName!),
+              SizedBox(height: 20),
             ],
           )
     );
   }
+
+
 
   Widget _buildAddCardButton(BuildContext context) {
     return GestureDetector(
@@ -224,41 +192,18 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
     );
   }
 
-  Widget _buildContinueButtonAvant(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed(AppRoutesName.homePage);
-      },
-      child: Container(
-        width: double.maxFinite,
-        height: 56,
-        decoration: BoxDecoration(
-          color:AppColors.greenMainAppColor,
-         // color: appTheme.gray_900,
-          borderRadius: BorderRadius.circular(28.0),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.arrow_forward, color: appTheme.white_A700, size: 24),
-          ],
-        ),
-      ),
-    );
-  }
-  Widget _buildContinueButton(BuildContext context) {
-    return SizedBox(
+
+  Widget _buildContinueButton(BuildContext context,bool isCodeInstanceGetted, String? codeInstance, String? instanceName) {
+    return
+      SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed:() {
-              Navigator.of(context).pushNamed(AppRoutesName.meetingListPage);
-             // Navigator.of(context).pushNamed(AppRoutesName.homePage);
-            },
+            onPressed:isCodeInstanceGetted? () {Navigator.of(context).pushNamed(AppRoutesName.meetingListPage,arguments: {"codeInstance": codeInstance,"instanceName":instanceName});} : null ,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(
                 vertical: AppDimensions.paddingMedium + 2,
               ),
-              backgroundColor: Color(0xff7DAA40),
+              backgroundColor: isCodeInstanceGetted?AppColors.secondWebAppColor:Colors.grey,
               // backgroundColor: AppColors.mainAppColor,
               foregroundColor: Colors.white,
               elevation: 0,
@@ -279,10 +224,9 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
         );
   }
 
-  PaymentCardItemWidget ( {
-    required String cardName,
-    required PaymentCardModel cardItem,
-
+  GroupUserCardWidget ( {
+    required UserAssignmentGroup userAssignmentGroup,
+    required String logoText,
     required bool isSelected,
     required VoidCallback? onTap,
   }) {
@@ -290,336 +234,73 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
     Color logoColor = appTheme.gray_600;
 
     return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? appTheme.bleu_600.withAlpha(13)
-            : appTheme.white_A700,
-        border: Border.all(
-          color: isSelected ? appTheme.bleu_600 : appTheme.gray_300,
-          width: 2.0,
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        margin: EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? appTheme.bleu_600.withAlpha(13)
+              : appTheme.white_A700,
+          border: Border.all(
+            color: isSelected ? appTheme.bleu_600 : appTheme.gray_300,
+            width: 2.0,
+          ),
+          borderRadius: BorderRadius.circular(12.0),
         ),
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: appTheme.gray_200,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Center(
-                child: Text(cardItem.cardType!, //logoText,
-                    style: TextStyleHelper.instance.body12MediumPlusJakartaSans.copyWith(
-                    color: logoColor,
-                   fontWeight: FontWeight.w700,
-                  ),
-                )
-            ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  cardItem.cardName ?? '',
-                  style: TextStyleHelper.instance.title16MediumPlusJakartaSans,
-                ),
-                SizedBox(height: 4),
-                Text(
-                  cardItem.cardNumber ?? '',
-                  style: TextStyleHelper.instance.body14RegularPlusJakartaSans
-                    .copyWith(color: appTheme.gray_600),
-                ),
-              ],
-            ),
-          ),
-          if (isSelected)
+        child: Row(
+          children: [
             Container(
-              width: 24,
-              height: 24,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: appTheme.bleu_600,
-                shape: BoxShape.circle,
+                color: appTheme.gray_200,
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Icon(Icons.check, color: appTheme.white_A700, size: 16,
+              child: Center(
+                  child: Text(logoText,
+                      style: TextStyleHelper.instance.body12MediumPlusJakartaSans.copyWith(
+                      color: logoColor,
+                     fontWeight: FontWeight.w700,
+                    ),
+                  )
               ),
             ),
-        ],
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    userAssignmentGroup.groupName,
+                    style: TextStyleHelper.instance.title16MediumPlusJakartaSans,
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    userAssignmentGroup.groupRoleName,
+                    style: TextStyleHelper.instance.body14RegularPlusJakartaSans
+                      .copyWith(color: appTheme.gray_600),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: appTheme.bleu_600,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.check, color: appTheme.white_A700, size: 16,
+                ),
+              ),
+          ],
+        ),
       ),
-    ),
     );
   }
 
 
 }
 
-
-class TextStyleHelper {
-  static TextStyleHelper? _instance;
-
-  TextStyleHelper._();
-
-  static TextStyleHelper get instance {
-    _instance ??= TextStyleHelper._();
-    return _instance!;
-  }
-
-  // Title Styles
-  // Medium text styles for titles and subtitles
-
-  TextStyle get title20RegularRoboto => TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
-  );
-
-  TextStyle get title18BoldPlusJakartaSans => TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w700,
-    fontFamily: 'Plus Jakarta Sans',
-  );
-
-  TextStyle get title16MediumPlusJakartaSans => TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w500,
-    fontFamily: 'Plus Jakarta Sans',
-    color: appTheme.gray_900_01,
-  );
-
-  TextStyle get title16RegularPlusJakartaSans => TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    fontFamily: 'Plus Jakarta Sans',
-    color: appTheme.gray_600,
-  );
-
-  // Body Styles
-  // Standard text styles for body content
-
-  TextStyle get body15RegularInter => TextStyle(
-    fontSize: 15,
-    fontWeight: FontWeight.w400,
-    fontFamily: 'Inter',
-    color: appTheme.gray_700,
-  );
-
-  TextStyle get body14BoldPlusJakartaSans => TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w700,
-    fontFamily: 'Plus Jakarta Sans',
-  );
-
-  TextStyle get body14RegularPlusJakartaSans => TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    fontFamily: 'Plus Jakarta Sans',
-    color: appTheme.green_600_01,
-  );
-
-  TextStyle get body13RegularInter => TextStyle(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-    fontFamily: 'Inter',
-    color: appTheme.gray_500_01,
-  );
-
-  TextStyle get body13SemiBoldInter => TextStyle(
-    fontSize: 13,
-    fontWeight: FontWeight.w600,
-    fontFamily: 'Inter',
-    color: appTheme.gray_700_01,
-  );
-
-  TextStyle get body12SemiBoldInter => TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-    fontFamily: 'Inter',
-    color: appTheme.gray_400_02,
-  );
-
-  TextStyle get body12MediumPlusJakartaSans => TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    fontFamily: 'Plus Jakarta Sans',
-  );
-
-  // Label Styles
-  // Small text styles for labels, captions, and hints
-
-  TextStyle get label11SemiBoldInter => TextStyle(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    fontFamily: 'Inter',
-    color: appTheme.green_300,
-  );
-
-  TextStyle get label11LightInter => TextStyle(
-    fontSize: 11,
-    fontWeight: FontWeight.w300,
-    fontFamily: 'Inter',
-    color: appTheme.gray_500_02,
-  );
-
-  TextStyle get label10LightInter => TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w300,
-    fontFamily: 'Inter',
-    color: appTheme.gray_500,
-  );
-
-  TextStyle get label10SemiBoldInter => TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w600,
-    fontFamily: 'Inter',
-    color: appTheme.gray_400,
-  );
-
-  TextStyle get label9SemiBoldInter => TextStyle(
-    fontSize: 9,
-    fontWeight: FontWeight.w600,
-    fontFamily: 'Inter',
-    color: appTheme.orange_300,
-  );
-}
-
-
-LightCodeColors get appTheme => ThemeHelper().themeColor();
-ThemeData get theme => ThemeHelper().themeData();
-
-/// Helper class for managing themes and colors.
-
-// ignore_for_file: must_be_immutable
-class ThemeHelper {
-  // The current app theme
-  var _appTheme = "lightCode";
-
-  // A map of custom color themes supported by the app
-  Map<String, LightCodeColors> _supportedCustomColor = {
-    'lightCode': LightCodeColors(),
-  };
-
-  // A map of color schemes supported by the app
-  Map<String, ColorScheme> _supportedColorScheme = {
-    'lightCode': ColorSchemes.lightCodeColorScheme,
-  };
-
-  /// Returns the lightCode colors for the current theme.
-  LightCodeColors _getThemeColors() {
-    return _supportedCustomColor[_appTheme] ?? LightCodeColors();
-  }
-
-  /// Returns the current theme data.
-  ThemeData _getThemeData() {
-    var colorScheme =
-        _supportedColorScheme[_appTheme] ?? ColorSchemes.lightCodeColorScheme;
-    return ThemeData(
-      visualDensity: VisualDensity.standard,
-      colorScheme: colorScheme,
-    );
-  }
-
-  /// Returns the lightCode colors for the current theme.
-  LightCodeColors themeColor() => _getThemeColors();
-
-  /// Returns the current theme data.
-  ThemeData themeData() => _getThemeData();
-}
-
-class ColorSchemes {
-  static final lightCodeColorScheme = ColorScheme.light();
-}
-
-class LightCodeColors {
-  // App Colors
-  Color get gray_900 => Color(0xFF1C160C);
-  Color get white_A700 => Color(0xFFFFFFFF);
-  Color get gray_600 => Color(0xFF727272);
-  Color get deep_orange_50 => Color(0xFFF5F0E5);
-  Color get gray_200 => Color(0xFFE5E8EA);
-  Color get green_600 => Color(0xFF30A05E);
-  Color get bleu_600 => Color(0xFF0056D6);
-  Color get yellow_800 => Color(0xFFEF9920);
-  Color get gray_900_01 => Color(0xFF0C1C11);
-  Color get green_600_01 => Color(0xFF4C9368);
-  Color get deep_orange_50_01 => Color(0xFFF4EFE5);
-  Color get black_900 => Color(0xFF000000);
-  Color get gray_300 => Color(0xFFE8DDCE);
-  Color get gray_700 => Color(0xFF585858);
-  Color get gray_500 => Color(0xFFADADAD);
-  Color get gray_400 => Color(0xFFBFC0C0);
-  Color get orange_50 => Color(0xFFFEF4E4);
-  Color get amber_100 => Color(0xFFFEE6C5);
-  Color get orange_300 => Color(0xFFF3B965);
-  Color get orange_50_01 => Color(0xFFFEF5E4);
-  Color get orange_300_01 => Color(0xFFF3BA67);
-  Color get orange_50_02 => Color(0xFFFEF4E2);
-  Color get orange_300_02 => Color(0xFFF4BB68);
-  Color get yellow_100 => Color(0xFFFEE7C6);
-  Color get orange_50_03 => Color(0xFFFEF5E5);
-  Color get green_300 => Color(0xFF7AC097);
-  Color get gray_400_01 => Color(0xFFAEAEAE);
-  Color get gray_400_02 => Color(0xFFAFAFAF);
-  Color get gray_700_01 => Color(0xFF5E5E5E);
-  Color get gray_400_03 => Color(0xFFBFBFBF);
-  Color get gray_500_01 => Color(0xFF929292);
-  Color get gray_500_02 => Color(0xFF979797);
-  Color get gray_700_02 => Color(0xFF5A5A59);
-  Color get gray_400_04 => Color(0xFFB6B6B6);
-  Color get gray_400_05 => Color(0xFFC4C4C4);
-  Color get orange_300_03 => Color(0xFFF3BB68);
-  Color get orange_50_04 => Color(0xFFFEF4E3);
-  Color get orange_50_05 => Color(0xFFFEF5E6);
-  Color get orange_200 => Color(0xFFF4BC6A);
-  Color get gray_400_06 => Color(0xFFB8B8B8);
-  Color get gray_500_03 => Color(0xFFACACAC);
-  Color get gray_500_04 => Color(0xFFA9A9A9);
-  Color get gray_400_07 => Color(0xFFC5C5C6);
-  Color get gray_500_05 => Color(0xFF999999);
-
-  // Additional Colors
-  Color get transparentCustom => Colors.transparent;
-  Color get greyCustom => Colors.grey;
-  Color get redCustom => Colors.red;
-
-  // Color Shades - Each shade has its own dedicated constant
-  Color get grey200 => Colors.grey.shade200;
-  Color get grey100 => Colors.grey.shade100;
-}
-
-class PaymentCardModel {
-  final String? cardName;
-  final String? cardNumber;
-  final String? cardType;
-   bool? isSelected;
-
-  PaymentCardModel({
-    this.cardName,
-    this.cardNumber,
-    this.cardType,
-    this.isSelected,
-  });
-
-  PaymentCardModel copyWith({
-    String? cardName,
-    String? cardNumber,
-    String? cardType,
-    bool? isSelected,
-  }) {
-    return PaymentCardModel(
-      cardName: cardName ?? this.cardName,
-      cardNumber: cardNumber ?? this.cardNumber,
-      cardType: cardType ?? this.cardType,
-      isSelected: isSelected ?? this.isSelected,
-    );
-  }
-
-  @override
-  List<Object?> get props => [cardName, cardNumber, cardType, isSelected];
-}

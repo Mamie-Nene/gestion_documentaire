@@ -10,7 +10,7 @@ import '/src/presentation/widgets/helper.dart';
 import '../../../../data/remote/digidocs/document_api.dart';
 import '/src/domain/remote/Document.dart';
 
-import '/src/utils/api/api_url.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 
@@ -187,7 +187,7 @@ class _DocumentViewScreenState extends State<DocumentViewScreen> {
   Widget _buildPreviewCard(BuildContext context) {
     List<_ActionButtonData> actions = [
       _ActionButtonData(Icons.share_rounded, 'Partager',Colors.white,(){}),
-      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,widget.document.fileName);}),
+      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrlDigidocs().voirDocumentUrl,widget.document.fileName);}),
       _ActionButtonData(Icons.print_rounded, 'Imprimer',Color(0xff305A9D),(){}),
     ];
    // index == quickStats.length - 1 ? 0
@@ -304,7 +304,7 @@ class _DocumentViewScreenState extends State<DocumentViewScreen> {
                       ),
                     ),
                 ElevatedButton.icon(
-                      onPressed:(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,widget.document.fileName);},
+                      onPressed:(){DocumentApi().voirDocuments(ApiUrlDigidocs().voirDocumentUrl,widget.document.fileName);},
                       icon: SvgPicture.asset("asset/images/download.svg"),
                       label: Text("Télécharger",style: TextStyle(fontSize: 15,fontFamily: "Chivo",color: Colors.white),),
                       style: ElevatedButton.styleFrom(
@@ -330,7 +330,7 @@ class _DocumentViewScreenState extends State<DocumentViewScreen> {
   Widget _buildActionButtons() {
     List<_ActionButtonData> actions = [
       _ActionButtonData(Icons.share_rounded, 'Partager',Colors.white,(){}),
-      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrl().voirDocumentUrl,widget.document.fileName);}),
+      _ActionButtonData(Icons.download_rounded, 'Télécharger',Color(0xff7DAA40),(){DocumentApi().voirDocuments(ApiUrlDigidocs().voirDocumentUrl,widget.document.fileName);}),
       _ActionButtonData(Icons.print_rounded, 'Imprimer',Color(0xff305A9D),(){}),
     ];
     return Row(
@@ -461,7 +461,7 @@ class _DocumentViewScreenState extends State<DocumentViewScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  DocumentApi().archiverDocument(ApiUrl().archiverDocumentUrl,idDocument,context);
+                  DocumentApi().archiverDocument(ApiUrlDigidocs().archiverDocumentUrl,idDocument,context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.mainRedColor,

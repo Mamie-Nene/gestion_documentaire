@@ -6,10 +6,10 @@ import '/src/presentation/widgets/utils_widget.dart';
 import '../../../../data/remote/digidocs/document_api.dart';
 import '../../../../data/remote/digidocs/events_api.dart';
 import '/src/domain/remote/Document.dart';
-import '/src/domain/remote/Event.dart';
-import '/src/domain/remote/EventTimeline.dart';
+import '/src/domain/remote/digidocs/Event.dart';
+import '../../../../domain/remote/digidocs/EventTimeline.dart';
 
-import '/src/utils/api/api_url.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 
@@ -50,7 +50,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     setState(() {
       _isEventLoading = true;
     });
-    await EventsApi().getDetailEvent(ApiUrl().getEventsUrl, widget.eventId!).then((value) {
+    await EventsApi().getDetailEvent(ApiUrlDigidocs().getEventsUrl, widget.eventId!).then((value) {
       setState(() {
         event = value;
         _isEventLoading = false;
@@ -67,7 +67,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     setState(() {
       _isEventTimelineLoading = true;
     });
-    await EventsApi().getEventTimelines(ApiUrl().getEventsTimelineUrl, widget.eventCode!).then((value) {
+    await EventsApi().getEventTimelines(ApiUrlDigidocs().getEventsTimelineUrl, widget.eventCode!).then((value) {
       setState(() {
         eventTimelines = value;
         _isEventTimelineLoading = false;
@@ -84,7 +84,7 @@ class _DetailsEvenementScreenState extends State<DetailsEvenementScreen> {
     setState(() {
       _isDocumentsLoading = true;
     });
-    await DocumentApi().getDocumentsByCritera(ApiUrl().getFilterDocumentsUrl, null, widget.eventCode).then((value) {
+    await DocumentApi().getDocumentsByCritera(ApiUrlDigidocs().getFilterDocumentsUrl, null, widget.eventCode).then((value) {
       setState(() {
         documentsGetted = value ?? [];
         _isDocumentsLoading = false;

@@ -36,3 +36,33 @@ class DateHelperWithMillisecond {
     return endTime.difference(startTime).inMinutes;
   }
 }
+class InstanceCardModel {
+  final String? cardName;
+  final String? cardRole;
+  final String? cardType;
+  bool? isSelected;
+
+  InstanceCardModel({
+    this.cardName,
+    this.cardRole,
+    this.cardType,
+    this.isSelected,
+  });
+
+  InstanceCardModel copyWith({
+    String? cardName,
+    String? cardNumber,
+    String? cardType,
+    bool? isSelected,
+  }) {
+    return InstanceCardModel(
+      cardName: cardName ?? this.cardName,
+      cardRole: cardNumber ?? this.cardRole,
+      cardType: cardType ?? this.cardType,
+      isSelected: isSelected ?? this.isSelected,
+    );
+  }
+
+  @override
+  List<Object?> get props => [cardName, cardRole, cardType, isSelected];
+}

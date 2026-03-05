@@ -7,9 +7,9 @@ import 'package:file_picker/file_picker.dart';
 import '../../../widgets/app_page_shell.dart';
 import '../../../../data/remote/digidocs/category_api.dart';
 import '../../../../data/remote/digidocs/events_api.dart';
-import '/src/domain/remote/Categorie.dart';
-import '/src/domain/remote/Event.dart';
-import '/src/utils/api/api_url.dart';
+import '../../../../domain/remote/digidocs/Categorie.dart';
+import '/src/domain/remote/digidocs/Event.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class AddDocumentScreen extends StatefulWidget {
@@ -59,7 +59,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
 
   _loadCategories() async {
     setState(() => _isLoadingCategories = true);
-    await CategoriesApi().getListCategory(ApiUrl().getCategoriesUrl).then((value) {
+    await CategoriesApi().getListCategory(ApiUrlDigidocs().getCategoriesUrl).then((value) {
       setState(() {
         _categories = value ?? [];
         _isLoadingCategories = false;
@@ -71,7 +71,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
 
   _loadEvents() async {
     setState(() => _isLoadingEvents = true);
-    await EventsApi().getListEvents(ApiUrl().getEventsUrl).then((value) {
+    await EventsApi().getListEvents(ApiUrlDigidocs().getEventsUrl).then((value) {
       setState(() {
         _events = value ?? [];
         _isLoadingEvents = false;

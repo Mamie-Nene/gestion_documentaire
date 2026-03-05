@@ -11,7 +11,7 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 
 import '/src/methods/token_interceptor.dart';
-import '/src/utils/api/api_url.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 
 /*Tell me if you want:
 ⏱ Auto-close document after X seconds
@@ -48,7 +48,7 @@ class _SecureDocumentViewerState extends State<SecureDocumentViewer> {
     super.initState();
    // _secureScreen();
     SecureScreen.enable();
-    _loadFile(ApiUrl().voirDocumentUrl);
+    _loadFile(ApiUrlDigidocs().voirDocumentUrl);
   }
 
  /* void _secureScreen() {

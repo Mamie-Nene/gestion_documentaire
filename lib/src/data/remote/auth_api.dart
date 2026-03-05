@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/domain/remote/iboard/UserAssignmentGroup.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url_digidocs.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url_iboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_interceptor/http/intercepted_http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,10 +16,19 @@ import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class AuthApi{
 
-  loginRequest(BuildContext context,String email, String password, String URL) async {
+  loginRequest(BuildContext context,String email, String password, bool isForIboard) async {
 
     try {
-
+      var URL ;
+      if(!isForIboard) {
+        URL = ApiUrlDigidocs().getLoginUrl;
+      }
+        else {
+        URL = ApiUrlIboard().getLoginUrl;
+      }
+        print(URL);
+        print(email);
+        print(password);
       var response = await http.post(
           Uri.parse(URL),
           headers: {
@@ -27,8 +39,8 @@ class AuthApi{
             'password': password,
           })
       );
-      debugPrint("response.statusCode for getToken after login ${response.statusCode}");
-      debugPrint("response.body for getToken after login ${response.body}");
+      debugPrint("response.statusCode for login isForIboard : $isForIboard ${response.statusCode}");
+      debugPrint("response.body for login isForIboard : $isForIboard ${response.body}");
 
       if (response.statusCode == 200) {
 
@@ -112,24 +124,24 @@ class AuthApi{
 
   }
 
-  getGroupBelongingToUserInfo( String URL) async {
+  Future<List<UserAssignmentGroup>> getGroupBelongingToUser( String URL) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
-    String? emailUser = prefs.getString("email");
+   // String? emailUser = prefs.getString("email");
     final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
-
+    //id user
+    List<UserAssignmentGroup> userAssignments=[];
     if(token==null)
     {
       globalResponseMessage.errorMessage(AppText.NO_TOKEN_GETTED);
-      return;
+      return [];
     }
-    else {
-      var uri = "$URL/$emailUser";
+
+      var uri = "$URL/f23a554a-081c-4601-ae7b-d49ca0ae73fe";//$id
       final headers = {
         'Authorization': 'Bearer $token',
       };
-      try {
         print(uri);
         var response = await http.get(
             Uri.parse(uri),headers: headers
@@ -139,25 +151,19 @@ class AuthApi{
 
         if (response.statusCode == 200) {
 
-         // var data = json.decode(response.body);
-
-          List<String> groups = response.body.split(',');
-          return groups;
+          List data = json.decode(response.body);
+          if (data.isEmpty) {
+            return userAssignments;
+          }
+          userAssignments = data.map((e) => UserAssignmentGroup.fromJson(e)).toList();
+          return userAssignments;
         }
 
         else  {
           print(response.statusCode);
           globalResponseMessage.errorMessage("Une Erreur est survenue!");
-
+          return [];
         }
       }
-
-      catch (e) {
-        debugPrint("error throw: ${e.toString()}");
-        globalResponseMessage.errorMessage(AppText.CATCH_ERROR_TEXT);
-      }
-    }
-
-  }
 
 }

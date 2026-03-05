@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
+import 'package:gestion_documentaire/src/presentation/widgets/app_page_shell.dart';
+import '/src/utils/consts/routes/app_routes_name.dart';
 
 import '/src/data/remote/auth_api.dart';
 import '/src/domain/remote/UserInfo.dart';
 import '/src/methods/signout.dart';
 
-import '../../../widgets/app_page_shell.dart';
-import '/src/utils/api/api_url.dart';
+
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _infoLoader = true;
 //change pwd
   getInfoUser() async {
-    await AuthApi().getUserInfo(ApiUrl().getUserInfoUrl).then((value) {
+    await AuthApi().getUserInfo(ApiUrlDigidocs().getUserInfoUrl).then((value) {
       setState(() {
         userInfo = value;
         _infoLoader = false;

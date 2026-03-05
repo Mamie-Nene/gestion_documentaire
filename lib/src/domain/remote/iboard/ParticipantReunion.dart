@@ -7,7 +7,7 @@ class ParticipantReunion {
   final String id;
   final String user;
   final String roleUser;
-  final bool present;
+   bool present;
   final bool meetingAccepted;
   final String? signature;
 

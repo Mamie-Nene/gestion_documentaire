@@ -3,8 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/remote/digidocs/reunion_api.dart';
-import '/src/utils/api/api_url.dart';
-import '/src/domain/remote/Reunion.dart';
+import '/src/utils/api/api_url_digidocs.dart';
+import '../../../domain/remote/digidocs/Reunion.dart';
 import '../../widgets/app_page_shell.dart';
 import '/src/presentation/widgets/helper.dart';
 import '/src/presentation/widgets/search_and_filter.dart';

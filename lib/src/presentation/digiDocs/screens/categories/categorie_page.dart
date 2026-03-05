@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '/src/presentation/widgets/search_and_filter.dart';
 import '../../../widgets/app_page_shell.dart';
 import '../../../../data/remote/digidocs/category_api.dart';
-import '/src/domain/remote/Categorie.dart';
+import '../../../../domain/remote/digidocs/Categorie.dart';
 
-import '/src/utils/api/api_url.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
@@ -37,7 +37,7 @@ class _CategorieListScreenState extends State<CategorieListScreen> {
     setState(() {
       _isCategoriesLoading = true;
     });
-    await CategoriesApi().getListCategory(ApiUrl().getCategoriesUrl).then((value) {
+    await CategoriesApi().getListCategory(ApiUrlDigidocs().getCategoriesUrl).then((value) {
       setState(() {
         categoriesGetted = value;
         _isCategoriesLoading = false;

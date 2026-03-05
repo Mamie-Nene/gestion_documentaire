@@ -1,5 +1,5 @@
 
-import '/src/domain/remote/TotalStorage.dart';
+import 'TotalStorage.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'Dashboard.g.dart';

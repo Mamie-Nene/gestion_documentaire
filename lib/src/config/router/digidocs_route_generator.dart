@@ -16,19 +16,21 @@ import '/src/presentation/digiDocs/screens/documents/document_list_screen.dart';
 import '/src/presentation/digiDocs/screens/documents/document_view_screen.dart';
 
 import '/src/presentation/digiDocs/screens/home_pages/home_screen.dart';
-import '/src/presentation/digiDocs/screens/auth/profile_screen.dart';
-import '../../presentation/digiDocs/screens/auth/login_screen.dart';
+import '/src/presentation/auth/profile_screen.dart';
+import '../../presentation/auth/login_screen.dart';
 import '/src/presentation/digiDocs/screens/home_pages/splash_first_page.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
 class DigidocsRouteGenerator {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+
+  static Route<dynamic> generateRoute(RouteSettings settings,bool isForIboard) {
     switch (settings.name) {
       case AppRoutesName.splashFirstPage:
-        return MaterialPageRoute(builder: (context) => const SplashPage());
+
+        return MaterialPageRoute(builder: (context) => SplashPage(isForIboard: isForIboard,));
 
       case AppRoutesName.loginPage:
-        return MaterialPageRoute(builder: (context) => const LoginScreen());
+        return MaterialPageRoute(builder: (context) =>  LoginScreen(isForIboard: isForIboard,));
 
       case AppRoutesName.homePage:
         return MaterialPageRoute(builder: (context) => const HomeScreen());

@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url_iboard.dart';
 import 'package:intl/intl.dart';
 
 class Helper{
@@ -53,6 +54,18 @@ class Helper{
     }
   }
 
+  String getUserAssignmentGroupCodeText(String fileType) {
+    switch (fileType) {
+      case "Assemblée Générale Annuelle":
+        return ApiUrlIboard().AGACode;
+      case 'Assemblée Générale Ordinaire':
+        return ApiUrlIboard().AGOCode;
+      default:
+        return ApiUrlIboard().ConseilAdministrationCode;
+    }
+  }
+
+
   String formatFileSize(String? fileName) {
     // Mock file size for now
     return '2.4MB';
@@ -73,4 +86,6 @@ class Helper{
   String formatHour(DateTime date) {
     return DateFormat('HH:mm').format(date);
   }
+
+
 }

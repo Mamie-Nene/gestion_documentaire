@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/utils/consts/routes/app_routes_name.dart';
 
 import '/src/data/remote/auth_api.dart';
-import '/src/utils/api/api_url.dart';
+import '/src/utils/api/api_url_digidocs.dart';
+import '/src/utils/api/api_url_iboard.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final bool isForIboard;
+  const LoginScreen({super.key, required this.isForIboard});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -16,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _loginKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   bool _obscurePassword = true;
   bool _rememberMe = false;
   bool _isRunning = false;
@@ -84,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
               fontFamily: "Chivo",
               fontWeight: FontWeight.w600,
               //color: AppColors.loginTitleColor,
-              color: Color(0xff205DA9),
+              color: widget.isForIboard? AppColors.mainWebAppColor: AppColors.loginTitleLabelColor,
               letterSpacing: 0.3,
             ),
           ),
@@ -129,13 +131,13 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-             // onPressed:(){   Navigator.of(context).pushReplacementNamed(AppRoutesName.chooseGroupInstance);},
               onPressed:_isRunning? null : () async {
                 setState(() {
                   _isRunning=true;
                 });
                 if (_loginKey.currentState!.validate()) {
-                  await AuthApi().loginRequest(context, _emailController.text, _passwordController.text, ApiUrl().getLoginUrl);
+                   await AuthApi().loginRequest(context, _emailController.text, _passwordController.text,true);
+
                 }
                 setState(() {
                   _isRunning=false;
@@ -145,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.symmetric(
                   vertical: AppDimensions.paddingMedium + 2,
                 ),
-                backgroundColor: AppColors.greenMainAppColor,
+                backgroundColor:widget.isForIboard?AppColors.secondWebAppColor: AppColors.greenMainAppColor,
                // backgroundColor: AppColors.mainAppColor,
                 foregroundColor: Colors.white,
                 elevation: 0,

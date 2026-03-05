@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/core/utils/date_helper.dart';
-import '/src/data/remote/iboard/meeting_api.dart';
-import '/src/domain/remote/AgendaMeeting.dart';
-import '/src/domain/remote/FeuillePresence.dart';
-import '/src/utils/api/api_url.dart';
-import '/src/utils/consts/app_specifications/app_dimensions.dart';
-import '/src/domain/remote/IboardMeetingData.dart';
 
-import '/src/data/local/feuille_presence_local_data.dart';
+import '/core/utils/date_helper.dart';
+import '/src/domain/remote/iboard/ParticipantReunion.dart';
+import '/src/utils/api/api_url_iboard.dart';
+
+import '/src/data/remote/iboard/meeting_api.dart';
+import '../../../domain/remote/iboard/AgendaMeeting.dart';
+import '../../../domain/remote/iboard/FeuillePresence.dart';
+import '/src/utils/consts/app_specifications/app_dimensions.dart';
+import '../../../domain/remote/iboard/IboardMeetingData.dart';
+
 import '/core/theme/app_colors.dart';
 
 
@@ -21,9 +23,9 @@ class MeetingDetailsPage extends StatefulWidget {
 
 class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late List<Participant> participants;
+  List<ParticipantReunion> participants=[];
 
-  bool _isfeuillePresenceLoading=false;
+  bool _isfeuillePresenceLoading=true;
   bool _isAgendaLoading=false;
   bool _isResolutionLoading=false;
 
@@ -31,23 +33,28 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
   List<AgendaMeeting> agendaMeetings = [];
 
   feuillePresenceGetted() async {
-    await MeetingIboardApi().getFeuillePresence( ApiUrl().getFeuillePresenceByMeetingCodeUrl,meetingCode: widget.meeting.code).then((value) {
-      setState(() {
-        feuillePresence = value;
-        _isfeuillePresenceLoading = false;
-      });
-    }).catchError((error) {
-      setState(() {
-        _isfeuillePresenceLoading = false;
-      });
-    });
+    await MeetingIboardApi().getFeuillePresence(ApiUrlIboard().getFeuillePresenceByMeetingCodeUrl,meetingCode: widget.meeting.code).then(
+            (value) {
+              _isfeuillePresenceLoading = false;
+              if(value!=null){
+                setState(() {
+                  feuillePresence = value;
+                  participants=feuillePresence!.participants;
+                 // _isfeuillePresenceLoading = false;
+                });
+              }
+            }).catchError((error) {
+              setState(() {
+                _isfeuillePresenceLoading = false;
+              });
+            });
   }
 
   agendaGetted() async {
     setState(() {
      _isfeuillePresenceLoading = true;
     });
-    await MeetingIboardApi().getListOrdreDuJour( ApiUrl().getAgendaByMeetingCodeUrl,meetingCode:widget.meeting.code).then((value) {
+    await MeetingIboardApi().getListOrdreDuJour( ApiUrlIboard().getAgendaByMeetingCodeUrl,meetingCode:widget.meeting.code).then((value) {
       setState(() {
         agendaMeetings = value ?? [];
        _isAgendaLoading=false;
@@ -69,7 +76,7 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
     agendaGetted();
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
-    participants = FeuillePresenceLocalData().participants;
+  //  participants = FeuillePresenceLocalData().participants;
   }
 
   @override
@@ -92,7 +99,8 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildListPresenceEtEmargement(),
+
+                 _buildListPresenceEtEmargement(feuillePresence),
                   _buildDetailReunion()
                 ],
               ),
@@ -261,13 +269,20 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
 
   // ================= AVANT REUNION =================
 
-  Widget _buildListPresenceEtEmargement() {
+  Widget _buildListPresenceEtEmargement(FeuillePresence? feuillepresence) {
     return SingleChildScrollView(
       child: Column(
         children: [
           _buildConvocationCard(),
           const SizedBox(height: 24),
-          _buildAttendanceSection(),
+
+          _isfeuillePresenceLoading?
+          Center(child: CircularProgressIndicator(),)
+              :
+          feuillePresence == null
+              ? const Center(child: Text("La feuille de présence n'a pas encore été créée!"))
+              :
+          _buildAttendanceSection(feuillePresence),
         ],
       ),
     );
@@ -279,13 +294,15 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-                "Ordre du jour",
+          Text("Ordre du jour",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: AppColors.foreground,
                 ),
               ),
+          agendaMeetings.isEmpty?
+          const Center(child: Text("L'agenda du jour n'a pas encore été créée!"))
+              :
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -454,9 +471,9 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
     );
   }
 
-  Widget _buildAttendanceSection() {
-    final presentCount =
-        participants.where((p) => p.isPresent).length;
+  Widget _buildAttendanceSection(FeuillePresence? feuillePresence) {
+    final presentCount = participants.where((p) => p.present).length;
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,7 +518,7 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
     );
   }
 
-  Widget _attendanceItem(Participant participant) {
+  Widget _attendanceItem(ParticipantReunion participant) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 20,
@@ -526,8 +543,7 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
                   color: AppColors.primary.withOpacity(.1),
                   shape: BoxShape.circle,
                 ),
-                child: Text(
-                  participant.initials,
+                child: Text("MN",
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -542,7 +558,7 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    participant.name,
+                    participant.user,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -550,7 +566,7 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
                     ),
                   ),
                   Text(
-                    participant.role,
+                    participant.roleUser,
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.mutedForeground,
@@ -565,24 +581,24 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
           OutlinedButton.icon(
             onPressed: () {
               setState(() {
-                participant.isPresent = !participant.isPresent;
+                participant.present = !participant.present;
               });
             },
             icon: Icon(
-              participant.isPresent
+              participant.present
                   ? Icons.check_circle
                   : Icons.person_add_alt_1,
               size: 16,
             ),
             label: Text(
-              participant.isPresent ? "Présent" : "Émarger",
+              participant.present ? "Présent" : "Émarger",
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: participant.isPresent
+              foregroundColor: participant.present
                   ? AppColors.success
                   : AppColors.foreground,
               side: BorderSide(
-                color: participant.isPresent
+                color: participant.present
                     ? AppColors.success
                     : AppColors.border,
               ),

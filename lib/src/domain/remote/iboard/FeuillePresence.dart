@@ -1,4 +1,4 @@
-import 'package:gestion_documentaire/src/domain/remote/ParticipantReunion.dart';
+import 'package:gestion_documentaire/src/domain/remote/iboard/ParticipantReunion.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 

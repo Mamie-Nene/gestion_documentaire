@@ -1,4 +1,4 @@
-class ApiUrl {
+class ApiUrlDigidocs {
   //              ---------------------- Const Var ----------------------
   static const String baseUrl = 'https://gupe-partenaire.gainde2000.sn/backendGestionDocument/api'; //preprod
  // static const String baseUrl = 'http://10.0.2.2:8082/api'; // local

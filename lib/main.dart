@@ -58,7 +58,8 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey, // <-- clé globale
       scaffoldMessengerKey: scaffoldMessengerKey, // Associer la GlobalKey
       initialRoute: AppRoutesName.splashFirstPage,
-      onGenerateRoute: IboardRouteGenerator.generateRoute,
+      onGenerateRoute: (settings) => IboardRouteGenerator.generateRoute(settings, true),
+      //onGenerateRoute: IboardRouteGenerator.generateRoute,
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
@@ -83,7 +84,8 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey, // <-- clé globale
       scaffoldMessengerKey: scaffoldMessengerKey, // Associer la GlobalKey
       initialRoute: AppRoutesName.splashFirstPage,
-       onGenerateRoute: DigidocsRouteGenerator.generateRoute,
+      onGenerateRoute: (settings) => DigidocsRouteGenerator.generateRoute(settings, false),
+      // onGenerateRoute: DigidocsRouteGenerator.generateRoute,
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,

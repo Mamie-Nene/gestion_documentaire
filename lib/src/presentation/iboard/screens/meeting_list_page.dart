@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/src/data/remote/iboard/meeting_api.dart';
-import '/src/domain/remote/IboardMeetingData.dart';
-import '/src/presentation/widgets/utils_widget.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url_iboard.dart';
+import '/src/data/remote/iboard/dashboard.dart';
+import '/src/domain/remote/iboard/DashboardIboard.dart';
 import 'package:intl/intl.dart';
 
-import '../../../data/remote/digidocs/reunion_api.dart';
-import '/src/utils/api/api_url.dart';
+import '/src/data/remote/iboard/meeting_api.dart';
+import '/src/domain/remote/iboard/IboardMeetingData.dart';
+import '/src/presentation/widgets/utils_widget.dart';
 import '/src/presentation/widgets/search_and_filter.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
-class ListReunionPage extends StatefulWidget {
-  const ListReunionPage({super.key});
+
+class MeetingListIboardPage extends StatefulWidget {
+  final String codeInstance;
+  final String instanceName;
+  const MeetingListIboardPage({super.key, required this.codeInstance, required this.instanceName});
 
   @override
-  State<ListReunionPage> createState() => _ListReunionPageState();
+  State<MeetingListIboardPage> createState() => _MeetingListIboardPageState();
 }
 
-class _ListReunionPageState extends State<ListReunionPage> {
+class _MeetingListIboardPageState extends State<MeetingListIboardPage> {
   final TextEditingController _searchController = TextEditingController();
+  DashboardIboard? dashboardGetted;
+  bool _isDashboardLoading=true;
 
   // Pagination state
   int _currentPage = 1;
@@ -36,7 +42,7 @@ class _ListReunionPageState extends State<ListReunionPage> {
     setState(() {
       _isMeetingsLoading = true;
     });
-    await MeetingIboardApi().getListMeetings( ApiUrl().getMeetingsUrl).then((value) {
+    await MeetingIboardApi().getListMeetings( ApiUrlIboard().getMeetingsUrl).then((value) {
       setState(() {
         meetingIboard = value ?? [];
         // reunions = value;
@@ -52,9 +58,26 @@ class _ListReunionPageState extends State<ListReunionPage> {
     });
   }
 
+  getDashboardIboardStats() async {
+    setState(() {
+      _isDashboardLoading = true;
+    });
+    await IboardDashboardApi().getDashboard(ApiUrlIboard().getDashboardUrl, widget.instanceName).then((value) {
+      setState(() {
+        dashboardGetted = value;
+        _isDashboardLoading=false;
+      });
+    }).catchError((error) {
+      setState(() {
+        _isDashboardLoading=false;
+      });
+    });
+  }
+
   @override
   void initState() {
     meetingsGetted();
+    getDashboardIboardStats();
     listView =true;
     super.initState();
   }
@@ -159,7 +182,7 @@ class _ListReunionPageState extends State<ListReunionPage> {
                   Row(
                     children: [
                       IconButton(icon:Icon(Icons.arrow_back),onPressed: (){Navigator.of(context).pop();},),
-                      dashboardHeader(),
+                      dashboardHeader(widget.codeInstance),
                     ],
                   ),
 
@@ -174,7 +197,16 @@ class _ListReunionPageState extends State<ListReunionPage> {
                 ],
               ),
               const SizedBox(height: 32),
-              _buildStats(context),
+              _isDashboardLoading?
+              Center(
+                  child: CircularProgressIndicator()
+              )
+                  :
+              dashboardGetted == null
+                  ? const Center(child: Text("Aucune donnée de statistiques disponible!"))
+                  :
+              _buildStats(context,dashboardGetted),
+
 
               const SizedBox(height: 32),
               _buildSearchAndFilter(),
@@ -223,11 +255,11 @@ class _ListReunionPageState extends State<ListReunionPage> {
     );
   }
 
-  Widget _buildStats(BuildContext context){
+  Widget _buildStats(BuildContext context,DashboardIboard? dashboardData){
     List<String> statTitles=["Total Réunions","Résolutions adoptées","Membre du conseil",];
     List<IconData> statIcons=[Icons.calendar_today_outlined,Icons.playlist_add_check_outlined,Icons.group,];
     List<Color> statColors=[AppColors.mainWebAppColor,AppColors.secondWebAppColor,Colors.grey];
-    List<VoidCallback> statActions=[(){Navigator.of(context).pushNamed(AppRoutesName.documentPage,arguments: {"subtitle":"Tous les documents"});},(){Navigator.of(context).pushNamed(AppRoutesName.evenementListPage);},(){Navigator.of(context).pushNamed(AppRoutesName.categoriePage);},(){}];
+   // List<VoidCallback> statActions=[(){Navigator.of(context).pushNamed(AppRoutesName.allDocumentIboardPage,arguments: {"subtitle":"Tous les documents"});},(){Navigator.of(context).pushNamed(AppRoutesName.allResolutionPage);},(){}];
 
     return  GridView.builder(
       shrinkWrap: true,
@@ -242,11 +274,13 @@ class _ListReunionPageState extends State<ListReunionPage> {
       ),
       itemCount: statTitles.length,
       itemBuilder: (context, index) {//recentDocuments[index];
-
-        final  statNumbers = ["1","1","1","1"];
-        return InkWell(
-            onTap: statActions[index],
-            child: Container(
+        if (dashboardData == null) {
+          return const Center(
+            child: Text("Pas de données pour le moment !"),
+          );
+        }
+        final  statNumbers = [dashboardData.totalMeetings.toString(),dashboardData.totalAdoptedResolutions.toString(),dashboardData.totalMembers.toString()];
+        return  Container(
               padding: const EdgeInsets.all(AppDimensions.paddingMedium),
               decoration: BoxDecoration(
                 color: AppColors.cardSurface,
@@ -269,7 +303,7 @@ class _ListReunionPageState extends State<ListReunionPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(statNumbers[index],
+                        Text(statNumbers[index].toString(),
                           style: TextStyle(
                            // fontFamily: "Roboto",
                             fontWeight: FontWeight.bold,
@@ -292,8 +326,7 @@ class _ListReunionPageState extends State<ListReunionPage> {
 
                 ],
               ),
-            )
-        );
+            );
       },
     );
   }
@@ -430,12 +463,13 @@ class _ListReunionPageState extends State<ListReunionPage> {
       ),
     );
   }
-  Widget dashboardHeader() {
+  Widget dashboardHeader(String codeInstance) {
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
+      children: [
         Text(
-          "Tableau de bord",
+          "Tableau de bord $codeInstance",
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gestion_documentaire/src/data/remote/auth_api.dart';
 import 'package:gestion_documentaire/src/domain/remote/UserInfo.dart';
-import 'package:gestion_documentaire/src/utils/api/api_url.dart';
+import 'package:gestion_documentaire/src/utils/api/api_url_digidocs.dart';
 import '/core/theme/app_colors.dart';
 
 class UserProfileDataClass {
@@ -37,7 +37,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   );
 
   getInfoUser() async {
-    await AuthApi().getUserInfo(ApiUrl().getUserInfoUrl).then((value) {
+    await AuthApi().getUserInfo(ApiUrlDigidocs().getUserInfoUrl).then((value) {
       setState(() {
         userInfo = value;
         _infoLoader = false;

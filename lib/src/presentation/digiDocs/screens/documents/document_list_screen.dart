@@ -8,7 +8,7 @@ import '../../../widgets/app_page_shell.dart';
 import '/src/presentation/widgets/helper.dart';
 import '/src/presentation/widgets/search_and_filter.dart';
 
-import '/src/utils/api/api_url.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
@@ -47,7 +47,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     setState(() {
       _isDocumentsLoading = true;
     });
-    await DocumentApi().getDocumentsByCritera( ApiUrl().getFilterDocumentsUrl, widget.category,widget.eventCode).then((value) {
+    await DocumentApi().getDocumentsByCritera( ApiUrlDigidocs().getFilterDocumentsUrl, widget.category,widget.eventCode).then((value) {
       setState(() {
         documentsGetted = value;
         documentsFiltered = documentsGetted;

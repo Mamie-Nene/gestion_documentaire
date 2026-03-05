@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gestion_documentaire/src/domain/remote/IboardMeetingData.dart';
+import '/src/domain/remote/iboard/IboardMeetingData.dart';
 
-import '/src/domain/remote/Categorie.dart';
+import '../../domain/remote/digidocs/Categorie.dart';
 import '/src/domain/remote/Document.dart';
-import '/src/domain/remote/Event.dart';
+import '/src/domain/remote/digidocs/Event.dart';
 import '/src/presentation/widgets/helper.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
@@ -303,7 +303,6 @@ class UtilsWidget{
           borderRadius: BorderRadius.circular(AppDimensions.borderRadiusLarge),
           onTap: (){Navigator.of(context).pushNamed(AppRoutesName.detailMeetingPage,arguments: {"meeting": meeting});},
 
-        // onTap: () => Navigator.pushNamed(context,AppRoutesName.detailsEventPage, arguments: {"eventCode": meeting.code,"eventId": meeting.id,"subtitle":meeting.title}),
           child: Container(
             padding: const EdgeInsets.all(AppDimensions.paddingMedium),
             decoration: BoxDecoration(

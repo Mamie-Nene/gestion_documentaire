@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 
 import '../../../widgets/app_page_shell.dart';
 import '../../../../data/remote/digidocs/events_api.dart';
-import '/src/domain/remote/Event.dart';
-import '/src/utils/api/api_url.dart';
+import '/src/domain/remote/digidocs/Event.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 
@@ -36,7 +36,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
     setState(() {
       _isEventsLoading = true;
     });
-    await EventsApi().getListEvents(ApiUrl().getEventsUrl).then((value) {
+    await EventsApi().getListEvents(ApiUrlDigidocs().getEventsUrl).then((value) {
       setState(() {
         events = value ?? [];
         _isEventsLoading = false;

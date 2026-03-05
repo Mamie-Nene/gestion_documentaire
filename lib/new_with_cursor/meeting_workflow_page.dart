@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/src/domain/remote/Reunion.dart';
+import '../src/domain/remote/digidocs/Reunion.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
@@ -457,7 +457,7 @@ class _MeetingWorkflowPageState extends State<MeetingWorkflowPage> {
           subtitle: const Text('Rédaction puis génération d\'un PV (PDF)'),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           onTap: () {
-            Navigator.of(context).pushNamed(AppRoutesName.reportPage);
+            Navigator.of(context).pushNamed(AppRoutesName.allResolutionPage);
           },
         ),
       ],

@@ -39,8 +39,8 @@ class AppRoutesName {
      static const String meetingListPage = '/meetingListPage';
      static const String signaturePage = '/signaturePage';
      static const String agendaPage = '/agendaPage';
-     static const String documentsPage = '/documentsPage';
-     static const String reportPage = '/reportPage';
+     static const String allDocumentIboardPage = '/allDocumentIboardPage';
+     static const String allResolutionPage = '/allResolutionPage';
      static const String feuillePresencePage = '/attendancePage';
      static const String addMeetingPage = '/addMeetingPage';
      static const String detailMeetingPage = '/detailMeetingPage';

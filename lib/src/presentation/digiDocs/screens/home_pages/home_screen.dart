@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../data/remote/digidocs/dashboard.dart';
-import '/src/domain/remote/Dashboard.dart';
+import '../../../../domain/remote/digidocs/Dashboard.dart';
 
 import '../../../../data/remote/digidocs/document_api.dart';
 import '../../../../data/remote/digidocs/events_api.dart';
 
-import '/src/domain/remote/Categorie.dart';
+import '../../../../domain/remote/digidocs/Categorie.dart';
 import '/src/domain/remote/Document.dart';
-import '/src/domain/remote/Event.dart';
+import '/src/domain/remote/digidocs/Event.dart';
 import '../../../widgets/app_page_shell.dart';
 import '/src/presentation/widgets/utils_widget.dart';
 
-import '/src/utils/api/api_url.dart';
+import '/src/utils/api/api_url_digidocs.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 import '/src/utils/consts/routes/app_routes_name.dart';
 
@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
      setState(() {
        _isEventsLoading = true;
      });
-     await EventsApi().getLastEvents(ApiUrl().getRecentsEventsUrl).then((value) {
+     await EventsApi().getLastEvents(ApiUrlDigidocs().getRecentsEventsUrl).then((value) {
        setState(() {
          last4Events = value;
          _isEventsLoading=false;
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _isDocumentsLoading = true;
     });
-    await DocumentApi().getRecentsDocuments( ApiUrl().getRecentsDocumentsUrl).then((value) {
+    await DocumentApi().getRecentsDocuments( ApiUrlDigidocs().getRecentsDocumentsUrl).then((value) {
       setState(() {
         last3DocumentsGetted = value;
         _isDocumentsLoading=false;
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _isDashboardLoading = true;
     });
-    await DashboardApi().getDashboard(ApiUrl().getDashboardUrl).then((value) {
+    await DashboardApi().getDashboard(ApiUrlDigidocs().getDashboardUrl).then((value) {
       setState(() {
         dashboardGetted = value;
         _isDashboardLoading=false;

@@ -36,6 +36,7 @@ class AppColors {
   static Color labelTextColorForTextFormField = const Color(0xff505050);
   static Color greyColorForIcon = const Color(0xff515151);
   static Color forgotPWD = const Color(0xFF02566B);
+  static Color loginTitleLabelColor = const Color(0xff205DA9);
   static Color loginTitleColor = const Color(0xFF212121);
   static Color textMainPageColor = const Color(0xff343741);
   static Color textMainPageColorAvant = const Color(0xff4b5057);
