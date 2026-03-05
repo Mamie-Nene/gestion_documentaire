@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signature/signature.dart';
 
 import '/core/utils/date_helper.dart';
 import '/src/domain/remote/iboard/ParticipantReunion.dart';
@@ -22,10 +24,13 @@ class MeetingDetailsPage extends StatefulWidget {
 }
 
 class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTickerProviderStateMixin {
+  final SignatureController signaturePresenceController = SignatureController(penStrokeWidth: 3, penColor: Colors.black,);
+
   late TabController _tabController;
   List<ParticipantReunion> participants=[];
 
   bool _isfeuillePresenceLoading=true;
+  String? emailUserConnected;
   bool _isAgendaLoading=false;
   bool _isResolutionLoading=false;
 
@@ -69,11 +74,70 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
     });
   }
 
+   getUserConnected()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      emailUserConnected = prefs.getString("email");
+    });
+  }
+
+  marquerPresence(BuildContext context,{required ParticipantReunion participantReunion}){
+    return showModalBottomSheet(
+        context:context ,
+        backgroundColor:Colors.white,
+        isScrollControlled :true,
+        useSafeArea:true,
+        constraints: BoxConstraints.expand(width:MediaQuery.of(context).size.width, height:MediaQuery.of(context).size.height/2.1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        builder: ( context){
+          return Container(
+            height: MediaQuery.of(context).size.height/2.1,
+            padding: EdgeInsets.all(12.0),
+            // width:MediaQuery.of(context).size.width ,
+            child: Center(
+              child: Column(
+                spacing: 12,
+                children: [
+                  Text("Veuillez signer ici pour matérialiser votre présence",style: TextStyle(fontSize: 14),),
+                  Expanded(
+                    child: Signature(
+                      controller: signaturePresenceController,
+                      backgroundColor: Colors.grey[200]!,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        onPressed: signaturePresenceController.clear,
+                        child: const Text("Effacer",style: TextStyle(color: Colors.grey),),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondary,
+                        ),
+                        onPressed: (){setState(() {
+                          participantReunion.present = true;
+                        });},
+                        child: const Text("Valider",style: TextStyle(color: Colors.white),),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        }
+    );
+  }
 
   @override
   void initState() {
     feuillePresenceGetted();
     agendaGetted();
+   getUserConnected();
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
   //  participants = FeuillePresenceLocalData().participants;
@@ -519,6 +583,7 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
   }
 
   Widget _attendanceItem(ParticipantReunion participant) {
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 20,
@@ -577,11 +642,13 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
             ],
           ),
 
-          // Button
+          emailUserConnected != null && emailUserConnected == participant.user
+              ?
           OutlinedButton.icon(
-            onPressed: () {
+            onPressed: participant.present? null:() {
               setState(() {
-                participant.present = !participant.present;
+                participant.present = true;
+                marquerPresence(context,participantReunion: participant);
               });
             },
             icon: Icon(
@@ -603,7 +670,8 @@ class _MeetingDetailsPageState extends State<MeetingDetailsPage> with SingleTick
                     : AppColors.border,
               ),
             ),
-          ),
+          )
+              : SizedBox.shrink()
         ],
       ),
     );
