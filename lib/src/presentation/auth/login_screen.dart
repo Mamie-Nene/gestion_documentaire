@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '/src/data/remote/auth_api.dart';
-import '/src/utils/api/api_url_digidocs.dart';
-import '/src/utils/api/api_url_iboard.dart';
 import '/src/utils/consts/app_specifications/all_directories.dart';
 
 class LoginScreen extends StatefulWidget {

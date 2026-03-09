@@ -130,7 +130,7 @@ class _ChooseGroupInstanceState extends State<ChooseGroupInstance> {
                 String logoText = Helper().getUserAssignmentGroupCodeText(group.groupName);
                 return GroupUserCardWidget(
                   userAssignmentGroup: group,
-                     logoText :logoText,
+                  logoText :logoText,
                   isSelected: selectedCardIndex == index,
                   onTap: () {
                     setState(() {

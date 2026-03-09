@@ -48,8 +48,10 @@ class AuthApi{
         SharedPreferences prefs = await SharedPreferences.getInstance();
         var data = json.decode(response.body);
         String token = data['token'];
+        String id = data['id'];
 
         prefs.setString("token", token);
+        prefs.setString("id", id);
         prefs.setString("email", email);
         prefs.setBool("isLoggedIn", true);
 
@@ -128,9 +130,8 @@ class AuthApi{
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
-   // String? emailUser = prefs.getString("email");
+    String? id = prefs.getString("id");
     final http = InterceptedHttp.build(interceptors: [TokenInterceptor()]);
-    //id user
     List<UserAssignmentGroup> userAssignments=[];
     if(token==null)
     {
@@ -138,7 +139,7 @@ class AuthApi{
       return [];
     }
 
-      var uri = "$URL/f23a554a-081c-4601-ae7b-d49ca0ae73fe";//$id
+      var uri = "$URL/$id";
       final headers = {
         'Authorization': 'Bearer $token',
       };
