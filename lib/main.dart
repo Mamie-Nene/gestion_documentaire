@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_documentaire/core/theme/app_colors.dart';
-import 'package:gestion_documentaire/src/config/router/iboard_route_generator.dart';
+import '/core/theme/app_colors.dart';
+import '/src/config/router/iboard_route_generator.dart';
 
 import '/src/config/router_observer.dart';
 import '/src/utils/variable/global_variable.dart';
